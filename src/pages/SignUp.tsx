@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
+ import { Link } from 'react-router-dom';
 
-export default function SignUp() {
-  return (
-    // OUTER OVERLAY
+ export default function SignUp() {
+ return (
+    
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       
-      <div className="flex h-[90vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
+      <div className="flex h-[95vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
@@ -45,17 +45,39 @@ export default function SignUp() {
       
           <div className="w-full max-w-md">
 
-            <h2 className="text-3xl font-serif  mt-8 font-semibold text-gray-900">
-              Welcome back!
+            <h2 className="text-2xl font-serif  mt-8 font-semibold text-gray-900">
+              Create your account
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-gray-900">
-              Enter your credentials to access your curated dashboard
+              Join our community of curators and design enthusiasts.
             </p>
 
-            <form className="mt-8 space-y-5">
+            <form className="mt-6 space-y-5">
 
-            
+              <div>
+                <label className="mb-2 block text-xs font-medium text-gray-900">
+                   Name
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Enter your  name"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
+                
+                <div>
+                <label className="mb-2 block text-xs font-medium text-gray-900">
+                  User Name
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Enter your user name"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-gray-900">
@@ -76,45 +98,25 @@ export default function SignUp() {
 
                 <input
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
                   className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
                 />
-              </div>
-
-
-                <div className="flex items-center justify-between">
-
-                <label className="flex items-center gap-2 text-sm text-gray-600">
-                 <input
-                   type="checkbox"
-                 className="h-4 w-4 accent-black"
-                      />
-                   Remember me
-                   </label>
-
-                 <button
-                   type="button"
-                   className="text-sm font-medium text-black underline"
-                    >
-                   Forgot password?
-                    </button>
-
               </div>
 
               <button
                 type="submit"
                 className="w-full bg-black py-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
               >
-                Sign In
+                Sign Up
               </button>
 
             </form>
 
-            <p className="mt-4  mb-4 text-center text-sm text-gray-900">
-              Don't have an account?{" "}
-              <Link to ="/create-account">
+            <p className="mt-2  mb-4 text-center text-sm text-gray-900">
+              Already  have an account?{" "}
+              <Link to ="/signin">
                 <button className="font-medium text-black underline">
-                  Sign up
+                  Sign in
                 </button>
               </Link>
             </p>

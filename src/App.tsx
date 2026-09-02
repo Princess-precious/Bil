@@ -13,17 +13,17 @@
 import Home from './pages/Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
-import CreateAccount from './pages/create account';
-import Text from './pages/Text';
+import SignIn from './pages/SignIn';
+import NewStory from './pages/NewStory';
 
 function App() {
     return(
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/create-account" element={<CreateAccount />} />
-                <Route path="/text" element={<Text />} />
+                <Route path="/" element={<NewStory />} />
             </Routes>
         </BrowserRouter>
 
