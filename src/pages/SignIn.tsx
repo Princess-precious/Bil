@@ -1,5 +1,7 @@
- export default function CreateAccount() {
- return (
+import { Link } from 'react-router-dom';
+
+export default function SignIn() {
+  return (
     // OUTER OVERLAY
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
@@ -44,26 +46,16 @@
           <div className="w-full max-w-md">
 
             <h2 className="text-3xl font-serif  mt-8 font-semibold text-gray-900">
-              Create your account
+              Welcome back!
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-gray-900">
-              Join our community of curators and design enthusiasts.
+              Enter your credentials to access your curated dashboard
             </p>
 
             <form className="mt-8 space-y-5">
 
-              <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
-                  Full Name
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Enter your full name"
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
-                />
-              </div>
+            
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-gray-900">
@@ -84,25 +76,47 @@
 
                 <input
                   type="password"
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                   className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
                 />
+              </div>
+
+
+                <div className="flex items-center justify-between">
+
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                 <input
+                   type="checkbox"
+                 className="h-4 w-4 accent-black"
+                      />
+                   Remember me
+                   </label>
+
+                 <button
+                   type="button"
+                   className="text-sm font-medium text-black underline"
+                    >
+                   Forgot password?
+                    </button>
+
               </div>
 
               <button
                 type="submit"
                 className="w-full bg-black py-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
               >
-                Sign Up
+                Sign In
               </button>
 
             </form>
 
             <p className="mt-4  mb-4 text-center text-sm text-gray-900">
-              Already  have an account?{" "}
-              <button className="font-medium text-black underline">
-                Sign in
-              </button>
+              Don't have an account?{" "}
+              <Link to ="/SignUp">
+                <button className="font-medium text-black underline">
+                  Sign up
+                </button>
+              </Link>
             </p>
 
            
