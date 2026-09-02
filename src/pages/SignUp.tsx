@@ -1,41 +1,125 @@
 export default function SignUp() {
   return (
-    <div className=" flex w-full h-full min-h-screen flex-col md:flex-row"> 
-      //left side
-      <div className="hidden md:flex md:w-1/2 relative bg-surface-container overflow-hidden"> 
-        <img src="image2.jpg" alt="image" className="absolute inset-0 w-full h-full object-cover" />
+    // OUTER OVERLAY
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
-        <div className="absolute left-10 top-8 z-10" >
-          <h1 className="text-2xl font-serif font-bold text-white" >
-            BIL
-          </h1>
+      
+      <div className="flex h-[90vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
+
+        {/* LEFT SIDE */}
+        <div className="hidden w-1/2 bg-gray-900 md:block">
+          <div className="relative h-full">
+
+            <img
+              src="image2.jpg"
+              alt="image"
+              className="h-full w-full object-cover"
+            />
+
+            <div className="absolute inset-0 bg-black/30"></div>
+
+            <div className="absolute left-10 top-8 z-10">
+              <h1 className="text-2xl font-serif font-bold text-white">
+                BIL
+              </h1>
+            </div>
+
+            <div className="absolute bottom-12 left-10 z-10 text-white">
+              <p className="max-w-md text-2xl font-serif">
+                "Quiet luxury defined by rigorous minimalism."
+              </p>
+
+              <p className="mt-4 text-xs uppercase tracking-widest">
+                Editorial / Culture
+              </p>
+            </div>
+
+          </div>
         </div>
 
-      <div  className="absolute bottom-12 left-10 z-10 text-white" >
-          <p className="max-w-md text-2xl font-serif">
-            "Quiet luxury defined by rigorous minimalism."
-          </p>
+        {/* RIGHT SIDE */}
+        <div className="relative flex w-full items-center justify-center bg-white px-8 py-12 md:w-1/2">
 
-           <p className="mt-4 text-xs uppercase tracking-widest">
-              Editorial / Culture
+      
+          <div className="w-full max-w-md">
+
+            <h2 className="text-3xl font-serif  mt-8 font-semibold text-gray-900">
+              Welcome back!
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-gray-900">
+              Enter your credentials to access your curated dashboard
             </p>
-      </div>
 
-      </div>
+            <form className="mt-8 space-y-5">
 
-      //right side
+            
 
-      <div className="bg-white px-8 py-12 justify-center relative flex">
-        <h1 className="text-3xl text-gray-900">Create Account</h1>
-        <p>Join our community or curators and design enthusiast </p>
-        <form>
-          <input type="text" placeholder="Full Name" />
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <button type="submit">Sign Up</button>
-          <br/>
-          <p>Already have an account? <a href="/login">sign in</a></p>
-        </form>
+              <div>
+                <label className="mb-2 block text-xs font-medium text-gray-900">
+                  Email Address
+                </label>
+
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-medium text-gray-900">
+                  Password
+                </label>
+
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
+
+
+                <div className="flex items-center justify-between">
+
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                 <input
+                   type="checkbox"
+                 className="h-4 w-4 accent-black"
+                      />
+                   Remember me
+                   </label>
+
+                 <button
+                   type="button"
+                   className="text-sm font-medium text-black underline"
+                    >
+                   Forgot password?
+                    </button>
+
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-black py-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
+              >
+                Sign In
+              </button>
+
+            </form>
+
+            <p className="mt-4  mb-4 text-center text-sm text-gray-900">
+              Don't have an account?{" "}
+              <button className="font-medium text-black underline">
+                Sign up
+              </button>
+            </p>
+
+           
+
+          </div>
+        </div>
+
       </div>
     </div>
   );
