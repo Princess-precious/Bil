@@ -16,7 +16,9 @@ import Button from "../ui/button";
 
 function Navbar() {
    const [showMenu, setShowMenu] = useState(false);
-  return(
+   
+  return
+    
     <>
     <nav className="fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-14 flex items-center justify-between h-[80px] border-b border-[#dbdad9]">
       <div className="flex items-center gap-2">
@@ -27,13 +29,22 @@ function Navbar() {
         <Link to="" className="hover:text-underline active:underline hover:opacity-80 active:opacity-80">Feed</Link>
       </div>
 
-      <div className="hidden md:flex md:items-center md:gap-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <Button className=" text-sm p-2">WRITE A STORY</Button>
+      <div className="flex flex-row gap-4 items-center">
+        <div className="flex flex-row gap-1 items-center">
+          <input type="search" className="hidden  border border-[#dbdad9] rounded-md p-2 outline-none "></input>
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
+        
+        <div className="hidden md:flex md:items-center md:gap-4">
+        
+          <Button className=" text-sm p-2">WRITE A STORY</Button>
+        </div>
       </div>
+
+      
       {/* hamburger button */}
       <button
       className="md:hidden"
@@ -47,13 +58,6 @@ function Navbar() {
       <div className="flex flex-col items-center gap-6 text-sm text-black order-2">
         <Link to="" className="hover:text-underline active:underline">Feed</Link>
       </div>
-
-      <div className="order-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      </div>
       
       <Button className=" text-xs p-1 order-3">WRITE A STORY</Button>
     </div>
@@ -61,7 +65,7 @@ function Navbar() {
     
     )}
    </>
-  );
+  ;
 }
 
 export default Navbar;

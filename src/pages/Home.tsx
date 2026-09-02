@@ -11,8 +11,8 @@
     * - Modification    : 
 **/
 import Navbar from '../components/Navbar';
-import Section1 from '../HomePageSections/section1';
-import Section2 from '../HomePageSections/section2';
+import Section1 from '../HomePage/section1';
+import Section2 from '../HomePage/section2';
 import Footer from '../components/footer';
 
 function Home() {

@@ -16,7 +16,7 @@ function Section1() {
   return(
     <section className="bg-[#fbf9f8] h-auto mt-[80px] px-14 py-12 flex flex-col justify-center md:flex-row md:justify-between items-center gap-10 border-b border-[#dbdad9] ">
       <div className="flex flex-2  rounded-lg items-center order-2 md:order-1 mt-10 p-4">
-        <img src={section1img} alt="Section 1 img" className="flex w-full h-full object-cover shadow-2xl"></img>
+        <img src={section1img} alt="Section 1 img" className="flex rounded-md w-full h-full object-cover shadow-2xl"></img>
       </div>
 
       <div className="flex-1 flex flex-col items-center text-center  order-1 md:order-2 mt-10 md:items-start md:text-left p-4">

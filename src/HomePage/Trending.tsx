@@ -27,10 +27,10 @@ function Section2() {
         </button>
       </div>
 
-      <div className="flex flex-row justify-between gap-10 flex-wrap">
-        <div className=" flex flex-col flex-2 rounded-lg items-center md:items-start my-8 p-4">
+      <div className="flex flex-col md:flex-row justify-between md:gap-10 flex-wrap">
+        <div className=" flex flex-col flex-2 rounded-md items-center text-center md:text-start md:items-start my-8 p-4">
         
-          <img src={homeimg2} alt="Loading..." className="w-full h-full object-cover shadow-2xl mb-6"></img>
+          <img src={homeimg2} alt="Loading..." className="w-full h-full rounded-md object-cover shadow-2xl mb-6"></img>
           <p className="text-[#b35d52] text-xs mb-2">
             CULTURE
           </p>
@@ -45,7 +45,7 @@ function Section2() {
 
         <div className="flex flex-col flex-1 items-center md:items-start my-8">
           <div className="flex flex-col items-center md:items-start border-b border-[#dbdad9] p-4">
-            <img src={homeimg3} alt="Loading..." className="w-full h-full object-cover shadow-2xl mb-6"></img>
+            <img src={homeimg3} alt="Loading..." className="w-full h-full rounded-md object-cover shadow-2xl mb-6"></img>
             <p className="text-[#b35d52] text-xs mb-2">
               CURATION
             </p>

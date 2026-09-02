@@ -13,7 +13,7 @@
 import Home from './pages/Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
-import CreateAccount from './pages/create account';
+import CreateAccount from './pages/CreateAccount';
 
 function App() {
     return(
