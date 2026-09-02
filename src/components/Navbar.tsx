@@ -18,13 +18,13 @@ function Navbar() {
    const [showMenu, setShowMenu] = useState(false);
   return(
     <>
-    <nav className="fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-14 flex items-center justify-between h-[80px]">
+    <nav className="fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-14 flex items-center justify-between h-[80px] border-b border-[#dbdad9]">
       <div className="flex items-center gap-2">
         <Link to="/" className="text-[#1a1a1a] text-5xl font-bold">BIL</Link>
       </div>
         
       <div className="hidden md:flex md:items-center md:gap-6 md:text-lg text-[#1a1a1a]">
-        <Link to="" className="hover:text-underline active:underline">Feed</Link>
+        <Link to="" className="hover:text-underline active:underline hover:opacity-80 active:opacity-80">Feed</Link>
       </div>
 
       <div className="hidden md:flex md:items-center md:gap-4">
