@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Footer from "../components/footer";
+import Navbar from "../components/Navbar";
 
 export default function NewStory() {
   
@@ -123,6 +125,7 @@ export default function NewStory() {
     <>
       <main className="w-full px-6 md:px-12 max-w-6xl mx-auto py-24 md:py-32">
 
+        <Navbar/>
         
         <header className="mb-16 md:mb-24">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
@@ -330,7 +333,7 @@ export default function NewStory() {
       </main>
 
      
-
+            <Footer/>
          
     </>
   );
