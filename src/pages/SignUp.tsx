@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function SignUp() {
   return (
     // OUTER OVERLAY
@@ -110,9 +112,11 @@ export default function SignUp() {
 
             <p className="mt-4  mb-4 text-center text-sm text-gray-900">
               Don't have an account?{" "}
-              <button className="font-medium text-black underline">
-                Sign up
-              </button>
+              <Link to ="/create-account">
+                <button className="font-medium text-black underline">
+                  Sign up
+                </button>
+              </Link>
             </p>
 
            
