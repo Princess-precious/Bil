@@ -14,6 +14,8 @@ import Home from './pages/Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import CreateAccount from './pages/CreateAccount';
+import Feed from './pages/Feed';
+import DemoArticle from './pages/DemoArticle';
 
 function App() {
     return(
@@ -22,6 +24,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<SignUp />} />
                 <Route path="/create-account" element={<CreateAccount />} />
+                <Route path="/feed" element={<Feed/>}/>
+                <Route path="/demoarticle" element={<DemoArticle/>}/>
             </Routes>
         </BrowserRouter>
 

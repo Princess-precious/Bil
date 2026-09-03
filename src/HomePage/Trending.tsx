@@ -15,8 +15,8 @@ import homeimg3 from "../images/homeimg3.jpg";
 
 function Section2() {
   return(
-    <section className="bg-[#fbf9f8] h-auto  px-14 py-12 flex flex-col border-b border-[#dbdad9]">
-      <div className="flex flex-row justify-between p-4">
+    <section className="bg-[#fbf9f8] h-auto  px-14  py-12 flex flex-col border-b border-[#dbdad9]">
+      <div className="flex flex-col items-center md:flex-row justify-between p-2 gap-2">
         <h1 className="text-2xl font-bold text-[#1a1a1a]">Trending Perspectives</h1>
         <button className="flex items-center text-xs p-2 hover:opacity-80 active:opacity-80">
           View ALL
@@ -43,7 +43,7 @@ function Section2() {
 
         </div>
 
-        <div className="flex flex-col flex-1 items-center md:items-start my-8">
+        <div className="flex flex-col flex-1 items-center md:items-start md:my-8">
           <div className="flex flex-col items-center md:items-start border-b border-[#dbdad9] p-4">
             <img src={homeimg3} alt="Loading..." className="w-full h-full rounded-md object-cover shadow-2xl mb-6"></img>
             <p className="text-[#b35d52] text-xs mb-2">
@@ -54,7 +54,7 @@ function Section2() {
             </h1>
           </div>
           
-          <div className="flex flex-col items-center md:items-start p-4">
+          <div className="flex flex-col items-center text-center md:text-start md:items-start p-4">
              <p className="text-[#b35d52] text-xs mb-2">
               DIALOGUE
             </p>
