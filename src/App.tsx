@@ -13,6 +13,9 @@
 import Home from './pages/Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
+import CreateAccount from './pages/CreateAccount';
+import Feed from './pages/Feed';
+import DemoArticle from './pages/DemoArticle';
 import SignIn from './pages/SignIn';
 import NewStory from './pages/NewStory';
 import UserProfile from './pages/UserProfile';
@@ -21,7 +24,7 @@ function App() {
     return(
         <BrowserRouter>
             <Routes>
-                <Route path="/home" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/new-story" element={<NewStory />} />
