@@ -24,6 +24,7 @@ function App() {
     return(
         <BrowserRouter>
             <Routes>
+                <Route path="/home" element={<Home />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<SignUp />} />
                 <Route path="/create-account" element={<CreateAccount />} />
@@ -32,7 +33,7 @@ function App() {
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/new-story" element={<NewStory />} />
-                <Route path="/user-profile" element={<UserProfile />} />
+                <Route path="/" element={<UserProfile />} />
             </Routes>
         </BrowserRouter>
 
