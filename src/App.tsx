@@ -24,16 +24,9 @@ function App() {
     return(
         <BrowserRouter>
             <Routes>
-<<<<<<< HEAD
                 <Route path="/" element={<Home />} />
-=======
-                <Route path="/home" element={<Home />} />
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<SignUp />} />
-                <Route path="/create-account" element={<CreateAccount />} />
                 <Route path="/feed" element={<Feed/>}/>
                 <Route path="/demoarticle" element={<DemoArticle/>}/>
->>>>>>> 554a508ed1256a0ab9f069e2e3c59d38129b574d
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/new-story" element={<NewStory />} />
