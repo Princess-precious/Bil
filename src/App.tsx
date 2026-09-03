@@ -13,7 +13,6 @@
 import Home from './pages/Home';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
-import CreateAccount from './pages/CreateAccount';
 import Feed from './pages/Feed';
 import DemoArticle from './pages/DemoArticle';
 import SignIn from './pages/SignIn';
