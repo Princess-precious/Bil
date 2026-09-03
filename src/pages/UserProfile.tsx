@@ -78,11 +78,12 @@ export default function UserProfile() {
         <header className="flex flex-col md:flex-row gap-12 items-start md:items-center mb-24">
 
           {/* Profile Image */}
-          <div className="shrink-0 w-32 h-32 md:w-48 md:h-48 rounded-full mt-10 overflow-hidden border-2 border-gray-300 p-1">
+          <div className="shrink-0 w-32 h-32 md:w-48 md:h-48 rounded-full mt-10 overflow-hidden 
+          border-2 border-gray-300 p-1">
             <img
               src={profileImage}
               alt="Author portrait"
-              className="w-full h-full object-cover rounded-full"
+              className="w-full h-full object-cover rounded-full hover:scale-105 transition-transform duration-700 ease-out"
             />
           </div>
 
@@ -117,7 +118,8 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleEditProfile}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80 transition-opacity uppercase tracking-widest font-semibold"
+                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80 transition-opacity 
+                uppercase tracking-widest font-semibold"
               >
                 Edit Profile
               </button>
@@ -126,7 +128,8 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleShare}
-                className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 transition-colors uppercase tracking-widest font-semibold"
+                className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 
+                transition-colors uppercase tracking-widest font-semibold"
               >
                 Share
               </button>
@@ -160,7 +163,8 @@ export default function UserProfile() {
                   className="w-24 h-24 rounded-full object-cover border border-gray-300"
                 />
 
-                <label className="cursor-pointer border border-black px-5 py-3 rounded-md text-sm font-semibold hover:bg-gray-100 transition-colors">
+                <label className="cursor-pointer border border-black px-5 py-3 rounded-md text-sm
+                 font-semibold hover:bg-gray-100 transition-colors">
                   Change Image
 
                   <input
@@ -202,7 +206,8 @@ export default function UserProfile() {
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 rows={4}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none focus:border-black resize-none"
+                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none 
+                focus:border-black resize-none"
               />
 
             </div>
@@ -213,7 +218,8 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleSaveChanges}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80 transition-opacity font-semibold"
+                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80
+                 transition-opacity font-semibold"
               >
                 Save Changes
               </button>
@@ -221,7 +227,7 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 transition-colors font-semibold"
+                className="border border-black text-black px-6 py-3  rounded-md hover:bg-gray-100 transition-colors font-semibold"
               >
                 Cancel
               </button>

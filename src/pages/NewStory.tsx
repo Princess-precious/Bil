@@ -218,8 +218,8 @@ export default function NewStory() {
         <Navbar />
 
         {/* PAGE TITLE */}
-        <header className="mb-16 md:mb-24">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+        <header className="mb-4 md:mb-8">
+          <h1 className="text-1xl md:text-5xl font-bold text-gray-900">
             New Story
           </h1>
         </header>
@@ -240,7 +240,7 @@ export default function NewStory() {
               EDITOR
           ========================= */}
 
-          <div className="md:col-span-8 space-y-12">
+          <div className="md:col-span-8 space-y-3">
 
             {/* TITLE */}
             <div>
@@ -251,28 +251,17 @@ export default function NewStory() {
                 onChange={(e) =>
                   setTitle(e.target.value)
                 }
-                className="w-full text-4xl font-bold border-b border-gray-300 pb-4 outline-none placeholder:text-gray-400"
+                className="w-full text-2xl font-bold border-b border-gray-300 pb-4  mb-4 outline-none placeholder:text-gray-400"
               />
             </div>
 
             {/* SLUG */}
-            <div>
-              <input
-                type="text"
-                placeholder="/slug"
-                value={slug}
-                onChange={(e) =>
-                  setSlug(e.target.value)
-                }
-                className="w-full text-sm border-b border-gray-300 pb-4 outline-none placeholder:text-gray-400 font-mono"
-              />
-            </div>
-
+            
             {/* EXCERPT */}
             <div>
               <textarea
                 placeholder="Write a brief excerpt..."
-                rows={3}
+                rows={1}
                 value={excerpt}
                 onChange={(e) =>
                   setExcerpt(e.target.value)
@@ -285,7 +274,7 @@ export default function NewStory() {
                 STORY CONTENT
             ========================= */}
 
-            <div className="border-t border-b border-gray-300 py-4 space-y-4">
+            <div className="border-t border-b border-gray-300 py-4 space-y-8">
 
               {/* TOOLBAR */}
               <div className="flex gap-5 text-gray-500 mb-4">
@@ -349,7 +338,7 @@ export default function NewStory() {
                 suppressContentEditableWarning
                 onInput={handleContentChange}
                 data-placeholder="Begin writing..."
-                className="w-full min-h-[400px] bg-transparent border-none outline-none resize-y text-lg text-gray-900 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400"
+                className="w-full min-h-[400px] bg-transparent border-none outline-none resize-y text-4xl text-gray-900 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400"
               />
 
             </div>
