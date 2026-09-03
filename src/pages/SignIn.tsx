@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-export default function SignUp() {
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
+export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,21 +18,9 @@ export default function SignUp() {
     setError("");
     setSuccess("");
 
-    // Check empty fields
-    if (!name.trim() || !username.trim() || !email.trim() || !password.trim()) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    // Check username length
-    if (username.length < 3) {
-      setError("Username must be at least 3 characters.");
-      return;
-    }
-
-    // Check password length
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    // Check if fields are empty
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter your email and password.");
       return;
     }
 
@@ -42,36 +30,58 @@ export default function SignUp() {
       return;
     }
 
-    // Start loading
+    // Check password
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulate signup
+    // Temporary login simulation
     setTimeout(() => {
-      console.log("New User:", {
-        name,
-        username,
+      console.log("Login details:", {
         email,
         password,
+        rememberMe,
       });
 
       setIsLoading(false);
-      setSuccess("Account created successfully!");
+      setSuccess("Signed in successfully!");
 
-      // Clear form
-      setName("");
-      setUsername("");
+      if (rememberMe) {
+        localStorage.setItem("rememberMe", "true");
+      }
+
       setEmail("");
       setPassword("");
     }, 1500);
   };
 
+  const handleForgotPassword = () => {
+    if (!email.trim()) {
+      setError("Please enter your email address first.");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setError("");
+    setSuccess("Password reset instructions have been sent to your email.");
+  };
+
   return (
+    // OUTER OVERLAY
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-      
-      <div className="flex h-[95vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
+
+      <div className="flex h-[90vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
+
           <div className="relative h-full">
 
             <img
@@ -89,6 +99,7 @@ export default function SignUp() {
             </div>
 
             <div className="absolute bottom-12 left-10 z-10 text-white">
+
               <p className="max-w-md text-2xl font-serif">
                 "Quiet luxury defined by rigorous minimalism."
               </p>
@@ -96,9 +107,11 @@ export default function SignUp() {
               <p className="mt-4 text-xs uppercase tracking-widest">
                 Editorial / Culture
               </p>
+
             </div>
 
           </div>
+
         </div>
 
         {/* RIGHT SIDE */}
@@ -106,12 +119,12 @@ export default function SignUp() {
 
           <div className="w-full max-w-md">
 
-            <h2 className="mt-8 text-2xl font-serif font-semibold text-gray-900">
-              Create your account
+            <h2 className="mt-8 text-3xl font-serif font-semibold text-gray-900">
+              Welcome back!
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-gray-900">
-              Join our community of curators and design enthusiasts.
+              Enter your credentials to access your curated dashboard
             </p>
 
             {/* ERROR MESSAGE */}
@@ -130,41 +143,12 @@ export default function SignUp() {
 
             <form
               onSubmit={handleSubmit}
-              className="mt-6 space-y-5"
+              className="mt-8 space-y-5"
             >
-
-              {/* NAME */}
-              <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
-                  Name
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
-                />
-              </div>
-
-              {/* USERNAME */}
-              <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
-                  User Name
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Enter your user name"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
-                />
-              </div>
 
               {/* EMAIL */}
               <div>
+
                 <label className="mb-2 block text-xs font-medium text-gray-900">
                   Email Address
                 </label>
@@ -176,21 +160,24 @@ export default function SignUp() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
                 />
+
               </div>
 
               {/* PASSWORD */}
               <div>
+
                 <label className="mb-2 block text-xs font-medium text-gray-900">
                   Password
                 </label>
 
                 <div className="relative">
+
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-200 bg-gray-50 px-4 py-3 pr-20 text-sm outline-none focus:border-black"
+                    className="w-full border border-gray-200 bg-gray-50 px-4 py-3 pr-16 text-sm outline-none focus:border-black"
                   />
 
                   <button
@@ -200,36 +187,68 @@ export default function SignUp() {
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
+
                 </div>
+
               </div>
 
-              {/* SIGN UP BUTTON */}
+              {/* REMEMBER ME + FORGOT PASSWORD */}
+              <div className="flex items-center justify-between">
+
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 accent-black"
+                  />
+
+                  Remember me
+
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm font-medium text-black underline"
+                >
+                  Forgot password?
+                </button>
+
+              </div>
+
+              {/* SIGN IN BUTTON */}
               <button
                 type="submit"
                 disabled={isLoading}
                 className="w-full bg-black py-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isLoading ? "Creating Account..." : "Sign Up"}
+                {isLoading ? "Signing In..." : "Sign In"}
               </button>
 
             </form>
 
-            {/* SIGN IN LINK */}
-            <p className="mt-2 mb-4 text-center text-sm text-gray-900">
-              Already have an account?{" "}
+            {/* SIGN UP */}
+            <p className="mt-4 mb-4 text-center text-sm text-gray-900">
+
+              Don't have an account?{" "}
 
               <Link
-                to="/signin"
+                to="/SignUp"
                 className="font-medium text-black underline"
               >
-                Sign in
+                Sign up
               </Link>
+
             </p>
 
           </div>
+
         </div>
 
       </div>
+
     </div>
   );
 }

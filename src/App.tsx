@@ -16,6 +16,9 @@ import SignUp from "./pages/SignUp";
 import CreateAccount from './pages/CreateAccount';
 import Feed from './pages/Feed';
 import DemoArticle from './pages/DemoArticle';
+import SignIn from './pages/SignIn';
+import NewStory from './pages/NewStory';
+import UserProfile from './pages/UserProfile';
 
 function App() {
     return(
@@ -26,6 +29,10 @@ function App() {
                 <Route path="/create-account" element={<CreateAccount />} />
                 <Route path="/feed" element={<Feed/>}/>
                 <Route path="/demoarticle" element={<DemoArticle/>}/>
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/new-story" element={<NewStory />} />
+                <Route path="/user-profile" element={<UserProfile />} />
             </Routes>
         </BrowserRouter>
 
