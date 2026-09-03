@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 
 export default function NewStory() {
-  
+  // =========================
   // FORM STATES
+  // =========================
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -12,21 +13,28 @@ export default function NewStory() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  
+  // =========================
   // IMAGE STATES
-  
+  // =========================
+
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  
+  // =========================
   // MESSAGE STATE
-  
+  // =========================
 
   const [message, setMessage] = useState("");
 
-  
+  // =========================
+  // EDITOR REF
+  // =========================
+
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  // =========================
   // IMAGE UPLOAD
-  
+  // =========================
 
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -42,6 +50,78 @@ export default function NewStory() {
   };
 
   // =========================
+  // FORMAT TEXT
+  // =========================
+
+  const formatText = (command: string, value?: string) => {
+    if (!editorRef.current) return;
+
+    editorRef.current.focus();
+
+    document.execCommand(command, false, value);
+
+    setContent(editorRef.current.innerHTML);
+  };
+
+  // =========================
+  // BOLD
+  // =========================
+
+  const handleBold = () => {
+    formatText("bold");
+  };
+
+  // =========================
+  // ITALIC
+  // =========================
+
+  const handleItalic = () => {
+    formatText("italic");
+  };
+
+  // =========================
+  // BLOCKQUOTE
+  // =========================
+
+  const handleQuote = () => {
+    formatText("formatBlock", "blockquote");
+  };
+
+  // =========================
+  // LINK
+  // =========================
+
+  const handleLink = () => {
+    const url = window.prompt("Enter the URL:");
+
+    if (!url) return;
+
+    formatText("createLink", url);
+  };
+
+  // =========================
+  // INSERT IMAGE INTO STORY
+  // =========================
+
+  const handleStoryImage = () => {
+    const url = window.prompt("Enter image URL:");
+
+    if (!url) return;
+
+    formatText("insertImage", url);
+  };
+
+  // =========================
+  // EDITOR INPUT
+  // =========================
+
+  const handleContentChange = (
+    e: React.FormEvent<HTMLDivElement>
+  ) => {
+    setContent(e.currentTarget.innerHTML);
+  };
+
+  // =========================
   // SAVE DRAFT
   // =========================
 
@@ -54,7 +134,10 @@ export default function NewStory() {
       category,
     };
 
-    localStorage.setItem("storyDraft", JSON.stringify(draft));
+    localStorage.setItem(
+      "storyDraft",
+      JSON.stringify(draft)
+    );
 
     setMessage("Draft saved successfully.");
 
@@ -105,6 +188,11 @@ export default function NewStory() {
     setImage(null);
     setPreview(null);
 
+    // Clear editor
+    if (editorRef.current) {
+      editorRef.current.innerHTML = "";
+    }
+
     // Remove saved draft
     localStorage.removeItem("storyDraft");
 
@@ -113,11 +201,13 @@ export default function NewStory() {
     }, 3000);
   };
 
-  
+  // =========================
   // FORM SUBMIT
-  
+  // =========================
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
   };
 
@@ -125,15 +215,16 @@ export default function NewStory() {
     <>
       <main className="w-full px-6 md:px-12 max-w-6xl mx-auto py-24 md:py-32">
 
-        <Navbar/>
-        
+        <Navbar />
+
+        {/* PAGE TITLE */}
         <header className="mb-16 md:mb-24">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
             New Story
           </h1>
         </header>
 
-        
+        {/* MESSAGE */}
         {message && (
           <div className="mb-8 border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-700">
             {message}
@@ -145,9 +236,9 @@ export default function NewStory() {
           className="grid grid-cols-1 md:grid-cols-12 gap-8"
         >
 
-          
-              {/* EDITOR */}
-          
+          {/* =========================
+              EDITOR
+          ========================= */}
 
           <div className="md:col-span-8 space-y-12">
 
@@ -157,7 +248,9 @@ export default function NewStory() {
                 type="text"
                 placeholder="Article Title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) =>
+                  setTitle(e.target.value)
+                }
                 className="w-full text-4xl font-bold border-b border-gray-300 pb-4 outline-none placeholder:text-gray-400"
               />
             </div>
@@ -168,7 +261,9 @@ export default function NewStory() {
                 type="text"
                 placeholder="/slug"
                 value={slug}
-                onChange={(e) => setSlug(e.target.value)}
+                onChange={(e) =>
+                  setSlug(e.target.value)
+                }
                 className="w-full text-sm border-b border-gray-300 pb-4 outline-none placeholder:text-gray-400 font-mono"
               />
             </div>
@@ -179,79 +274,97 @@ export default function NewStory() {
                 placeholder="Write a brief excerpt..."
                 rows={3}
                 value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
+                onChange={(e) =>
+                  setExcerpt(e.target.value)
+                }
                 className="w-full text-lg border-b border-gray-300 pb-4 outline-none resize-none placeholder:text-gray-400"
               />
             </div>
 
-            {/* STORY CONTENT */}
+            {/* =========================
+                STORY CONTENT
+            ========================= */}
+
             <div className="border-t border-b border-gray-300 py-4 space-y-4">
 
               {/* TOOLBAR */}
-              <div className="flex gap-4 text-gray-500 mb-4">
+              <div className="flex gap-5 text-gray-500 mb-4">
 
+                {/* BOLD */}
                 <button
                   type="button"
+                  onClick={handleBold}
                   className="font-bold hover:text-black transition-colors"
-                  onClick={() => setContent(`${content} **bold**`)}
+                  title="Bold"
                 >
                   B
                 </button>
 
+                {/* ITALIC */}
                 <button
                   type="button"
+                  onClick={handleItalic}
                   className="italic hover:text-black transition-colors"
-                  onClick={() => setContent(`${content} *italic*`)}
+                  title="Italic"
                 >
                   I
                 </button>
 
+                {/* QUOTE */}
                 <button
                   type="button"
-                  className="hover:text-black transition-colors"
-                  onClick={() => setContent(`${content} "quote"`)}
+                  onClick={handleQuote}
+                  className="hover:text-black transition-colors text-lg"
+                  title="Quote"
                 >
                   ❝
                 </button>
 
+                {/* LINK */}
                 <button
                   type="button"
+                  onClick={handleLink}
                   className="hover:text-black transition-colors"
-                  onClick={() => setContent(`${content} [link]`)}
+                  title="Add link"
                 >
                   🔗
                 </button>
 
+                {/* IMAGE */}
                 <button
                   type="button"
+                  onClick={handleStoryImage}
                   className="hover:text-black transition-colors"
-                  onClick={() => setContent(`${content} [image]`)}
+                  title="Insert image"
                 >
                   🖼
                 </button>
 
               </div>
 
-              <textarea
-                placeholder="Begin writing..."
-                rows={20}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full bg-transparent border-none outline-none resize-y text-lg placeholder:text-gray-400"
+              {/* RICH TEXT EDITOR */}
+              <div
+                ref={editorRef}
+                contentEditable
+                suppressContentEditableWarning
+                onInput={handleContentChange}
+                data-placeholder="Begin writing..."
+                className="w-full min-h-[400px] bg-transparent border-none outline-none resize-y text-lg text-gray-900 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400"
               />
 
             </div>
           </div>
 
-          
-             {/* {/SIDEBAR/} */}
-          
+          {/* =========================
+              SIDEBAR
+          ========================= */}
 
-          <aside  className="md:col-span-4 md:col-start-9 space-y-12">"
+          <aside className="md:col-span-4 md:col-start-9 space-y-12">
 
             {/* ACTIONS */}
             <div className="bg-white border border-gray-200 p-8 flex flex-col gap-4">
 
+              {/* PUBLISH */}
               <button
                 type="button"
                 onClick={handlePublish}
@@ -260,6 +373,7 @@ export default function NewStory() {
                 Publish
               </button>
 
+              {/* SAVE DRAFT */}
               <button
                 type="button"
                 onClick={handleSaveDraft}
@@ -272,34 +386,51 @@ export default function NewStory() {
 
             {/* CATEGORY */}
             <div>
+
               <label className="block mb-4 text-sm font-semibold uppercase tracking-widest text-gray-600">
                 Category
               </label>
 
               <div className="relative">
+
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) =>
+                    setCategory(e.target.value)
+                  }
                   className="w-full appearance-none bg-transparent border-b border-gray-300 py-3 pr-8 text-base text-gray-800 cursor-pointer outline-none rounded-none focus:border-black"
                 >
                   <option value="" disabled hidden>
                     Select Category
                   </option>
 
-                  <option value="technology">Technology</option>
-                  <option value="science">Science</option>
-                  <option value="art">Art</option>
-                  <option value="culture">Culture</option>
+                  <option value="technology">
+                    Technology
+                  </option>
+
+                  <option value="science">
+                    Science
+                  </option>
+
+                  <option value="art">
+                    Art
+                  </option>
+
+                  <option value="culture">
+                    Culture
+                  </option>
                 </select>
 
                 <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
                   ▼
                 </span>
+
               </div>
             </div>
 
             {/* COVER IMAGE */}
             <div>
+
               <label className="block mb-4 text-sm font-semibold uppercase tracking-widest text-gray-600">
                 Cover Image
               </label>
@@ -326,15 +457,15 @@ export default function NewStory() {
                 />
 
               </label>
+
             </div>
 
           </aside>
+
         </form>
       </main>
 
-     
-            <Footer/>
-         
+      <Footer />
     </>
   );
 }

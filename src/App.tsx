@@ -15,6 +15,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import SignIn from './pages/SignIn';
 import NewStory from './pages/NewStory';
+import UserProfile from './pages/UserProfile';
 
 function App() {
     return(
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/new-story" element={<NewStory />} />
+                <Route path="/user-profile" element={<UserProfile />} />
             </Routes>
         </BrowserRouter>
 
