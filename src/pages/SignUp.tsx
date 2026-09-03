@@ -72,24 +72,24 @@ export default function SignUp() {
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
-          <div className="relative h-full">
+          <div className="relative h-full over-flow-hidden">
 
             <img
               src="login.jpg"
               alt="Editorial"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover hover:scale-105 transition-transform duration-700 "
             />
 
-            <div className="absolute inset-0 bg-black/30"></div>
+            <div className="absolute inset-0 bg-black/10"></div>
 
             <div className="absolute left-10 top-8 z-10">
-              <h1 className="text-2xl font-serif font-bold text-white">
+              <h1 className="text-2xl  font-bold text-white">
                 BIL
               </h1>
             </div>
 
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl font-serif">
+              <p className="max-w-md text-2xl ">
                 "Quiet luxury defined by rigorous minimalism."
               </p>
 
@@ -106,7 +106,7 @@ export default function SignUp() {
 
           <div className="w-full max-w-md">
 
-            <h2 className="mt-8 text-2xl font-serif font-semibold text-gray-900">
+            <h2 className="mt-8 text-2xl  font-semibold text-gray-900">
               Create your account
             </h2>
 

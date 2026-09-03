@@ -93,14 +93,14 @@ export default function SignIn() {
             <div className="absolute inset-0 bg-black/30"></div>
 
             <div className="absolute left-10 top-8 z-10">
-              <h1 className="text-2xl font-serif font-bold text-white">
+              <h1 className="text-2xl  font-bold text-white">
                 BIL
               </h1>
             </div>
 
             <div className="absolute bottom-12 left-10 z-10 text-white">
 
-              <p className="max-w-md text-2xl font-serif">
+              <p className="max-w-md text-2xl ">
                 "Quiet luxury defined by rigorous minimalism."
               </p>
 
@@ -119,7 +119,7 @@ export default function SignIn() {
 
           <div className="w-full max-w-md">
 
-            <h2 className="mt-8 text-3xl font-serif font-semibold text-gray-900">
+            <h2 className="mt-8 text-3xl  font-semibold text-gray-900">
               Welcome back!
             </h2>
 
