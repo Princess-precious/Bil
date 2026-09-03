@@ -2,28 +2,29 @@
     * @description      : 
     * @author           : HP
     * @group            : 
-    * @created          : 01/09/2026 - 22:36:28
+    * @created          : 02/09/2026 - 14:38:58
     * 
     * MODIFICATION LOG
     * - Version         : 1.0.0
-    * - Date            : 01/09/2026
+    * - Date            : 02/09/2026
     * - Author          : HP
     * - Modification    : 
 **/
 import Navbar from '../components/Navbar';
-import Hero from '../HomePage/Hero';
-import Trending from '../HomePage/Trending';
+import Hero from '../FeedPage/hero';
+import Content from '../FeedPage/content';
 import Footer from '../components/footer';
 
-function Home() {
+function Feed() {
   return(
     <>
-      <Navbar/>
-      <Hero/>
-      <Trending/>
-      <Footer/>
-    </> 
+        <Navbar/>
+        <Hero/>
+        <Content/>
+        <Footer/>
+    </>
+    
   );
 }
 
-export default Home;
+export default Feed;
