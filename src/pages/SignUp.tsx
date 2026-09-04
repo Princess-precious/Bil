@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function SignUp() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -57,11 +59,15 @@ export default function SignUp() {
       setIsLoading(false);
       setSuccess("Account created successfully!");
 
+
+       
       // Clear form
       setName("");
       setUsername("");
       setEmail("");
       setPassword("");
+
+      navigate("/new-story");
     }, 1500);
   };
 

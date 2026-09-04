@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate,  } from "react-router-dom";
 import { useState } from "react";
 
 export default function SignIn() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -56,6 +57,7 @@ export default function SignIn() {
       setEmail("");
       setPassword("");
     }, 1500);
+      navigate("/new-story");
   };
 
   const handleForgotPassword = () => {
@@ -72,6 +74,7 @@ export default function SignIn() {
     setError("");
     setSuccess("Password reset instructions have been sent to your email.");
   };
+
 
   return (
     // OUTER OVERLAY
