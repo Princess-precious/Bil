@@ -13,11 +13,12 @@
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import Button from "../ui/button";
+
 
 function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
 
   return (
     <>
@@ -32,26 +33,56 @@ function Navbar() {
           </Link>
         </div>
         {/* 2 */}
-        <div className="hidden md:flex md:items-center md:gap-6 md:text-lg text-[#1a1a1a]">
+        <div className="hidden  md:flex md:items-center md:gap-6 md:text-lg text-[#1a1a1a] md:absolute left-1/2 -translate-x-1/2">
           <Link
             to="/feed"
             className="hover:underline active:underline hover:opacity-80 active:opacity-80"
           >
             Feed
           </Link>
+          {/* CATEGORY */}
+          <div className="relative group">
+            <button
+            className="flex items-center gap-1 hover:underline active:underline hover:opacity-80 active:opacity-80"
+            >
+              Category
+              <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#1a1a1a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              >
+              <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+          
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
+              <Link to="" className="text-xs">Design</Link>
+              <Link to="" className="text-xs">Fashion</Link>
+              <Link to="" className="text-xs">Entertainment</Link>
+            </div>
+          </div>
+          
+          
+
         </div>
 
         {/* 3 */}
         <div className="flex items-center gap-2">
 
           {/* Search */}
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center gap-2">
 
             {showSearchBar && (
               <input
                 type="search"
                 placeholder="Search..."
-                className="border border-[#dbdad9] rounded-md p-2 outline-none"
+                className={`border-b border-black p-2 outline-none text-xs absolute right-10  ${showSearchBar ? "w-48 opacity-100" : "w-0 opacity-0"} `}
               />
             )}
             <button
@@ -76,10 +107,23 @@ function Navbar() {
             </button>
           </div>
 
-          <div className="hidden md:flex md:items-center md:gap-4">
-            <Button className="text-sm p-2">
-              WRITE A STORY
-            </Button>
+          <div className=" hidden md:flex md:items-c">
+            <button className="text-sm p-2">
+              Add Story
+            </button>
+          </div>
+
+          <Link to="/signin" className=" md:flex md:items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </Link>
+
+          <div className=" hidden md:flex md:items-c">
+            <button className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
+              Sign In
+            </button>
           </div>
 
           {/* Hamburger Button */}
@@ -103,7 +147,7 @@ function Navbar() {
       </nav>
 
       
-      {showMenu && (
+      {showMenu && 
         <div className="md:hidden bg-white flex flex-col items-center gap-4 p-4 fixed top-[80px] right-0 z-40">
 
           <div className="flex flex-col items-center gap-6 text-sm text-black">
@@ -113,14 +157,47 @@ function Navbar() {
             >
               Feed
             </Link>
+
+            {/* CATEGORY */}
+            <div className="relative group">
+              <button
+              className="flex items-center gap-1 hover:underline active:underline   hover:opacity-80 active:opacity-80"
+              >
+                Category
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#1a1a1a"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                >
+                <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+          
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
+                <Link to="" className="text-xs">Design</Link>
+                <Link to="" className="text-xs">Fashion</Link>
+                <Link to="" className="text-xs">Entertainment</Link>
+              </div>
+            </div>
+            
           </div>
 
-          <Button className="text-xs p-1">
-            WRITE A STORY
-          </Button>
+          <button className="text-xs p-1">
+            Add Story
+          </button>
+          
+          <button className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] w-full text-white text-xs p-1">
+            Sign In
+          </button>
 
         </div>
-      )}
+      }
     </>
   );
 }
