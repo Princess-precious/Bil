@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/footer";  
+import Footer from "../components/footer";
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
 
-  // Current profile information
+  // ================= PROFILE INFORMATION =================
   const [name, setName] = useState("Elias Thorne");
 
   const [bio, setBio] = useState(
@@ -14,12 +14,51 @@ export default function UserProfile() {
 
   const [profileImage, setProfileImage] = useState("/userprofile.jpg");
 
-  // Temporary values used while editing
+  // Temporary values used while editing profile
   const [editName, setEditName] = useState(name);
   const [editBio, setEditBio] = useState(bio);
   const [editImage, setEditImage] = useState(profileImage);
 
-  // Open edit profile
+  // ================= STORY EDITING =================
+  const [editingStory, setEditingStory] = useState<number | null>(null);
+
+  // ================= STORY 1 =================
+  const [storyTitle, setStoryTitle] = useState(
+    "The Weight of Silence: Brutalism in the Modern Era"
+  );
+
+  const [storyContent, setStoryContent] = useState(
+    "An exploration of how heavy concrete forms are being reimagined to create spaces of profound tranquility and quiet contemplation in bustling metropolises."
+  );
+
+  const [story1Image, setStory1Image] = useState("/profileHero.jpg");
+  const [editStory1Image, setEditStory1Image] =
+    useState("/profileHero.jpg");
+
+  // ================= STORY 2 =================
+  const [story2Title, setStory2Title] = useState(
+    "Texture & Time: Materials That Age With Grace"
+  );
+
+  const [story2Image, setStory2Image] = useState("/story.jpg");
+  const [editStory2Image, setEditStory2Image] =
+    useState("/story.jpg");
+
+  // ================= STORY 3 =================
+  const [story3Title, setStory3Title] = useState(
+    "Negative Space in City Planning"
+  );
+
+  const [story3Content, setStory3Content] = useState(
+    "Why the empty spaces between our monuments define the character of our cities more than the structures themselves."
+  );
+
+  const [story3Image, setStory3Image] = useState("/profileHero.jpg");
+  const [editStory3Image, setEditStory3Image] =
+    useState("/profileHero.jpg");
+
+  // ================= EDIT PROFILE =================
+
   const handleEditProfile = () => {
     setEditName(name);
     setEditBio(bio);
@@ -48,7 +87,7 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
-  // Cancel editing
+  // Cancel profile editing
   const handleCancel = () => {
     setEditName(name);
     setEditBio(bio);
@@ -57,7 +96,8 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
-  // Share profile
+  // ================= SHARE PROFILE =================
+
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -67,32 +107,105 @@ export default function UserProfile() {
     }
   };
 
-  return (
-    <div className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
+  // ================= STORY EDITING =================
 
+  const handleEditStory = (storyId: number) => {
+    // Reset temporary image to the currently saved image
+    if (storyId === 1) {
+      setEditStory1Image(story1Image);
+    }
+
+    if (storyId === 2) {
+      setEditStory2Image(story2Image);
+    }
+
+    if (storyId === 3) {
+      setEditStory3Image(story3Image);
+    }
+
+    setEditingStory(storyId);
+  };
+
+  // Change story cover image
+  const handleStoryImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    storyId: number
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const imageUrl = URL.createObjectURL(file);
+
+    if (storyId === 1) {
+      setEditStory1Image(imageUrl);
+    }
+
+    if (storyId === 2) {
+      setEditStory2Image(imageUrl);
+    }
+
+    if (storyId === 3) {
+      setEditStory3Image(imageUrl);
+    }
+  };
+
+  // Save story changes
+  const handleSaveStory = () => {
+    if (editingStory === 1) {
+      setStory1Image(editStory1Image);
+    }
+
+    if (editingStory === 2) {
+      setStory2Image(editStory2Image);
+    }
+
+    if (editingStory === 3) {
+      setStory3Image(editStory3Image);
+    }
+
+    setEditingStory(null);
+  };
+
+  // Cancel story editing
+  const handleCancelStory = () => {
+    if (editingStory === 1) {
+      setEditStory1Image(story1Image);
+    }
+
+    if (editingStory === 2) {
+      setEditStory2Image(story2Image);
+    }
+
+    if (editingStory === 3) {
+      setEditStory3Image(story3Image);
+    }
+
+    setEditingStory(null);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white text-gray-900 antialiased">
       <Navbar />
 
-      <main className="flex-grow w-full px-6 md:px-12 max-w-6xl mx-auto pt-16 pb-32">
+      <main className="mx-auto w-full max-w-6xl flex-grow px-6 pt-16 pb-32 md:px-12">
 
         {/* ================= PROFILE HEADER ================= */}
-        <header className="flex flex-col md:flex-row gap-12 items-start md:items-center mb-24">
 
-          {/* Profile Image */}
-          <div className="shrink-0 w-32 h-32 md:w-48 md:h-48 rounded-full mt-10 overflow-hidden 
-          border-2 border-gray-300 p-1">
+        <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
+
+          <div className="mt-10 h-32 w-32 shrink-0 overflow-hidden rounded-full border-2 border-gray-300 p-1 md:h-48 md:w-48">
             <img
               src={profileImage}
               alt="Author portrait"
-              className="w-full h-full object-cover rounded-full hover:scale-105 transition-transform duration-700 ease-out"
+              className="h-full w-full rounded-full object-cover transition-transform duration-700 ease-out hover:scale-105"
             />
           </div>
 
-          {/* Profile Information */}
-          <div className="flex flex-col gap-6 max-w-2xl">
+          <div className="flex max-w-2xl flex-col gap-6">
 
-            {/* Name and Bio */}
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+              <h1 className="mb-2 text-4xl font-bold text-gray-900 md:text-5xl">
                 {name}
               </h1>
 
@@ -101,57 +214,47 @@ export default function UserProfile() {
               </p>
             </div>
 
-            {/* Stories */}
             <div className="flex items-center gap-8 text-base text-gray-900">
               <div>
-                <span className="font-bold text-black">
-                  142
-                </span>{" "}
+                <span className="font-bold text-black">142</span>{" "}
                 Stories
               </div>
             </div>
 
-            {/*   profile button*/}
-            <div className="flex gap-4 mt-2">
+            <div className="mt-2 flex gap-4">
 
-              {/* Edit Profile */}
               <button
                 type="button"
                 onClick={handleEditProfile}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80 transition-opacity 
-                uppercase tracking-widest font-semibold"
+                className="rounded-md bg-black px-6 py-3 font-semibold uppercase tracking-widest text-white transition-opacity hover:opacity-80"
               >
                 Edit Profile
               </button>
 
-              {/* Share */}
               <button
                 type="button"
                 onClick={handleShare}
-                className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 
-                transition-colors uppercase tracking-widest font-semibold"
+                className="rounded-md border border-black px-6 py-3 font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gray-100"
               >
                 Share
               </button>
 
             </div>
-
           </div>
-
         </header>
 
         {/* ================= EDIT PROFILE ================= */}
-        {isEditing && (
-          <div className="mb-12 max-w-2xl border border-gray-300 rounded-md p-6">
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        {isEditing && (
+          <div className="mb-12 max-w-2xl rounded-md border border-gray-300 p-6">
+
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
               Edit Profile
             </h2>
 
-            {/* Profile Image */}
             <div className="mb-6">
 
-              <label className="block text-sm font-semibold mb-3">
+              <label className="mb-3 block text-sm font-semibold">
                 Profile Image
               </label>
 
@@ -160,11 +263,10 @@ export default function UserProfile() {
                 <img
                   src={editImage}
                   alt="Profile preview"
-                  className="w-24 h-24 rounded-full object-cover border border-gray-300"
+                  className="h-24 w-24 rounded-full border border-gray-300 object-cover"
                 />
 
-                <label className="cursor-pointer border border-black px-5 py-3 rounded-md text-sm
-                 font-semibold hover:bg-gray-100 transition-colors">
+                <label className="cursor-pointer rounded-md border border-black px-5 py-3 text-sm font-semibold transition-colors hover:bg-gray-100">
                   Change Image
 
                   <input
@@ -176,13 +278,11 @@ export default function UserProfile() {
                 </label>
 
               </div>
-
             </div>
 
-            {/* Name */}
             <div className="mb-5">
 
-              <label className="block text-sm font-semibold mb-2">
+              <label className="mb-2 block text-sm font-semibold">
                 Name
               </label>
 
@@ -190,15 +290,14 @@ export default function UserProfile() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none focus:border-black"
+                className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
               />
 
             </div>
 
-            {/* Bio */}
             <div className="mb-6">
 
-              <label className="block text-sm font-semibold mb-2">
+              <label className="mb-2 block text-sm font-semibold">
                 Bio
               </label>
 
@@ -206,20 +305,17 @@ export default function UserProfile() {
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 rows={4}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none 
-                focus:border-black resize-none"
+                className="w-full resize-none rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
               />
 
             </div>
 
-            {/* Save / Cancel */}
             <div className="flex gap-4">
 
               <button
                 type="button"
                 onClick={handleSaveChanges}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80
-                 transition-opacity font-semibold"
+                className="rounded-md bg-black px-6 py-3 font-semibold text-white transition-opacity hover:opacity-80"
               >
                 Save Changes
               </button>
@@ -227,29 +323,29 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="border border-black text-black px-6 py-3  rounded-md hover:bg-gray-100 transition-colors font-semibold"
+                className="rounded-md border border-black px-6 py-3 font-semibold text-black transition-colors hover:bg-gray-100"
               >
                 Cancel
               </button>
 
             </div>
-
           </div>
         )}
 
         {/* ================= TABS ================= */}
-        <div className="flex gap-8 border-b border-gray-300 mb-12">
+
+        <div className="mb-12 flex gap-8 border-b border-gray-300">
 
           <button
             type="button"
-            className="text-sm font-semibold text-black border-b-2 border-black pb-4 uppercase tracking-widest"
+            className="border-b-2 border-black pb-4 text-sm font-semibold uppercase tracking-widest text-black"
           >
             My Stories
           </button>
 
           <button
             type="button"
-            className="text-sm text-gray-500 hover:text-black transition-colors pb-4 uppercase tracking-widest"
+            className="pb-4 text-sm uppercase tracking-widest text-gray-500 transition-colors hover:text-black"
           >
             Saved Stories
           </button>
@@ -257,94 +353,377 @@ export default function UserProfile() {
         </div>
 
         {/* ================= STORIES ================= */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-8">
 
-          {/* Featured Story */}
-          <article className="md:col-span-8 flex flex-col gap-6 group cursor-pointer">
+        <section className="grid grid-cols-1 gap-8 md:grid-cols-12">
 
-            <div className="w-full aspect-video overflow-hidden">
+          {/* ================= STORY 1 ================= */}
 
-              <img
-                src="/profileHero.jpg"
-                alt="Brutalist concrete architecture"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
+          <article className="md:col-span-8">
 
-            </div>
+            {editingStory === 1 ? (
 
-            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-5 rounded-md border border-gray-300 p-6">
 
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Architecture
-              </span>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Edit Story
+                </h2>
 
-              <h2 className="text-3xl font-bold text-gray-900 group-hover:text-gray-600 transition-colors">
-                The Weight of Silence: Brutalism in the Modern Era
-              </h2>
+                {/* COVER IMAGE */}
 
-              <p className="text-base text-gray-600 line-clamp-2">
-                An exploration of how heavy concrete forms are being
-                reimagined to create spaces of profound tranquility and
-                quiet contemplation in bustling metropolises.
-              </p>
+                <div>
 
-            </div>
+                  <label className="mb-3 block text-sm font-semibold">
+                    Story Cover Image
+                  </label>
+
+                  <div className="flex flex-col gap-4">
+
+                    <img
+                      src={editStory1Image}
+                      alt="Story cover preview"
+                      className="aspect-video w-full rounded-md object-cover"
+                    />
+
+                    <label className="w-fit cursor-pointer rounded-md border border-black px-5 py-3 text-sm font-semibold hover:bg-gray-100">
+
+                      Change Cover Image
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleStoryImageChange(e, 1)
+                        }
+                        className="hidden"
+                      />
+
+                    </label>
+
+                  </div>
+                </div>
+
+                {/* TITLE */}
+
+                <label className="text-sm font-semibold">
+                  Story Title
+                </label>
+
+                <input
+                  type="text"
+                  value={storyTitle}
+                  onChange={(e) => setStoryTitle(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                />
+
+                {/* CONTENT */}
+
+                <label className="text-sm font-semibold">
+                  Story Content
+                </label>
+
+                <textarea
+                  value={storyContent}
+                  onChange={(e) => setStoryContent(e.target.value)}
+                  rows={8}
+                  className="w-full resize-none rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                />
+
+                <div className="flex gap-4">
+
+                  <button
+                    type="button"
+                    onClick={handleSaveStory}
+                    className="rounded-md bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+                  >
+                    Save Changes
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCancelStory}
+                    className="rounded-md border border-black px-6 py-3 text-sm font-semibold text-black hover:bg-gray-100"
+                  >
+                    Cancel
+                  </button>
+
+                </div>
+              </div>
+
+            ) : (
+
+              <div className="group flex cursor-pointer flex-col gap-6">
+
+                <div className="aspect-video w-full overflow-hidden">
+
+                  <img
+                    src={story1Image}
+                    alt="Brutalist concrete architecture"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+
+                </div>
+
+                <div className="flex flex-col gap-3">
+
+                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                    Architecture
+                  </span>
+
+                  <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600">
+                    {storyTitle}
+                  </h2>
+
+                  <p className="line-clamp-2 text-base text-gray-600">
+                    {storyContent}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => handleEditStory(1)}
+                    className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+                  >
+                    Edit Story
+                  </button>
+
+                </div>
+              </div>
+            )}
 
           </article>
 
-          {/* Secondary Stories */}
-          <div className="md:col-span-4 flex flex-col gap-12">
+          {/* ================= SECONDARY STORIES ================= */}
 
-            {/* Story 2 */}
-            <article className="flex flex-col gap-4 group cursor-pointer border-b border-gray-300 pb-8">
+          <div className="flex flex-col gap-12 md:col-span-4">
 
-              <div className="w-full aspect-[4/3] overflow-hidden">
+            {/* ================= STORY 2 ================= */}
 
-                <img
-                  src="/story.jpg"
-                  alt="Concrete and glass materials"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+            <article className="group flex flex-col gap-4 border-b border-gray-300 pb-8">
 
-              </div>
+              {editingStory === 2 ? (
 
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Design Theory
-              </span>
+                <div className="flex flex-col gap-4">
 
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-600 transition-colors leading-tight">
-                Texture &amp; Time: Materials That Age With Grace
-              </h3>
+                  <h3 className="text-xl font-bold">
+                    Edit Story
+                  </h3>
+
+                  {/* COVER IMAGE */}
+
+                  <label className="text-sm font-semibold">
+                    Story Cover Image
+                  </label>
+
+                  <img
+                    src={editStory2Image}
+                    alt="Story cover preview"
+                    className="aspect-[4/3] w-full rounded-md object-cover"
+                  />
+
+                  <label className="w-fit cursor-pointer rounded-md border border-black px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-gray-100">
+
+                    Change Cover Image
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleStoryImageChange(e, 2)
+                      }
+                      className="hidden"
+                    />
+
+                  </label>
+
+                  {/* TITLE */}
+
+                  <input
+                    type="text"
+                    value={story2Title}
+                    onChange={(e) =>
+                      setStory2Title(e.target.value)
+                    }
+                    className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                  />
+
+                  <div className="flex gap-3">
+
+                    <button
+                      type="button"
+                      onClick={handleSaveStory}
+                      className="bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCancelStory}
+                      className="border border-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-black hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+
+                  </div>
+                </div>
+
+              ) : (
+
+                <>
+                  <div className="aspect-[4/3] w-full overflow-hidden">
+
+                    <img
+                      src={story2Image}
+                      alt="Concrete and glass materials"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+
+                  </div>
+
+                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                    Design Theory
+                  </span>
+
+                  <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                    {story2Title}
+                  </h3>
+
+                  <button
+                    type="button"
+                    onClick={() => handleEditStory(2)}
+                    className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+                  >
+                    Edit Story
+                  </button>
+                </>
+              )}
 
             </article>
 
-            {/* Story 3 */}
-            <article className="flex flex-col gap-4 group cursor-pointer">
+            {/* ================= STORY 3 ================= */}
 
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Urbanism
-              </span>
+            <article className="group flex flex-col gap-4">
 
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-600 transition-colors leading-tight">
-                Negative Space in City Planning
-              </h3>
+              {editingStory === 3 ? (
 
-              <p className="text-base text-gray-600 line-clamp-2">
-                Why the empty spaces between our monuments define the
-                character of our cities more than the structures
-                themselves.
-              </p>
+                <div className="flex flex-col gap-4">
+
+                  <h3 className="text-xl font-bold">
+                    Edit Story
+                  </h3>
+
+                  {/* COVER IMAGE */}
+
+                  <label className="text-sm font-semibold">
+                    Story Cover Image
+                  </label>
+
+                  <img
+                    src={editStory3Image}
+                    alt="Story cover preview"
+                    className="aspect-[4/3] w-full rounded-md object-cover"
+                  />
+
+                  <label className="w-fit cursor-pointer rounded-md border border-black px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-gray-100">
+
+                    Change Cover Image
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleStoryImageChange(e, 3)
+                      }
+                      className="hidden"
+                    />
+
+                  </label>
+
+                  {/* TITLE */}
+
+                  <input
+                    type="text"
+                    value={story3Title}
+                    onChange={(e) =>
+                      setStory3Title(e.target.value)
+                    }
+                    className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                  />
+
+                  {/* CONTENT */}
+
+                  <textarea
+                    value={story3Content}
+                    onChange={(e) =>
+                      setStory3Content(e.target.value)
+                    }
+                    rows={5}
+                    className="w-full resize-none rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                  />
+
+                  <div className="flex gap-3">
+
+                    <button
+                      type="button"
+                      onClick={handleSaveStory}
+                      className="bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCancelStory}
+                      className="border border-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-black hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+
+                  </div>
+
+                </div>
+
+              ) : (
+
+                <>
+                  <div className="aspect-[4/3] w-full overflow-hidden">
+
+                    <img
+                      src={story3Image}
+                      alt="Urban architecture"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+
+                  </div>
+
+                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                    Urbanism
+                  </span>
+
+                  <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                    {story3Title}
+                  </h3>
+
+                  <p className="line-clamp-2 text-base text-gray-600">
+                    {story3Content}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => handleEditStory(3)}
+                    className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+                  >
+                    Edit Story
+                  </button>
+                </>
+              )}
 
             </article>
 
           </div>
-
         </section>
-
       </main>
 
       <Footer />
-
     </div>
   );
 }
