@@ -21,7 +21,12 @@ export default function SignUp() {
     setSuccess("");
 
     // Check empty fields
-    if (!name.trim() || !username.trim() || !email.trim() || !password.trim()) {
+    if (
+      !name.trim() ||
+      !username.trim() ||
+      !email.trim() ||
+      !password.trim()
+    ) {
       setError("Please fill in all fields.");
       return;
     }
@@ -73,33 +78,36 @@ export default function SignUp() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-      
-      <div className="flex h-[95vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
+
+      {/* MAIN MODAL */}
+      <div className="flex h-[90vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
-          <div className="relative h-full over-flow-hidden">
+          <div className="relative h-full overflow-hidden">
 
             <img
               src="login.jpg"
               alt="Editorial"
-              className="h-full w-full object-cover hover:scale-105 transition-transform duration-700 "
+              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
             />
 
-            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute inset-0 bg-black/30"></div>
 
+            {/* LOGO */}
             <div className="absolute left-10 top-8 z-10">
-              <h1 className="text-2xl  font-bold text-white">
+              <h1 className="text-2xl font-bold text-white">
                 BIL
               </h1>
             </div>
 
+            {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl ">
+              <p className="max-w-md text-2xl">
                 "Quiet luxury defined by rigorous minimalism."
               </p>
 
-              <p className="mt-4 text-xs uppercase tracking-widest">
+              <p className="mt-3 text-xs uppercase tracking-widest">
                 Editorial / Culture
               </p>
             </div>
@@ -108,40 +116,42 @@ export default function SignUp() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="relative flex w-full items-center justify-center bg-white px-8 py-12 md:w-1/2">
+        <div className="flex w-full items-center justify-center bg-white px-8 py-5 md:w-1/2">
 
           <div className="w-full max-w-md">
 
-            <h2 className="mt-8 text-2xl  font-semibold text-gray-900">
+            {/* HEADING */}
+            <h2 className="text-xl font-semibold text-gray-900">
               Create your account
             </h2>
 
-            <p className="mt-3 text-sm leading-6 text-gray-900">
+            <p className="mt-1 text-xs leading-5 text-gray-900">
               Join our community of curators and design enthusiasts.
             </p>
 
             {/* ERROR MESSAGE */}
             {error && (
-              <div className="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-600">
+              <div className="mt-2 rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">
                 {error}
               </div>
             )}
 
             {/* SUCCESS MESSAGE */}
             {success && (
-              <div className="mt-4 rounded-md bg-green-50 px-4 py-3 text-sm text-green-600">
+              <div className="mt-2 rounded-md bg-green-50 px-3 py-2 text-xs text-green-600">
                 {success}
               </div>
             )}
 
+            {/* FORM */}
             <form
               onSubmit={handleSubmit}
-              className="mt-6 space-y-5"
+              className="mt-4 space-y-3"
             >
 
               {/* NAME */}
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-xs font-medium text-gray-900">
                   Name
                 </label>
 
@@ -150,13 +160,13 @@ export default function SignUp() {
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
                 />
               </div>
 
               {/* USERNAME */}
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-xs font-medium text-gray-900">
                   User Name
                 </label>
 
@@ -165,13 +175,13 @@ export default function SignUp() {
                   placeholder="Enter your user name"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
                 />
               </div>
 
               {/* EMAIL */}
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-xs font-medium text-gray-900">
                   Email Address
                 </label>
 
@@ -180,13 +190,13 @@ export default function SignUp() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
                 />
               </div>
 
               {/* PASSWORD */}
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-xs font-medium text-gray-900">
                   Password
                 </label>
 
@@ -196,7 +206,7 @@ export default function SignUp() {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-200 bg-gray-50 px-4 py-3 pr-20 text-sm outline-none focus:border-black"
+                    className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 pr-20 text-sm outline-none focus:border-black"
                   />
 
                   <button
@@ -213,7 +223,7 @@ export default function SignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black py-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full bg-black py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? "Creating Account..." : "Sign Up"}
               </button>
@@ -221,7 +231,7 @@ export default function SignUp() {
             </form>
 
             {/* SIGN IN LINK */}
-            <p className="mt-2 mb-4 text-center text-sm text-gray-900">
+            <p className="mt-2 text-center text-xs text-gray-900">
               Already have an account?{" "}
 
               <Link

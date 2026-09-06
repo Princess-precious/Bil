@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
-import Footer from "../components/footer";  
+import Footer from "../components/footer";
 
 export default function UserProfile() {
+  const navigate = useNavigate();
+
+  // ================= PROFILE INFORMATION =================
+
   const [isEditing, setIsEditing] = useState(false);
 
-  // Current profile information
   const [name, setName] = useState("Elias Thorne");
 
   const [bio, setBio] = useState(
@@ -14,20 +19,52 @@ export default function UserProfile() {
 
   const [profileImage, setProfileImage] = useState("/userprofile.jpg");
 
-  // Temporary values used while editing
+  // Temporary profile values while editing
   const [editName, setEditName] = useState(name);
   const [editBio, setEditBio] = useState(bio);
   const [editImage, setEditImage] = useState(profileImage);
 
-  // Open edit profile
+  // ================= STORIES =================
+
+  const stories = [
+    {
+      id: 1,
+      title: "The Weight of Silence: Brutalism in the Modern Era",
+      content:
+        "An exploration of how heavy concrete forms are being reimagined to create spaces of profound tranquility and quiet contemplation in bustling metropolises.",
+      image: "/profileHero.jpg",
+      category: "Architecture",
+    },
+    {
+      id: 2,
+      title: "Texture & Time: Materials That Age With Grace",
+      content:
+        "A look at how materials change and develop character over time.",
+      image: "/story.jpg",
+      category: "Design Theory",
+    },
+    {
+      id: 3,
+      title: "Negative Space in City Planning",
+      content:
+        "Why the empty spaces between our monuments define the character of our cities more than the structures themselves.",
+      image: "/profileHero.jpg",
+      category: "Urbanism",
+    },
+  ];
+
+  // ================= EDIT PROFILE =================
+
   const handleEditProfile = () => {
     setEditName(name);
     setEditBio(bio);
     setEditImage(profileImage);
+
     setIsEditing(true);
   };
 
-  // Change profile image
+  // ================= PROFILE IMAGE =================
+
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -36,10 +73,12 @@ export default function UserProfile() {
     if (!file) return;
 
     const imageUrl = URL.createObjectURL(file);
+
     setEditImage(imageUrl);
   };
 
-  // Save profile
+  // ================= SAVE PROFILE =================
+
   const handleSaveChanges = () => {
     setName(editName);
     setBio(editBio);
@@ -48,7 +87,8 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
-  // Cancel editing
+  // ================= CANCEL PROFILE EDIT =================
+
   const handleCancel = () => {
     setEditName(name);
     setEditBio(bio);
@@ -57,114 +97,109 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
-  // Share profile
+  // ================= SHARE PROFILE =================
+
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+
       alert("Profile link copied!");
     } catch (error) {
       console.error("Failed to copy profile link:", error);
     }
   };
 
+  // ================= EDIT STORY =================
+
+  const handleEditStory = (storyId: number) => {
+    navigate(`/edit-story/${storyId}`);
+  };
+
   return (
-    <div className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
+      {/* ================= NAVBAR ================= */}
 
       <Navbar />
 
-      <main className="flex-grow w-full px-6 md:px-12 max-w-6xl mx-auto pt-16 pb-32">
-
+      <main className="mx-auto w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
         {/* ================= PROFILE HEADER ================= */}
-        <header className="flex flex-col md:flex-row gap-12 items-start md:items-center mb-24">
 
-          {/* Profile Image */}
-          <div className="shrink-0 w-32 h-32 md:w-48 md:h-48 rounded-full mt-10 overflow-hidden 
-          border-2 border-gray-300 p-1">
+        <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
+          {/* PROFILE IMAGE */}
+
+          <div className="mt-10 h-32 w-32 shrink-0 overflow-hidden rounded-full border-2 border-gray-300 p-1 md:h-48 md:w-48">
             <img
               src={profileImage}
               alt="Author portrait"
-              className="w-full h-full object-cover rounded-full hover:scale-105 transition-transform duration-700 ease-out"
+              className="h-full w-full rounded-full object-cover transition-transform duration-700 ease-out hover:scale-105"
             />
           </div>
 
-          {/* Profile Information */}
-          <div className="flex flex-col gap-6 max-w-2xl">
+          {/* PROFILE INFORMATION */}
 
-            {/* Name and Bio */}
+          <div className="flex max-w-2xl flex-col gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+              <h1 className="mb-2 text-4xl font-bold text-gray-900 md:text-5xl">
                 {name}
               </h1>
 
-              <p className="text-lg text-gray-600">
-                {bio}
-              </p>
+              <p className="text-lg text-gray-600">{bio}</p>
             </div>
 
-            {/* Stories */}
+            {/* STORY COUNT */}
+
             <div className="flex items-center gap-8 text-base text-gray-900">
               <div>
-                <span className="font-bold text-black">
-                  142
-                </span>{" "}
+                <span className="font-bold text-black">142</span>{" "}
                 Stories
               </div>
             </div>
 
-            {/*   profile button*/}
-            <div className="flex gap-4 mt-2">
+            {/* PROFILE BUTTONS */}
 
-              {/* Edit Profile */}
+            <div className="mt-2 flex gap-4">
               <button
                 type="button"
                 onClick={handleEditProfile}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80 transition-opacity 
-                uppercase tracking-widest font-semibold"
+                className="rounded-md bg-black px-6 py-3 font-semibold uppercase tracking-widest text-white transition-opacity hover:opacity-80"
               >
                 Edit Profile
               </button>
 
-              {/* Share */}
               <button
                 type="button"
                 onClick={handleShare}
-                className="border border-black text-black px-6 py-3 rounded-md hover:bg-gray-100 
-                transition-colors uppercase tracking-widest font-semibold"
+                className="rounded-md border border-black px-6 py-3 font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gray-100"
               >
                 Share
               </button>
-
             </div>
-
           </div>
-
         </header>
 
         {/* ================= EDIT PROFILE ================= */}
-        {isEditing && (
-          <div className="mb-12 max-w-2xl border border-gray-300 rounded-md p-6">
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        {isEditing && (
+          <div className="mb-12 max-w-2xl rounded-md border border-gray-300 p-6">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
               Edit Profile
             </h2>
 
-            {/* Profile Image */}
-            <div className="mb-6">
+            {/* PROFILE IMAGE */}
 
-              <label className="block text-sm font-semibold mb-3">
+            <div className="mb-6">
+              <label className="mb-3 block text-sm font-semibold">
                 Profile Image
               </label>
 
               <div className="flex items-center gap-5">
-
                 <img
                   src={editImage}
                   alt="Profile preview"
-                  className="w-24 h-24 rounded-full object-cover border border-gray-300"
+                  className="h-24 w-24 rounded-full border border-gray-300 object-cover"
                 />
 
-                <label className="cursor-pointer border border-black px-5 py-3 rounded-md text-sm
-                 font-semibold hover:bg-gray-100 transition-colors">
+                <label className="cursor-pointer rounded-md border border-black px-5 py-3 text-sm font-semibold transition-colors hover:bg-gray-100">
                   Change Image
 
                   <input
@@ -174,15 +209,13 @@ export default function UserProfile() {
                     className="hidden"
                   />
                 </label>
-
               </div>
-
             </div>
 
-            {/* Name */}
-            <div className="mb-5">
+            {/* NAME */}
 
-              <label className="block text-sm font-semibold mb-2">
+            <div className="mb-5">
+              <label className="mb-2 block text-sm font-semibold">
                 Name
               </label>
 
@@ -190,15 +223,14 @@ export default function UserProfile() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none focus:border-black"
+                className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
               />
-
             </div>
 
-            {/* Bio */}
-            <div className="mb-6">
+            {/* BIO */}
 
-              <label className="block text-sm font-semibold mb-2">
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold">
                 Bio
               </label>
 
@@ -206,20 +238,17 @@ export default function UserProfile() {
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 rows={4}
-                className="w-full border border-gray-300 rounded-md px-4 py-3 outline-none 
-                focus:border-black resize-none"
+                className="w-full resize-none rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
               />
-
             </div>
 
-            {/* Save / Cancel */}
-            <div className="flex gap-4">
+            {/* PROFILE ACTIONS */}
 
+            <div className="flex gap-4">
               <button
                 type="button"
                 onClick={handleSaveChanges}
-                className="bg-black text-white px-6 py-3 rounded-md hover:opacity-80
-                 transition-opacity font-semibold"
+                className="rounded-md bg-black px-6 py-3 font-semibold text-white transition-opacity hover:opacity-80"
               >
                 Save Changes
               </button>
@@ -227,124 +256,153 @@ export default function UserProfile() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="border border-black text-black px-6 py-3  rounded-md hover:bg-gray-100 transition-colors font-semibold"
+                className="rounded-md border border-black px-6 py-3 font-semibold text-black transition-colors hover:bg-gray-100"
               >
                 Cancel
               </button>
-
             </div>
-
           </div>
         )}
 
         {/* ================= TABS ================= */}
-        <div className="flex gap-8 border-b border-gray-300 mb-12">
 
+        <div className="mb-12 flex gap-8 border-b border-gray-300">
           <button
             type="button"
-            className="text-sm font-semibold text-black border-b-2 border-black pb-4 uppercase tracking-widest"
+            className="border-b-2 border-black pb-4 text-sm font-semibold uppercase tracking-widest text-black"
           >
             My Stories
           </button>
 
           <button
             type="button"
-            className="text-sm text-gray-500 hover:text-black transition-colors pb-4 uppercase tracking-widest"
+            className="pb-4 text-sm uppercase tracking-widest text-gray-500 transition-colors hover:text-black"
           >
             Saved Stories
           </button>
-
         </div>
 
         {/* ================= STORIES ================= */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-8">
 
-          {/* Featured Story */}
-          <article className="md:col-span-8 flex flex-col gap-6 group cursor-pointer">
+        <section className="grid grid-cols-1 gap-8 md:grid-cols-12">
+          {/* ================= STORY 1 ================= */}
 
-            <div className="w-full aspect-video overflow-hidden">
+          <article className="md:col-span-8">
+            <div className="group flex flex-col gap-6">
+              {/* IMAGE */}
 
-              <img
-                src="/profileHero.jpg"
-                alt="Brutalist concrete architecture"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-
-            </div>
-
-            <div className="flex flex-col gap-3">
-
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Architecture
-              </span>
-
-              <h2 className="text-3xl font-bold text-gray-900 group-hover:text-gray-600 transition-colors">
-                The Weight of Silence: Brutalism in the Modern Era
-              </h2>
-
-              <p className="text-base text-gray-600 line-clamp-2">
-                An exploration of how heavy concrete forms are being
-                reimagined to create spaces of profound tranquility and
-                quiet contemplation in bustling metropolises.
-              </p>
-
-            </div>
-
-          </article>
-
-          {/* Secondary Stories */}
-          <div className="md:col-span-4 flex flex-col gap-12">
-
-            {/* Story 2 */}
-            <article className="flex flex-col gap-4 group cursor-pointer border-b border-gray-300 pb-8">
-
-              <div className="w-full aspect-[4/3] overflow-hidden">
-
+              <div className="aspect-video w-full overflow-hidden">
                 <img
-                  src="/story.jpg"
-                  alt="Concrete and glass materials"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  src={stories[0].image}
+                  alt="Brutalist concrete architecture"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-
               </div>
 
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Design Theory
+              {/* STORY INFORMATION */}
+
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                  {stories[0].category}
+                </span>
+
+                <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600">
+                  {stories[0].title}
+                </h2>
+
+                <p className="line-clamp-2 text-base text-gray-600">
+                  {stories[0].content}
+                </p>
+
+                {/* EDIT STORY */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log("Edit button clicked");
+                    navigate("/edit-story/1");
+                  }}
+                  className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white"
+                >
+                  Edit Story
+                </button>
+              </div>
+            </div>
+          </article>
+
+          {/* ================= SECONDARY STORIES ================= */}
+
+          <div className="flex flex-col gap-12 md:col-span-4">
+            {/* ================= STORY 2 ================= */}
+
+            <article className="group flex flex-col gap-4 border-b border-gray-300 pb-8">
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={stories[1].image}
+                  alt="Concrete and glass materials"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+
+              <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                {stories[1].category}
               </span>
 
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-600 transition-colors leading-tight">
-                Texture &amp; Time: Materials That Age With Grace
+              <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                {stories[1].title}
               </h3>
 
-            </article>
-
-            {/* Story 3 */}
-            <article className="flex flex-col gap-4 group cursor-pointer">
-
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                Urbanism
-              </span>
-
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-600 transition-colors leading-tight">
-                Negative Space in City Planning
-              </h3>
-
-              <p className="text-base text-gray-600 line-clamp-2">
-                Why the empty spaces between our monuments define the
-                character of our cities more than the structures
-                themselves.
+              <p className="line-clamp-2 text-base text-gray-600">
+                {stories[1].content}
               </p>
 
+              <button
+                type="button"
+                onClick={() => handleEditStory(stories[1].id)}
+                className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+              >
+                Edit Story
+              </button>
             </article>
 
+            {/* ================= STORY 3 ================= */}
+
+            <article className="group flex flex-col gap-4">
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={stories[2].image}
+                  alt="Urban architecture"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+
+              <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                {stories[2].category}
+              </span>
+
+              <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                {stories[2].title}
+              </h3>
+
+              <p className="line-clamp-2 text-base text-gray-600">
+                {stories[2].content}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => handleEditStory(stories[2].id)}
+                className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+              >
+                Edit Story
+              </button>
+            </article>
           </div>
-
         </section>
-
       </main>
 
-      <Footer />
+      {/* ================= FOOTER ================= */}
 
+      <Footer />
     </div>
   );
 }
