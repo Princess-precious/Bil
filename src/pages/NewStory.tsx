@@ -20,32 +20,16 @@ import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 
 export default function NewStory() {
-  // =========================
-  // FORM STATES
-  // =========================
-
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  // =========================
-  // IMAGE STATES
-  // =========================
-
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-
-  // =========================
-  // MESSAGE STATE
-  // =========================
-
   const [message, setMessage] = useState("");
 
-  // =========================
-  // AI STATES
-  // =========================
-
+  // AI States
   const [showAI, setShowAI] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState("");
@@ -53,10 +37,6 @@ export default function NewStory() {
   const [aiAction, setAiAction] = useState<
     "improve" | "quote" | "rewrite" | null
   >(null);
-
-  // =========================
-  // EDITOR REF
-  // =========================
 
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
@@ -68,11 +48,7 @@ export default function NewStory() {
       theme: "snow",
       placeholder: "Begin writing...",
       modules: {
-        toolbar: [
-          ["bold", "italic"],
-          ["blockquote"],
-          ["link", "image"],
-        ],
+        toolbar: [["bold", "italic"], ["blockquote"], ["link", "image"]],
       },
     });
 
@@ -84,38 +60,25 @@ export default function NewStory() {
 
     return () => {
       quillRef.current = null;
-
       if (editorRef.current) {
         editorRef.current.innerHTML = "";
       }
     };
   }, []);
 
-  // =========================
-  // IMAGE UPLOAD
-  // =========================
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (!file) return;
 
     setImage(file);
-
-    const imageUrl = URL.createObjectURL(file);
-    setPreview(imageUrl);
+    setPreview(URL.createObjectURL(file));
   };
-
-  // =========================
-  // AI ASSISTANT
-  // =========================
 
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
 
     let requestMessage = aiPrompt;
 
-    // Only these selected quick actions require story content.
     if (aiAction !== null) {
       const storyText = quillRef.current?.getText().trim() || "";
 
@@ -151,16 +114,11 @@ ${storyText}
         `${import.meta.env.VITE_API_URL}/api/chat`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: requestMessage,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: requestMessage }),
         }
       );
 
-      // Read raw text response first to avoid crashing on empty/non-JSON responses
       const text = await response.text();
       let result;
 
@@ -197,10 +155,6 @@ ${storyText}
     }
   };
 
-  // =========================
-  // AI QUICK ACTION
-  // =========================
-
   const handleAIQuickAction = (
     prompt: string,
     action: "improve" | "quote" | "rewrite" | null
@@ -209,9 +163,12 @@ ${storyText}
     setAiAction(action);
   };
 
-  // =========================
-  // CLEAR AI
-  // =========================
+  const handleInsertToEditor = () => {
+    if (quillRef.current && aiResponse) {
+      const range = quillRef.current.getSelection(true);
+      quillRef.current.insertText(range.index, `\n${aiResponse}\n`);
+    }
+  };
 
   const handleClearAI = () => {
     setAiPrompt("");
@@ -219,111 +176,53 @@ ${storyText}
     setAiAction(null);
   };
 
-  // =========================
-  // SAVE DRAFT
-  // =========================
-
   const handleSaveDraft = () => {
-    const draft = {
-      title,
-      excerpt,
-      content,
-      category,
-    };
-
-    localStorage.setItem("storyDraft", JSON.stringify(draft));
-
+    localStorage.setItem(
+      "storyDraft",
+      JSON.stringify({ title, excerpt, content, category })
+    );
     setMessage("Draft saved successfully.");
-
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
+    setTimeout(() => setMessage(""), 3000);
   };
 
-  // =========================
-  // PUBLISH
-  // =========================
-
   const handlePublish = () => {
-    if (!title.trim()) {
-      setMessage("Please enter an article title.");
-      return;
-    }
-
-    if (!content.trim()) {
-      setMessage("Please write your story.");
-      return;
-    }
-
-    if (!category) {
-      setMessage("Please select a category.");
-      return;
-    }
-
-    const story = {
-      title,
-      excerpt,
-      content,
-      category,
-      imageName: image?.name || "",
-    };
-
-    console.log("Published Story:", story);
+    if (!title.trim()) return setMessage("Please enter an article title.");
+    if (!content.trim()) return setMessage("Please write your story.");
+    if (!category) return setMessage("Please select a category.");
 
     setMessage("Story published successfully.");
-
-    // Clear form
     setTitle("");
     setExcerpt("");
     setContent("");
     setCategory("");
     setImage(null);
     setPreview(null);
-
-    // Clear editor
-    if (quillRef.current) {
-      quillRef.current.setText("");
-    }
-
-    // Clear AI
-    setAiPrompt("");
-    setAiResponse("");
+    if (quillRef.current) quillRef.current.setText("");
+    handleClearAI();
     setShowAI(false);
-
-    // Remove saved draft
     localStorage.removeItem("storyDraft");
 
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  };
-
-  // =========================
-  // FORM SUBMIT
-  // =========================
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    setTimeout(() => setMessage(""), 3000);
   };
 
   return (
     <>
-      <main className="mx-auto w-full max-w-6xl px-6 py-24 md:px-12 md:py-32">
+      <main className="relative mx-auto w-full max-w-6xl px-6 py-24 md:px-12 md:py-32">
         <Navbar />
 
-        {/* =========================  
-            PAGE TITLE  
-        ========================= */}
-
-        <header className="mb-4 md:mb-8">
-          <h1 className="text-1xl font-bold text-gray-900 md:text-5xl">
+        <header className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900 md:text-5xl">
             New Story
           </h1>
+          <button
+            type="button"
+            onClick={() => setShowAI(!showAI)}
+            className="flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800"
+          >
+            <span>✨</span>
+            <span>{showAI ? "Close Assistant" : "Ask AI"}</span>
+          </button>
         </header>
-
-        {/* =========================  
-            MESSAGE  
-        ========================= */}
 
         {message && (
           <div className="mb-8 border border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-700">
@@ -331,291 +230,180 @@ ${storyText}
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 gap-8 md:grid-cols-12"
-        >
-          {/* =========================  
-              EDITOR  
-          ========================= */}
+        <form onSubmit={(e) => e.preventDefault()} className="grid grid-cols-1 gap-8 md:grid-cols-12">
+          {/* EDITOR AREA */}
+          <div className="space-y-4 md:col-span-8">
+            <input
+              type="text"
+              placeholder="Article Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full border-b border-gray-200 pb-3 text-3xl font-bold outline-none focus:border-black placeholder:text-gray-300"
+            />
 
-          <div className="space-y-3 md:col-span-8">
-            {/* TITLE */}
+            <textarea
+              placeholder="Write a brief excerpt..."
+              rows={1}
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              className="w-full resize-none border-b border-gray-200 pb-3 text-lg text-gray-600 outline-none focus:border-black placeholder:text-gray-300"
+            />
 
-            <div>
-              <input
-                type="text"
-                placeholder="Article Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mb-4 w-full border-b border-gray-300 pb-4 text-2xl font-bold outline-none placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* EXCERPT */}
-
-            <div>
-              <textarea
-                placeholder="Write a brief excerpt..."
-                rows={1}
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                className="w-full resize-none border-b border-gray-300 pb-4 text-lg outline-none placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* STORY CONTENT */}
-
-            <div className="space-y-6 border-b border-t border-gray-300 py-4">
-              {/* TOOLBAR*/}
-
-              <div className="mb-4 flex items-center gap-5 text-gray-500">
-                {/* AI */}
-
-                <button
-                  type="button"
-                  onClick={() => setShowAI(!showAI)}
-                  className={`bg-black px-4 py-2 text-white transition-colors hover:bg-gray-800 ${
-                    showAI ? "bg-gray-800" : ""
-                  }`}
-                  title="AI Writing Assistant"
-                >
-                  💬 Ask Ai
-                </button>
-              </div>
-
-              {/* =========================  
-                  AI WRITING ASSISTANT  
-              ========================= */}
-
-              {showAI && (
-                <div className="border border-gray-200 bg-gray-50 p-5">
-                  {/* AI HEADER */}
-
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        AI Writing Assistant
-                      </h3>
-
-                      <p className="mt-1 text-sm text-gray-500">
-                        Get help writing, improving, or finding quotes.
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowAI(false)}
-                      className="text-gray-400 transition-colors hover:text-black"
-                      title="Close AI"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  {/* QUICK ACTIONS */}
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleAIQuickAction(
-                          "Help me improve the writing in my story",
-                          "improve"
-                        )
-                      }
-                      className="border border-gray-300 bg-white px-3 py-2 text-sm transition-colors hover:border-black"
-                    >
-                      Improve writing
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleAIQuickAction(
-                          "Suggest a relevant quote for my story",
-                          "quote"
-                        )
-                      }
-                      className="border border-gray-300 bg-white px-3 py-2 text-sm transition-colors hover:border-black"
-                    >
-                      Suggest quote
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleAIQuickAction(
-                          "Help me continue writing my story",
-                          null
-                        )
-                      }
-                      className="border border-gray-300 bg-white px-3 py-2 text-sm transition-colors hover:border-black"
-                    >
-                      Help me write
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleAIQuickAction(
-                          "Rewrite my story to make it more engaging",
-                          "rewrite"
-                        )
-                      }
-                      className="border border-gray-300 bg-white px-3 py-2 text-sm transition-colors hover:border-black"
-                    >
-                      Rewrite
-                    </button>
-                  </div>
-
-                  {/* PROMPT */}
-
-                  <textarea
-                    value={aiPrompt}
-                    onChange={(e) => setAiPrompt(e.target.value)}
-                    placeholder="Ask the AI something..."
-                    rows={3}
-                    className="mt-4 w-full resize-none border border-gray-300 bg-white p-3 text-sm outline-none focus:border-black"
-                  />
-
-                  {/* AI ACTIONS */}
-
-                  <div className="mt-3 flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleAIRequest}
-                      disabled={aiLoading || !aiPrompt.trim()}
-                      className="bg-black px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {aiLoading ? "Thinking..." : "Ask AI"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleClearAI}
-                      className="border border-gray-300 px-5 py-2 text-sm text-gray-700 transition-colors hover:border-black hover:text-black"
-                    >
-                      Clear
-                    </button>
-                  </div>
-
-                  {/* AI RESPONSE */}
-
-                  {aiResponse && (
-                    <div className="mt-4 border border-gray-200 bg-white p-4">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-gray-500">
-                        AI Response
-                      </p>
-
-                      <div className="text-sm leading-6 text-gray-700">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {aiResponse}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* =========================  
-                  RICH TEXT EDITOR  
-              ========================= */}
+            <div className="min-h-[450px] border-y border-gray-200 py-4">
               <div ref={editorRef} className="min-h-[400px] w-full" />
             </div>
           </div>
 
-          {/* =========================  
-              SIDEBAR  
-          ========================= */}
-
-          <aside className="space-y-12 md:col-span-4 md:col-start-9">
-            {/* ACTIONS */}
-
-            <div className="flex flex-col gap-4 border border-gray-200 bg-white p-8">
-              {/* PUBLISH */}
-
+          {/* SIDEBAR */}
+          <aside className="space-y-8 md:col-span-4">
+            <div className="flex flex-col gap-3 border border-gray-200 bg-white p-6 shadow-sm">
               <button
                 type="button"
                 onClick={handlePublish}
-                className="w-full bg-black py-4 font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+                className="w-full bg-black py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800"
               >
                 Publish
               </button>
 
-              {/* SAVE DRAFT */}
-
               <button
                 type="button"
                 onClick={handleSaveDraft}
-                className="w-full border border-black bg-transparent py-4 font-semibold uppercase tracking-widest text-black transition-colors hover:bg-gray-100"
+                className="w-full border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-widest text-black transition hover:bg-gray-50"
               >
                 Save Draft
               </button>
             </div>
 
-            {/* CATEGORY */}
-
             <div>
-              <label className="mb-4 block text-sm font-semibold uppercase tracking-widest text-gray-600">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Category
               </label>
-
-              <div className="relative">
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full cursor-pointer appearance-none rounded-none border-b border-gray-300 bg-transparent py-3 pr-8 text-base text-gray-800 outline-none focus:border-black"
-                >
-                  <option value="" disabled hidden>
-                    Select Category
-                  </option>
-
-                  <option value="technology">Technology</option>
-
-                  <option value="science">Science</option>
-
-                  <option value="art">Art</option>
-
-                  <option value="culture">Culture</option>
-                </select>
-
-                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-lg text-gray-500">
-                  ▼
-                </span>
-              </div>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full border-b border-gray-300 bg-transparent py-2.5 text-sm text-gray-800 outline-none focus:border-black"
+              >
+                <option value="" disabled hidden>Select Category</option>
+                <option value="technology">Technology</option>
+                <option value="science">Science</option>
+                <option value="art">Art</option>
+                <option value="culture">Culture</option>
+              </select>
             </div>
 
-            {/* COVER IMAGE */}
-
             <div>
-              <label className="mb-4 block text-sm font-semibold uppercase tracking-widest text-gray-600">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Cover Image
               </label>
-
-              <label className="group flex h-48 w-full cursor-pointer flex-col items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-black">
+              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Cover preview"
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={preview} alt="Cover preview" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="material-symbols-outlined text-4xl text-gray-400 transition-colors group-hover:text-black">
-                    add_photo_alternate
+                  <span className="text-sm text-gray-400 group-hover:text-black">
+                    + Upload Cover Image
                   </span>
                 )}
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageChange}
-                />
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               </label>
             </div>
           </aside>
         </form>
+
+        {/* MODERN SLIDE-OVER AI ASSISTANT PANEL */}
+        {showAI && (
+          <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-gray-200 bg-white shadow-2xl transition-all">
+            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">✨</span>
+                <h3 className="font-semibold text-gray-900">AI Writing Assistant</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAI(false)}
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-black"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Quick Prompt Pills */}
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  Quick Actions
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Improve writing", prompt: "Help me improve the writing in my story", action: "improve" },
+                    { label: "Suggest quote", prompt: "Suggest a relevant quote for my story", action: "quote" },
+                    { label: "Continue writing", prompt: "Help me continue writing my story", action: null },
+                    { label: "Rewrite", prompt: "Rewrite my story to make it more engaging", action: "rewrite" },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => handleAIQuickAction(item.prompt, item.action as any)}
+                      className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-700 transition hover:border-black hover:bg-white"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Prompt Input Box */}
+              <div className="relative rounded-lg border border-gray-200 bg-gray-50 p-2 focus-within:border-black focus-within:bg-white">
+                <textarea
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="Ask AI for suggestions, rewrites, or quotes..."
+                  rows={3}
+                  className="w-full resize-none bg-transparent p-2 text-sm outline-none placeholder:text-gray-400"
+                />
+                <div className="flex items-center justify-between border-t border-gray-100 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleClearAI}
+                    className="px-2 text-xs text-gray-400 hover:text-black"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAIRequest}
+                    disabled={aiLoading || !aiPrompt.trim()}
+                    className="rounded-md bg-black px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-gray-800 disabled:opacity-40"
+                  >
+                    {aiLoading ? "Thinking..." : "Generate"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Response Display Box */}
+              {aiResponse && (
+                <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Response
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleInsertToEditor}
+                      className="text-xs font-medium text-black hover:underline"
+                    >
+                      + Insert into Story
+                    </button>
+                  </div>
+                  <div className="prose prose-sm text-sm text-gray-700 leading-relaxed">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {aiResponse}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />
