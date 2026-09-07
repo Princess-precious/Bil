@@ -18,6 +18,7 @@ import { useAuth } from "../useAuth";
 function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
   const { isSignedIn } = useAuth();
 
 
@@ -44,6 +45,7 @@ function Navbar() {
           {/* CATEGORY */}
           <div className="relative group">
             <button
+            onClick={() => setShowCategory(!showCategory)}
             className="flex items-center gap-1 hover:underline active:underline hover:opacity-80 active:opacity-80"
             >
               Category
@@ -62,7 +64,7 @@ function Navbar() {
               </svg>
             </button>
           
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
               <Link to="" className="text-xs">Design</Link>
               <Link to="" className="text-xs">Fashion</Link>
               <Link to="" className="text-xs">Entertainment</Link>
@@ -165,6 +167,7 @@ function Navbar() {
             {/* CATEGORY */}
             <div className="relative group">
               <button
+              onClick={() => setShowCategory(!showCategory)}
               className="flex items-center gap-1 hover:underline active:underline   hover:opacity-80 active:opacity-80"
               >
                 Category
@@ -183,7 +186,7 @@ function Navbar() {
                 </svg>
               </button>
           
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
                 <Link to="" className="text-xs">Design</Link>
                 <Link to="" className="text-xs">Fashion</Link>
                 <Link to="" className="text-xs">Entertainment</Link>
