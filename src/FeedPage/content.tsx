@@ -12,18 +12,22 @@
 **/
 import architectureimg from '../images/architectureimg.jpg';
 import technologyimg from '../images/technologyimg.jpg';
+import {useState} from "react"
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 
 function Content() {
+  const [showMore, setShowMore] = useState(false)
+  const bottomAnimation = useScrollAnimation<HTMLDivElement>("bottom");
   return(
-    <section className="flex flex-2 flex-col md:flex-row h-auto py-8 px-14  bg-[#fbf9f8] justify-between ">
+    <section ref={bottomAnimation} className="flex flex-2 flex-col md:flex-row h-auto py-8 px-14  bg-[#fbf9f8] justify-between ">
       {/* FIRST FRACTION */}
       <div className="flex flex-2 flex-col flex-wrap gap-6 items-center md:items-start border-b border-[#dbdad9] pb-5 md:border-b-0 md:border-r md:border-[#dbdad9]  md:pr-4">
         
         {/* first section of the first fraction */}
         <div className="flex flex-col md:flex-row gap-4 mt-10">
           <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 ">
+            <div className="flex flex-row gap-2 items-center">
               <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">ARCHITECTURE</p>
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By Elena Rostova</p>
@@ -47,7 +51,7 @@ function Content() {
         {/* second section of the first fraction */}
         <div className="flex flex-col md:flex-row gap-4 mt-10">
           <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 ">
+            <div className="flex flex-row gap-2 items-center">
               <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">TeECHNOLOGY</p>
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By Marcus Throne</p>
@@ -71,7 +75,7 @@ function Content() {
         {/* third section of the first fraction */}
         <div className="flex flex-col md:flex-row gap-4 mt-10">
           <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 ">
+            <div className="flex flex-row gap-2 items-center">
               <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">CULTURE</p>
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
@@ -90,6 +94,42 @@ function Content() {
           <div className="order-1 md:order-2 mb-4">
              <img src={technologyimg} alt="Loading..." className="" /> 
           </div>
+        </div>
+        {/* MORE ARTICLES */}
+        {showMore && (
+           <div className="flex flex-col md:flex-row gap-4 mt-10">
+          <div className="flex flex-col gap-4 order-2 md:order-1">
+            <div className="flex flex-row gap-2 items-center">
+              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">CULTURE</p>
+              <p className="font-bold text-[#1a1a1a]text-xs">.</p>
+              <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
+            </div>
+            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a]">
+              The Death of the Flâneur in the Digital Age
+            </h1>
+            <p className="text-xs text-[#1a1a1a]">
+              How constant connectivity and algorithmic routing have eroded the art of aimless wandering in the modern metropolis.
+            </p>
+            
+            <p className="text-xs text-[#1a1a1a]"> Oct 8</p>
+            
+            
+          </div>
+          <div className="order-1 md:order-2 mb-4">
+             <img src={technologyimg} alt="Loading..." className="" /> 
+          </div>
+        </div>   
+        )}
+
+        {/* View More */}
+        <div className="flex flex-row gap-4">
+          <button onClick={() => setShowMore(!showMore)} className= " flex gap-1 text-[#1a1a1a] underline text-xs hover:opacity-80 active:opacity-80 p-2">
+            {showMore ? "View Less" : "View More"}
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </div>
       </div>
 

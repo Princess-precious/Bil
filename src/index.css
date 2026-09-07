@@ -1,9 +1,89 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 
+@keyframes slideFromLeft {
+  from {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromTop {
+  from {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromBottom {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-left {
+  animation: slideFromLeft 0.8s ease-out both;
+}
+
+.animate-slide-right {
+  animation: slideFromRight 0.8s ease-out both;
+}
+
+.animate-slide-top {
+  animation: slideFromTop 0.8s ease-out both;
+}
+
+.animate-slide-bottom {
+  animation: slideFromBottom 0.8s ease-out both;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;
+}
+
+@keyframes searchFromRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-search {
+  animation: searchFromRight 0.5s ease-out both;
 }
 
 body {

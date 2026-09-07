@@ -13,15 +13,18 @@
 
 import section1img from "../images/section1img.jpg";
 import { Link } from "react-router-dom";
+import { useScrollAnimation } from "../hooks/useScrollAnimation";
 
 function Section1() {
+  const leftAnimation = useScrollAnimation<HTMLDivElement>("left");
+  const rightAnimation = useScrollAnimation<HTMLDivElement>("right");
   return(
     <section className="bg-[#fbf9f8] h-auto mt-[80px] px-14 md:py-12 flex flex-col justify-center md:flex-row md:justify-between items-center md:gap-10 border-b border-[#dbdad9] ">
-      <div className="flex flex-1  rounded-lg items-center order-2 md:order-1 mt-10 p-4">
+      <div ref={leftAnimation} className="flex flex-1  rounded-lg items-center order-2 md:order-1 mt-10 p-4">
         <img src={section1img} alt="Section 1 img" className="flex rounded-md w-full h-full object-cover shadow-2xl mb-6"></img>
       </div>
 
-      <div className="flex-1 flex flex-col items-center text-center  order-1 md:order-2 mt-10 md:items-start md:text-left p-4">
+      <div ref={rightAnimation} className="flex-1 flex flex-col items-center text-center  order-1 md:order-2 mt-10 md:items-start md:text-left p-4">
         <p className="text-[#b35d52] text-xs mb-4">Architecture & Design</p>
         <h1 className="text-4xl md:text-6xl font-bold text-[#1a1a1a]">
           The Quiet Resurgence of Brutalism in Modern Interfaces
