@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 07/09/2026 - 13:24:32
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 07/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
