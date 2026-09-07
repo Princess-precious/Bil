@@ -12,10 +12,13 @@
 **/
 import homeimg2 from "../images/homeimg2.jpg";
 import homeimg3 from "../images/homeimg3.jpg";
+import { useScrollAnimation } from "../hooks/useScrollAnimation";
 
 function Section2() {
+  const bottomAnimation = useScrollAnimation("bottom");
+
   return(
-    <section className="bg-[#fbf9f8] h-auto  px-14  py-12 flex flex-col border-b border-[#dbdad9]">
+    <section ref={bottomAnimation} className="bg-[#fbf9f8] h-auto  px-14  py-12 flex flex-col border-b border-[#dbdad9]">
       <div className="flex flex-col items-center md:flex-row justify-between p-2 gap-2">
         <h1 className="text-2xl font-bold text-[#1a1a1a]">Trending Perspectives</h1>
         <button className="flex items-center text-xs p-2 hover:opacity-80 active:opacity-80">

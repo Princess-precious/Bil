@@ -10,11 +10,12 @@
     * - Author          : HP
     * - Modification    : 
 **/
-
+import { useScrollAnimation } from "../hooks/useScrollAnimation";
 
 function Hero() {
+  const topAnimation = useScrollAnimation<HTMLDivElement>("top")
   return(
-    <section className="flex flex-col md:flex-row mt-[80px] h-auto py-8 px-14  bg-[#fbf9f8] justify-between ">
+    <section ref={topAnimation} className="flex flex-col md:flex-row mt-[80px] h-auto py-8 px-14  bg-[#fbf9f8] justify-between ">
       <div className="flex flex-col flex-wrap  gap-4 items-center text-center md:text-start md:items-start">
         <h1 className="text-4xl text-[#1a1a1a] font-bold text-center">Good morning, Reader.</h1>
         <p className="text-sm text-[#1a1a1a]">

@@ -13,12 +13,13 @@
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import { useAuth } from "../useAuth";
 
 function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [showCategory, setShowCategory] = useState(false);
+  const { isSignedIn } = useAuth();
+
 
   return (
     <>
@@ -82,7 +83,7 @@ function Navbar() {
               <input
                 type="search"
                 placeholder="Search..."
-                className={`border-b border-black p-2 outline-none text-xs absolute right-10  ${showSearchBar ? "w-48 opacity-100" : "w-0 opacity-0"} `}
+                className="border-b border-black p-2 outline-none text-xs absolute right-10 animate-search"
               />
             )}
             <button
@@ -108,23 +109,26 @@ function Navbar() {
           </div>
 
           <div className=" hidden md:flex md:items-c">
-            <button className="text-sm p-2">
+            <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
               Add Story
-            </button>
+            </Link>
           </div>
-
-          <Link to="/signin" className=" md:flex md:items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          
+          {isSignedIn ? (
+            // Profile Icon
+            <Link to="/user-profile" className="flex md:items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </Link>
-
-          <div className=" hidden md:flex md:items-c">
-            <button className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
-              Sign In
-            </button>
-          </div>
+              </svg>
+            </Link>
+          ) : (
+            <div className=" hidden md:flex">
+              <Link to="/signin" className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
+                Sign In
+              </Link>
+            </div>
+          )}
 
           {/* Hamburger Button */}
           <button
@@ -188,13 +192,21 @@ function Navbar() {
             
           </div>
 
-          <button className="text-xs p-1">
-            Add Story
-          </button>
+          <div className="md:flex md:items-c">
+            <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
+              Add Story
+            </Link>
+          </div>
+
+          {!isSignedIn && (
+            <div className="flex">
+              <Link to="/signin" className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
+                Sign In
+              </Link>
+            </div>
+          )}
+
           
-          <button className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] w-full text-white text-xs p-1">
-            Sign In
-          </button>
 
         </div>
       }
