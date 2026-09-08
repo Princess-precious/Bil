@@ -121,7 +121,7 @@ export default function UserProfile() {
 
       <Navbar />
 
-      <main className="mx-auto w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
+      <main className="mx-auto w-full max-w-6xl my-12 flex-grow px-6 pb-32 pt-16 md:px-12">
         {/* ================= PROFILE HEADER ================= */}
 
         <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
@@ -137,7 +137,7 @@ export default function UserProfile() {
 
           {/* PROFILE INFORMATION */}
 
-          <div className="flex max-w-2xl flex-col gap-6">
+          <div className="flex max-w-2xl mb-6 flex-col gap-6">
             <div>
               <h1 className="mb-2 text-4xl font-bold text-gray-900 md:text-5xl">
                 {name}

@@ -28,14 +28,14 @@ function Content() {
         <div className="flex flex-col md:flex-row gap-4 mt-10">
           <div className="flex flex-col gap-4 order-2 md:order-1">
             <div className="flex flex-row gap-2 items-center">
-              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">ARCHITECTURE</p>
+              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1 font-sans-serif">ARCHITECTURE</p>
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By Elena Rostova</p>
             </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a]">
+            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
               The Brutalist Revival: Concrete Poetics in the Modern City
             </h1>
-            <p className="text-xs text-[#1a1a1a]">
+            <p className="text-xs text-[#1a1a1a] font-fira-sans">
               An exploration into why a new generation of architects is returning to the imposing, raw aesthetics of mid-century brutalism, finding beauty in utility and stark geometry.
             </p>
             
@@ -56,10 +56,10 @@ function Content() {
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By Marcus Throne</p>
             </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a]">
+            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
               Silicon Sentience: The Philosophy of Code
             </h1>
-            <p className="text-xs text-[#1a1a1a]">
+            <p className="text-xs text-[#1a1a1a] font-fira-sans">
               As machine learning models grow increasingly complex, technologists and ethicists grapple with the fuzzy boundaries between algorithmic processing and genuine cognition.
             </p>
             
@@ -80,10 +80,10 @@ function Content() {
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
             </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a]">
+            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
               The Death of the Flâneur in the Digital Age
             </h1>
-            <p className="text-xs text-[#1a1a1a]">
+            <p className="text-xs text-[#1a1a1a] font-fira-sans">
               How constant connectivity and algorithmic routing have eroded the art of aimless wandering in the modern metropolis.
             </p>
             
@@ -104,10 +104,10 @@ function Content() {
               <p className="font-bold text-[#1a1a1a]text-xs">.</p>
               <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
             </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a]">
+            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
               The Death of the Flâneur in the Digital Age
             </h1>
-            <p className="text-xs text-[#1a1a1a]">
+            <p className="text-xs text-[#1a1a1a] font-fira-sans">
               How constant connectivity and algorithmic routing have eroded the art of aimless wandering in the modern metropolis.
             </p>
             
@@ -137,17 +137,17 @@ function Content() {
       <div className="flex flex-1 p-5 flex-col items-center text-center md:text-start md:items-start md:text-center">
         <p className="text-[#b35d52] text-xs mb-5">FOR YOU</p>
 
-        <div className="flex flex-col gap-2 mb-5">
+        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
           <h1 className="font-bold text-sm">The Aesthetics of Silence in Cinema</h1>
           <p className=" text-xs">Film</p>
         </div>
 
-        <div className="flex flex-col gap-2 mb-5">
+        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
           <h1 className="font-bold text-sm">Sustainable Haute Couture: A Paradox?</h1>
           <p className=" text-xs">Fashion</p>
         </div>
 
-        <div className="flex flex-col gap-2 mb-5">
+        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
           <h1 className="font-bold text-sm">Gastronomy as Geopolitics</h1>
           <p className=" text-xs">Culture</p>
         </div>
