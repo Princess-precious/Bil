@@ -33,6 +33,7 @@ function App() {
                 <Route path="/new-story" element={<NewStory />} />
                 <Route path="/edit-story/:id" element={<EditStory />} />
                 <Route path="/user-profile" element={<UserProfile />} />
+                
             </Routes>
         </BrowserRouter>
 

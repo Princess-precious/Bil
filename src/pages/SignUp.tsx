@@ -80,14 +80,14 @@ export default function SignUp() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       {/* MAIN MODAL */}
-      <div className="flex h-[90vh] w-[50vw] max-w-5xl overflow-hidden rounded-lg bg-white">
+      <div className="flex h-[90vh] w-[95vw] max-w-5xl md:w-1/2 overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
           <div className="relative h-full overflow-hidden">
 
             <img
-              src="login.jpg"
+              src="signup.jpg"
               alt="Editorial"
               className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
             />
@@ -103,11 +103,11 @@ export default function SignUp() {
 
             {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl">
-                "Quiet luxury defined by rigorous minimalism."
+              <p className="max-w-md text-2xl text-italic">
+                "Every story begins with a single thought."
               </p>
 
-              <p className="mt-3 text-xs uppercase tracking-widest">
+              <p className="mt-3 text-xs uppercase tracking-widest">  
                 Editorial / Culture
               </p>
             </div>
@@ -116,16 +116,16 @@ export default function SignUp() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full items-center justify-center bg-white px-8 py-5 md:w-1/2">
+        <div className="flex w-full items-center justify-center bg-white px-8 py-5 md:w-1/2 font-fira-sans">
 
           <div className="w-full max-w-md">
 
             {/* HEADING */}
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold font-fira-sans text-gray-900">
               Create your account
             </h2>
 
-            <p className="mt-1 text-xs leading-5 text-gray-900">
+            <p className="mt-1 text-sm leading-5 text-gray-900">
               Join our community of curators and design enthusiasts.
             </p>
 
@@ -151,7 +151,7 @@ export default function SignUp() {
 
               {/* NAME */}
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-sm font-medium text-gray-900">
                   Name
                 </label>
 
@@ -160,13 +160,13 @@ export default function SignUp() {
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800 hover:placeholder:text-white"
                 />
               </div>
 
               {/* USERNAME */}
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-sm font-medium text-gray-900">
                   User Name
                 </label>
 
@@ -175,13 +175,13 @@ export default function SignUp() {
                   placeholder="Enter your user name"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800 hover:placeholder:text-white"
                 />
               </div>
 
               {/* EMAIL */}
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-sm font-medium text-gray-900">
                   Email Address
                 </label>
 
@@ -190,13 +190,13 @@ export default function SignUp() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-black"
+                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
                 />
               </div>
 
               {/* PASSWORD */}
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-900">
+                <label className="mb-1 block text-sm font-medium text-gray-900">
                   Password
                 </label>
 
@@ -206,7 +206,7 @@ export default function SignUp() {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 pr-20 text-sm outline-none focus:border-black"
+                    className="w-full border border-gray-700 bg-gray-50 px-4 py-2.5 pr-20 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
                   />
 
                   <button
@@ -223,7 +223,7 @@ export default function SignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full bg-black py-3 text-xs font-semibold uppercase  rounded-3xl tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? "Creating Account..." : "Sign Up"}
               </button>
@@ -231,12 +231,12 @@ export default function SignUp() {
             </form>
 
             {/* SIGN IN LINK */}
-            <p className="mt-2 text-center text-xs text-gray-900">
+            <p className="mt-2 text-center text-sm text-gray-900">
               Already have an account?{" "}
 
               <Link
                 to="/signin"
-                className="font-medium text-black underline"
+                className="font-medium text-black underline "
               >
                 Sign in
               </Link>
