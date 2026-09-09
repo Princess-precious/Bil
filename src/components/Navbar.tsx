@@ -20,9 +20,8 @@ type NavbarProps ={
 }
 
 function Navbar({className}:NavbarProps) {
-  const [showMenu, setShowMenu] = useState(false);
+  //const [showMenu, setShowMenu] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [showCategory, setShowCategory] = useState(false);
   const { isSignedIn } = useAuth();
   const location = useLocation();
   
@@ -40,58 +39,20 @@ function Navbar({className}:NavbarProps) {
             BIL
           </Link>
         </div>
+        
+
         {/* 2 */}
-        <div className="hidden  md:flex md:items-center md:gap-6 md:text-lg  md:absolute left-1/2 -translate-x-1/2">
-          <Link
-            to="/feed"
-            className="hover:underline active:underline hover:opacity-80 active:opacity-80"
-          >
-            Feed
-          </Link>
-          {/* CATEGORY */}
-          <div className="relative group">
-            <button
-            onClick={() => setShowCategory(!showCategory)}
-            className="flex items-center gap-1 hover:underline active:underline hover:opacity-80 active:opacity-80"
-            >
-              Category
-              <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#1a1a1a"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              >
-              <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-          
-            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
-              <Link to="" className="text-xs">Design</Link>
-              <Link to="" className="text-xs">Fashion</Link>
-              <Link to="" className="text-xs">Entertainment</Link>
-            </div>
-          </div>
-          
-          
-
-        </div>
-
-        {/* 3 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
 
           {/* Search */}
-          <div className="relative flex items-center gap-2">
+          {!isHome && (
+            <div className="relative flex items-center gap-2">
 
             {showSearchBar && (
               <input
                 type="search"
                 placeholder="Search..."
-                className="border-b border-black p-2 outline-none text-xs absolute right-10 animate-search"
+                className={`${isHome ? "border-white" : "border-black"} border rounded-2xl  p-2 outline-none text-xs absolute right-10 animate-search md:w-[700px]`}
               />
             )}
             <button
@@ -105,7 +66,7 @@ function Navbar({className}:NavbarProps) {
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#1a1a1a"
+                stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -115,12 +76,15 @@ function Navbar({className}:NavbarProps) {
               </svg>
             </button>
           </div>
+          )}
 
-          <div className=" hidden md:flex md:items-c">
-            <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
-              Add Story
-            </Link>
-          </div>
+          {!isHome && (
+            <div className="md:flex md:items-c">
+              <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
+                Add Story
+              </Link>
+            </div>
+          )}
           
           {isSignedIn ? (
             // Profile Icon
@@ -131,15 +95,15 @@ function Navbar({className}:NavbarProps) {
               </svg>
             </Link>
           ) : (
-            <div className=" hidden md:flex">
-              <Link to="/signin" className={`${isHome ? "bg-transparent" : "bg-[#1a1a1a]"} hover:opacity-80 active:opacity-80 text-sm px-3 py-1 text-white rounded-2xl text-center`}>
+            <div className="md:flex">
+              <Link to="/signin" className="text-white bg-black border border-white hover:opacity-80 active:opacity-80 text-sm px-3 py-1 rounded-2xl text-center">
                 Sign In
               </Link>
             </div>
           )}
 
           {/* Hamburger Button */}
-          <button
+          {/* <button
             type="button"
             className="md:hidden"
             onClick={() => setShowMenu(!showMenu)}
@@ -149,63 +113,28 @@ function Navbar({className}:NavbarProps) {
               height="24"
               viewBox="0 -960 960 960"
               width="24"
-              fill="#1a1a1a"
+              fill="currentColor"
             >
               <path d="M120-680v-80h720v80H120Zm0 480v-80h720v80H120Zm0-240v-80h720v80H120Z" />
             </svg>
-          </button>
+          </button> */}
 
         </div>
       </nav>
 
       
-      {showMenu && 
+      {/* {showMenu && 
         <div className="md:hidden bg-white flex flex-col items-center gap-4 p-4 fixed top-[80px] right-0 z-40">
 
-          <div className="flex flex-col items-center gap-6 text-sm text-black">
-            <Link
-              to="/feed"
-              className="hover:underline active:underline"
-            >
-              Feed
-            </Link>
-
-            {/* CATEGORY */}
-            <div className="relative group">
-              <button
-              onClick={() => setShowCategory(!showCategory)}
-              className="flex items-center gap-1 hover:underline active:underline   hover:opacity-80 active:opacity-80"
-              >
-                Category
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#1a1a1a"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                >
-                <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
           
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:flex flex-col bg-white items-center gap-4 p-4 z-40">
-                <Link to="" className="text-xs">Design</Link>
-                <Link to="" className="text-xs">Fashion</Link>
-                <Link to="" className="text-xs">Entertainment</Link>
-              </div>
-            </div>
-            
-          </div>
 
-          <div className="md:flex md:items-c">
-            <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
-              Add Story
-            </Link>
-          </div>
+          {!isHome && (
+            <div className="md:flex md:items-c">
+              <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
+                Add Story
+              </Link>
+            </div>
+          )}
 
           {!isSignedIn && (
             <div className="flex">
@@ -218,7 +147,7 @@ function Navbar({className}:NavbarProps) {
           
 
         </div>
-      }
+      } */}
     </>
   );
 }
