@@ -33,19 +33,15 @@ function Footer({className}: footerProps){
   const ishome = location.pathname === "/"
 
   return(
-    <section className={`${className}   py-4 px-12 flex flex-col gap-4 md:flex-row items-center justify-between h-auto text-center md:text-start ${ishome? "border-[#373737]" : "border-white"} border-t-1`}>
-      <div>
-        <h1 className="text-4xl font-bold ">BIL</h1>
-        <p className="mt-6 text-xs ">
+    <section className={`${className}   py-4 px-12 flex flex-row gap-4 items-center justify-between h-auto ${ishome? "border-[#373737]" : "border-white"} border-t`}>
+      <div className="flex flex-col">
+        <p className="text-[10px] md:text-xs">
           © 2026 BIL. All rights reserved. Clean and Panache.
         </p>
       </div>
-      <div className="flex flex-col md:flex-row gap-4">
-        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">ABOUT</Link>
-        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">PRIVACY</Link>
-        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">TERMS</Link>
-        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">CONTACT</Link>
-        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">NEWSLETTER</Link>
+      <div className="flex flex-row gap-4">
+        <Link to="" className=" text-[10px] md:text-xs underline  hover:opacity-80 active:opacity-80">ABOUT</Link>
+        <Link to="" className="text-[10px] md:text-xs underline  hover:opacity-80 active:opacity-80">PRIVACY</Link>
       </div>
     </section>
   );

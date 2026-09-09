@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 09/09/2026 - 14:29:55
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 09/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 
 import { useMemo, useState } from "react";
 
@@ -136,6 +148,7 @@ const topics = [
 ];
 
 export default function Feed() {
+  const [stories] = useState<Story[]>(initialStories);
   const [stories, ] = useState<Story[]>(initialStories);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
