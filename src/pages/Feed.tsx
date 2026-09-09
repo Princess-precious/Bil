@@ -11,7 +11,6 @@
     * - Modification    : 
 **/
 import Navbar from '../components/Navbar';
-import Hero from '../FeedPage/hero';
 import Content from '../FeedPage/content';
 import Footer from '../components/footer';
 
@@ -19,7 +18,7 @@ function Feed() {
   return(
     <>
         <Navbar/>
-        <Hero/>
+        
         <Content/>
         <Footer/>
     </>

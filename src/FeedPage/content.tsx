@@ -1,167 +1,533 @@
-/**
-    * @description      : 
-    * @author           : HP
-    * @group            : 
-    * @created          : 02/09/2026 - 15:31:04
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 02/09/2026
-    * - Author          : HP
-    * - Modification    : 
-**/
-import architectureimg from '../images/architectureimg.jpg';
-import technologyimg from '../images/technologyimg.jpg';
-import {useState} from "react"
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
+
+import { useMemo, useState } from "react";
+
+type Story = {
+  id: string;
+  category: string;
+  author: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  coverImage: string;
+  caption: string;
+};
+
+type ForYouStory = {
+  id: string;
+  type: string;
+  title: string;
+  category: string;
+};
+
+const initialStories: Story[] = [
+  {
+    id: "article-1",
+    category: "ARCHITECTURE",
+    author: "ELENA ROSTOVA",
+    title:
+      "The Brutalist Revival: Concrete Poetics in the Modern City",
+    excerpt:
+      "A meditation on the enduring language of brutalism, where raw concrete becomes a canvas for light, shadow, and human scale.",
+    date: "Oct 12",
+    coverImage: "/feedarchitecture.png",
+    caption: "Barbican Estate, London — Monochrome Study",
+  },
+  {
+    id: "article-2",
+    category: "TECHNOLOGY & MIND",
+    author: "MARCUS THRONE",
+    title: "Silicon Sentience: The Philosophy of Code",
+    excerpt:
+      "As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.",
+    date: "Oct 10",
+    coverImage: "/feedtechnology.png",
+    caption: "Synthesized Neural Topology — Vector Render",
+  },
+  {
+    id: "article-3",
+    category: "CULTURE & CINEMA",
+    author: "JULIAN MORAND",
+    title:
+      "The Aesthetics of Silence: Why Modern Cinema Craves Stillness",
+    excerpt:
+      "In an age of constant noise, filmmakers are rediscovering the power of negative space, stillness, and silence.",
+    date: "Oct 08",
+    coverImage: "/feedcinema.png",
+    caption: "Still from Tarkovsky Retrospective",
+  },
+  {
+    id: "article-4",
+    category: "DESIGN",
+    author: "SOFIA RENARD",
+    title: "The Quiet Geometry of Contemporary Design",
+    excerpt:
+      "Exploring how restraint, proportion, and negative space are shaping a new visual language in modern design.",
+    date: "Oct 06",
+    coverImage: "/feedarchitecture.png",
+    caption: "Study in Contemporary Form",
+  },
+  {
+    id: "article-5",
+    category: "PHILOSOPHY",
+    author: "ADRIAN VALE",
+    title: "The Architecture of Solitude",
+    excerpt:
+      "Why certain spaces make us feel alone, reflective, and strangely connected to ourselves.",
+    date: "Oct 04",
+    coverImage: "/feedcinema.png",
+    caption: "Interior Study — Quiet Spaces",
+  },
+  {
+    id: "article-6",
+    category: "ARTIFICIAL INTELLIGENCE",
+    author: "NORA KLEIN",
+    title: "When Machines Become Creative Partners",
+    excerpt:
+      "The relationship between human imagination and artificial intelligence is changing the way we create.",
+    date: "Oct 02",
+    coverImage: "/feedtechnology.png",
+    caption: "Synthetic Intelligence — Visual Study",
+  },
+];
+
+const forYouStories: ForYouStory[] = [
+  {
+    id: "article-3",
+    type: "ESSAY",
+    title: "The Aesthetics of Silence in Cinema",
+    category: "Film",
+  },
+  {
+    id: "article-4",
+    type: "CRITIQUE",
+    title: "Sustainable Haute Couture: A Paradox?",
+    category: "Fashion",
+  },
+  {
+    id: "article-5",
+    type: "DISPATCH",
+    title: "Gastronomy as Geopolitics",
+    category: "Culture",
+  },
+  {
+    id: "article-5",
+    type: "DIALOGUE",
+    title: "The Architecture of Solitude",
+    category: "Philosophy",
+  },
+];
+
+const topics = [
+  { name: "Architecture", count: 18 },
+  { name: "Design", count: 24 },
+  { name: "Economics", count: 12 },
+  { name: "Philosophy", count: 31 },
+  { name: "Artificial Intelligence", count: 16 },
+  { name: "Cinema", count: 9 },
+  { name: "Visual Culture", count: 22 },
+  { name: "Literature", count: 15 },
+  { name: "Photography", count: 19 },
+  { name: "Technology", count: 27 },
+  { name: "Fashion", count: 14 },
+  { name: "Music", count: 11 },
+  { name: "Politics", count: 20 },
+  { name: "Science", count: 17 },
+  { name: "Culture", count: 25 },
+];
+
+export default function Feed() {
+  const [stories, setStories] = useState<Story[]>(initialStories);
+  const [showAllTopics, setShowAllTopics] = useState(false);
+
+  const [selectedTopic, setSelectedTopic] = useState("All");
+
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  // --------------------------------------------------
+  // FILTER STORIES BY TOPIC
+  // --------------------------------------------------
+
+  const filteredStories = useMemo(() => {
+    if (selectedTopic === "All") {
+      return stories;
+    }
+
+    return stories.filter((story) => {
+      const category = story.category.toLowerCase();
+      const topic = selectedTopic.toLowerCase();
+
+      if (topic === "cinema") {
+        return category.includes("cinema");
+      }
+
+      if (topic === "artificial intelligence") {
+        return category.includes("artificial intelligence");
+      }
+
+      return category.includes(topic);
+    });
+  }, [stories, selectedTopic]);
+
+  const visibleStories = filteredStories.slice(0, visibleCount);
+
+  // --------------------------------------------------
+  // SHARE FUNCTION
+  // --------------------------------------------------
+
+  const handleShare = async (story: Story) => {
+    const storyUrl =
+      window.location.origin +
+      window.location.pathname +
+      `#${story.id}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: story.title,
+          text: story.excerpt,
+          url: storyUrl,
+        });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(storyUrl);
+
+        alert("Story link copied to clipboard!");
+      } else {
+        alert("Unable to share this story.");
+      }
+    } catch (error) {
+      // User cancelled the share menu.
+      console.log("Share cancelled:", error);
+    }
+  };
+
+  // --------------------------------------------------
+  // READ NEXT / LOAD MORE
+  // --------------------------------------------------
+
+  const handleReadNext = () => {
+    setVisibleCount((currentCount) => {
+      const nextCount = currentCount + 3;
+
+      if (nextCount >= filteredStories.length) {
+        return filteredStories.length;
+      }
+
+      return nextCount;
+    });
+  };
+
+  // --------------------------------------------------
+  // TOPIC FILTER
+  // --------------------------------------------------
+
+  const handleTopicClick = (topic: string) => {
+    setSelectedTopic(topic);
+    setVisibleCount(3);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // --------------------------------------------------
+  // FOR YOU CLICK
+  // --------------------------------------------------
+
+  const handleForYouClick = (storyId: string) => {
+    const element = document.getElementById(storyId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
+  // --------------------------------------------------
+  // RESET TOPIC
+  // --------------------------------------------------
+
+  const showAllStories = () => {
+    setSelectedTopic("All");
+    setVisibleCount(3);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FBF9F8] text-[#1A1A1A]">
+      <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          {/* =========================================
+              MAIN FEED
+          ========================================= */}
+
+          <section className="space-y-16 lg:col-span-8">
+            {/* ALL STORIES BUTTON */}
+
+            {selectedTopic !== "All" && (
+              <div className="flex items-center justify-between border-b border-[#ECE6E0] pb-4">
+                <div className="font-hanken text-xs uppercase tracking-[0.2em] text-[#8A8581]">
+                  Filtered by:{" "}
+                  <span className="text-[#B35D52]">
+                    {selectedTopic}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={showAllStories}
+                  className="font-hanken text-xs uppercase tracking-[0.15em] text-[#5C5855] transition-colors hover:text-[#B35D52]"
+                >
+                  View all
+                </button>
+              </div>
+            )}
+
+            {/* =====================================
+                STORIES
+            ===================================== */}
+
+            {visibleStories.length > 0 ? (
+              visibleStories.map((story) => (
+                <article
+                  id={story.id}
+                  key={story.id}
+                  className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
+                >
+                  {/* TEXT */}
+
+                  <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
+                    <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
+                      <span className="text-[#B35D52]">
+                        {story.category}
+                      </span>
+
+                      <span className="text-[#8A8581]">
+                        /
+                      </span>
+
+                      <span className="text-[#5C5855]">
+                        {story.author}
+                      </span>
+                    </div>
+
+                    <h2 className="font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] md:text-4xl">
+                      {story.title}
+                    </h2>
+
+                    <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
+                      {story.excerpt}
+                    </p>
+
+                    <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+                      <span>{story.date}</span>
+
+                      <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+
+                      <button
+                        type="button"
+                        onClick={() => handleShare(story)}
+                        className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
+                      >
+                        Share
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* IMAGE */}
+
+                  <div className="order-first md:order-last md:col-span-5">
+                    <figure>
+                      <div className="group/img relative aspect-[4/3] overflow-hidden bg-[#F4F0EB]">
+                        <img
+                          src={story.coverImage}
+                          alt={story.title}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                        />
+
+                        <div className="pointer-events-none absolute inset-0 bg-[#1A1A1A]/5" />
+                      </div>
+
+                      <figcaption className="mt-2 text-right font-playfair text-[11px] italic text-[#8A8581]">
+                        {story.caption}
+                      </figcaption>
+                    </figure>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="border-y border-[#ECE6E0] py-20 text-center">
+                <h2 className="font-playfair text-2xl">
+                  No stories found
+                </h2>
+
+                <p className="mt-3 font-hanken text-sm text-[#8A8581]">
+                  There are no stories available for this topic yet.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={showAllStories}
+                  className="mt-6 border border-[#1A1A1A] px-6 py-3 font-hanken text-xs uppercase tracking-[0.15em] transition-colors hover:bg-[#1A1A1A] hover:text-white"
+                >
+                  View all stories
+                </button>
+              </div>
+            )}
+
+            {/* =====================================
+                READ NEXT
+            ===================================== */}
+
+            {visibleCount < filteredStories.length && (
+              <div className="border-t border-[#ECE6E0] pt-10">
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={handleReadNext}
+                    className="flex items-center gap-3 border border-[#1A1A1A] px-8 py-3 font-hanken text-xs font-medium uppercase tracking-[0.18em] transition-all hover:bg-[#1A1A1A] hover:text-white"
+                  >
+                    Read Next Folio
+
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path d="M12 5v14" />
+                      <path d="m19 12-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ALL STORIES MESSAGE */}
+
+            {visibleCount >= filteredStories.length &&
+              filteredStories.length > 3 && (
+                <p className="text-center font-hanken text-xs uppercase tracking-[0.15em] text-[#8A8581]">
+                  You have reached the end of the folio.
+                </p>
+              )}
+          </section>
+
+          {/* =========================================
+              SIDEBAR
+          ========================================= */}
+
+          <aside className="space-y-12 lg:col-span-4 lg:border-l lg:border-[#ECE6E0] lg:pl-10">
+            {/* =====================================
+                FOR YOU
+            ===================================== */}
+
+            <section>
+              <div className="mb-6 flex items-baseline justify-between">
+                <h3 className="font-playfair text-2xl font-semibold">
+                  <span className="text-[#B35D52]">
+                    For You
+                  </span>
+                </h3>
+
+                <span className="font-hanken text-[10px] uppercase tracking-[0.18em] text-[#8A8581]">
+                  Curated
+                </span>
+              </div>
+
+              <div className="space-y-6">
+                {forYouStories.map((item, index) => (
+                  <button
+                    key={`${item.id}-${index}`}
+                    type="button"
+                    onClick={() => handleForYouClick(item.id)}
+                    className="group block w-full text-left"
+                  >
+                    <div className="flex gap-4">
+                      <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+
+                      <div>
+                        <div className="mb-1 font-hanken text-[9px] uppercase tracking-[0.16em] text-[#B35D52]">
+                          {item.type}
+                        </div>
+
+                        <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
+                          {item.title}
+                        </h4>
+
+                        <p className="mt-1 font-hanken text-xs text-[#8A8581]">
+                          {item.category}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
 
 
-function Content() {
-  const [showMore, setShowMore] = useState(false)
-  const bottomAnimation = useScrollAnimation<HTMLDivElement>("bottom");
-  return(
-    <section ref={bottomAnimation} className="flex flex-2 flex-col md:flex-row h-auto py-8 px-14  bg-[#fbf9f8] justify-between ">
-      {/* FIRST FRACTION */}
-      <div className="flex flex-2 flex-col flex-wrap gap-6 items-center md:items-start border-b border-[#dbdad9] pb-5 md:border-b-0 md:border-r md:border-[#dbdad9]  md:pr-4">
-        
-        {/* first section of the first fraction */}
-        <div className="flex flex-col md:flex-row gap-4 mt-10">
-          <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 items-center">
-              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1 font-sans-serif">ARCHITECTURE</p>
-              <p className="font-bold text-[#1a1a1a]text-xs">.</p>
-              <p className="text-xs text-[#1a1a1a]p-1">By Elena Rostova</p>
-            </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
-              The Brutalist Revival: Concrete Poetics in the Modern City
-            </h1>
-            <p className="text-xs text-[#1a1a1a] font-fira-sans">
-              An exploration into why a new generation of architects is returning to the imposing, raw aesthetics of mid-century brutalism, finding beauty in utility and stark geometry.
-            </p>
+
+           {/* =====================================
+                      EXPLORE TOPICS
+                ===================================== */}
+
+             <section>
+                 <div className="mb-4">
+                  <h3 className="font-playfair text-2xl font-semibold">
+                  Categories
+                  </h3>
+
+                 <p className="mt-3 font-hanken text-sm leading-6 text-[#8A8581]">
+                    Filter our continuous catalog through core
+                    disciplines and philosophical threads:
+                 </p>
+               </div>
+
+               <div className="space-y-2">
+                    {(showAllTopics ? topics : topics.slice(0, 7)).map((topic) => {
+                     const isActive = selectedTopic === topic.name;
+
+                     return (
+                        <button
+                           key={topic.name}
+                             type="button"
+                               onClick={() => handleTopicClick(topic.name)}
+                               className={`flex w-full items-center justify-between border-b border-[#ECE6E0] py-3 text-left font-hanken text-sm transition-colors ${
+                               isActive
+                              ? "text-[#B35D52]"
+                            : "text-[#5C5855] hover:text-[#B35D52]"
+                      }`}
+                     >
+                    <span>{topic.name}</span>
+
+                      <span className="text-xs text-[#8A8581]">
+                         {topic.count}
+                      </span>
+                    </button>
+                       );
+                      })}
+                  </div>
+
+                  <button
+                    type="button"
+                     onClick={() => setShowAllTopics((current) => !current)}
+                     className="mt-6 font-hanken text-xs uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
+                    >
+                     {showAllTopics ? "Show less ↑" : "View full index →"}
+                  </button>
+               </section>
+                
+                      
+
             
-            <p className="text-xs text-[#1a1a1a]"> Oct 12</p>
-            
-            
-          </div>
-          <div className="order-1 md:order-2 mb-4">
-             <img src={architectureimg} alt="Loading..." className="" /> 
-          </div>
+          </aside>
         </div>
-
-        {/* second section of the first fraction */}
-        <div className="flex flex-col md:flex-row gap-4 mt-10">
-          <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 items-center">
-              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">TeECHNOLOGY</p>
-              <p className="font-bold text-[#1a1a1a]text-xs">.</p>
-              <p className="text-xs text-[#1a1a1a]p-1">By Marcus Throne</p>
-            </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
-              Silicon Sentience: The Philosophy of Code
-            </h1>
-            <p className="text-xs text-[#1a1a1a] font-fira-sans">
-              As machine learning models grow increasingly complex, technologists and ethicists grapple with the fuzzy boundaries between algorithmic processing and genuine cognition.
-            </p>
-            
-            <p className="text-xs text-[#1a1a1a]"> Oct 10</p>
-            
-            
-          </div>
-          <div className="order-1 md:order-2 mb-4">
-             <img src={technologyimg} alt="Loading..." className="" /> 
-          </div>
-        </div>
-
-        {/* third section of the first fraction */}
-        <div className="flex flex-col md:flex-row gap-4 mt-10">
-          <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 items-center">
-              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">CULTURE</p>
-              <p className="font-bold text-[#1a1a1a]text-xs">.</p>
-              <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
-            </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
-              The Death of the Flâneur in the Digital Age
-            </h1>
-            <p className="text-xs text-[#1a1a1a] font-fira-sans">
-              How constant connectivity and algorithmic routing have eroded the art of aimless wandering in the modern metropolis.
-            </p>
-            
-            <p className="text-xs text-[#1a1a1a]"> Oct 8</p>
-            
-            
-          </div>
-          <div className="order-1 md:order-2 mb-4">
-             <img src={technologyimg} alt="Loading..." className="" /> 
-          </div>
-        </div>
-        {/* MORE ARTICLES */}
-        {showMore && (
-           <div className="flex flex-col md:flex-row gap-4 mt-10">
-          <div className="flex flex-col gap-4 order-2 md:order-1">
-            <div className="flex flex-row gap-2 items-center">
-              <p className="text-[10px] font-bold text-[#1a1a1a] bg-[#f5f3f3] p-1">CULTURE</p>
-              <p className="font-bold text-[#1a1a1a]text-xs">.</p>
-              <p className="text-xs text-[#1a1a1a]p-1">By  Sarah Jenkins </p>
-            </div>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1a1a1a] font-fira-sans">
-              The Death of the Flâneur in the Digital Age
-            </h1>
-            <p className="text-xs text-[#1a1a1a] font-fira-sans">
-              How constant connectivity and algorithmic routing have eroded the art of aimless wandering in the modern metropolis.
-            </p>
-            
-            <p className="text-xs text-[#1a1a1a]"> Oct 8</p>
-            
-            
-          </div>
-          <div className="order-1 md:order-2 mb-4">
-             <img src={technologyimg} alt="Loading..." className="" /> 
-          </div>
-        </div>   
-        )}
-
-        {/* View More */}
-        <div className="flex flex-row gap-4">
-          <button onClick={() => setShowMore(!showMore)} className= " flex gap-1 text-[#1a1a1a] underline text-xs hover:opacity-80 active:opacity-80 p-2">
-            {showMore ? "View Less" : "View More"}
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* SECOND FRACTION(FOR YOU) */}
-      <div className="flex flex-1 p-5 flex-col items-center text-center md:text-start md:items-start md:text-center">
-        <p className="text-[#b35d52] text-xs mb-5">FOR YOU</p>
-
-        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
-          <h1 className="font-bold text-sm">The Aesthetics of Silence in Cinema</h1>
-          <p className=" text-xs">Film</p>
-        </div>
-
-        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
-          <h1 className="font-bold text-sm">Sustainable Haute Couture: A Paradox?</h1>
-          <p className=" text-xs">Fashion</p>
-        </div>
-
-        <div className="flex flex-col gap-2 mb-5 font-fira-sans">
-          <h1 className="font-bold text-sm">Gastronomy as Geopolitics</h1>
-          <p className=" text-xs">Culture</p>
-        </div>
-
-        <h1 className="text-xs mt-5 mb-5">EXPLORE TOPICS</h1>
-        <div className="flex flex-row gap-2">
-          <button className="p-1 border border-[#dbdad9] text-xs hover:bg-black hover:text-white active:opacity-80">Design</button>
-          <button className="p-1 border border-[#dbdad9] text-xs hover:bg-black hover:text-white active:opacity-80">Economics</button>
-          <button className="p-1 border border-[#dbdad9] text-xs hover:bg-black hover:text-white active:opacity-80">Philosophy</button>
-          <button className="p-1 border border-[#dbdad9] text-xs hover:bg-black hover:text-white active:opacity-80">Click me</button>
-        </div>
-      </div>
-    </section>
-    
+      </main>
+    </div>
   );
 }
-export default Content;
