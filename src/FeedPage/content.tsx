@@ -136,7 +136,7 @@ const topics = [
 ];
 
 export default function Feed() {
-  const [stories, setStories] = useState<Story[]>(initialStories);
+  const [stories, ] = useState<Story[]>(initialStories);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -452,9 +452,7 @@ export default function Feed() {
                       </span>
 
                       <div>
-                        <div className="mb-1 font-hanken text-[9px] uppercase tracking-[0.16em] text-[#B35D52]">
-                          {item.type}
-                        </div>
+                        
 
                         <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
                           {item.title}
