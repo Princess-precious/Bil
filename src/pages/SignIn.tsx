@@ -108,11 +108,11 @@ export default function SignIn() {
 
             {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl text-italic">
+              <p className="max-w-md text-2xl text-italic px-4">
                 "Return to your sanctuary of thought."
               </p>
 
-              <p className="mt-3 text-xs uppercase tracking-widest">
+              <p className="mt-3 text-xs uppercase px-4 tracking-widest">
                 Editorial / Culture
               </p>
             </div>
@@ -126,8 +126,8 @@ export default function SignIn() {
           <div className="w-full max-w-md">
 
             {/* HEADING */}
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Welcome back!
+            <h2 className="text-2xl font-semibold  text-center text-gray-900">
+              Login!
             </h2>
 
             {/* <p className="mt-1 text-sm leading-5 text-gray-900">
