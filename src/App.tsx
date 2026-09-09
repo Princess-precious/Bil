@@ -19,7 +19,7 @@ import SignIn from './pages/SignIn';
 import NewStory from './pages/NewStory';
 import UserProfile from './pages/UserProfile';
 import EditStory from './pages/EditStory';
-import Feeeed from './pages/Feeeed';
+
 
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
                 <Route path="/new-story" element={<NewStory />} />
                 <Route path="/edit-story/:id" element={<EditStory />} />
                 <Route path="/user-profile" element={<UserProfile />} />
-                <Route path="/feeeed" element={<Feeeed />}/>
+            
             </Routes>
         </BrowserRouter>
 
