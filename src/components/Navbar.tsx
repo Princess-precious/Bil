@@ -11,31 +11,37 @@
     * - Modification    : 
 **/
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../useAuth";
 
-function Navbar() {
+type NavbarProps ={
+ className?: string;
+}
+
+function Navbar({className}:NavbarProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const { isSignedIn } = useAuth();
-
+  const location = useLocation();
+  
+  const isHome = location.pathname === "/"
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-4 md:px-14 flex items-center justify-between h-[80px] border-b border-[#dbdad9] z-50">
+      <nav className={`${className} fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-4 md:px-14 flex items-center justify-between h-[80px]  z-50`}>
         {/* 1 */}
         <div className="flex items-center gap-2">
           <Link
             to="/"
-            className="text-[#1a1a1a] text-5xl font-bold"
+            className=" text-5xl font-bold"
           >
             BIL
           </Link>
         </div>
         {/* 2 */}
-        <div className="hidden  md:flex md:items-center md:gap-6 md:text-lg text-[#1a1a1a] md:absolute left-1/2 -translate-x-1/2">
+        <div className="hidden  md:flex md:items-center md:gap-6 md:text-lg  md:absolute left-1/2 -translate-x-1/2">
           <Link
             to="/feed"
             className="hover:underline active:underline hover:opacity-80 active:opacity-80"
@@ -126,7 +132,7 @@ function Navbar() {
             </Link>
           ) : (
             <div className=" hidden md:flex">
-              <Link to="/signin" className="hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
+              <Link to="/signin" className={`${isHome ? "bg-transparent" : "bg-[#1a1a1a]"} hover:opacity-80 active:opacity-80 text-sm px-3 py-1 text-white rounded-2xl text-center`}>
                 Sign In
               </Link>
             </div>
