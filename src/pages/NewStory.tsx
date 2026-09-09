@@ -65,7 +65,7 @@ export default function NewStory() {
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
 
-    let requestMessage = aiPrompt;
+    let requestMessage = "";
 
     if (aiAction !== null) {
       const storyText = quillRef.current?.getText().trim() || "";
@@ -85,13 +85,27 @@ export default function NewStory() {
       };
 
       requestMessage = `
-${instructions[aiAction]}
+  ${instructions[aiAction]}
 
-Story title: ${title || "Untitled"}
+ Story title: ${title || "Untitled"}
 
-Story:
-${storyText}
+  Story:
+  ${storyText}
       `.trim();
+    } else {
+      const storyText  =quillRef.current?.getText().trim()  || "";
+
+  requestMessage = `
+  User instruction:
+  ${aiPrompt}
+
+   Story title: ${title || "Untitled"}
+
+   Story:
+   ${storyText}
+   `.trim();
+
+
     }
 
     setAiLoading(true);
@@ -198,7 +212,7 @@ ${storyText}
       <main className="relative mx-auto w-full max-w-6xl px-6 py-24 md:px-12 md:py-32">
         <Navbar />
 
-        <header className="mb-6 flex items-center justify-between">
+        <header className="mb-6 flex items-center justify-between ">
           <h1 className="text-2xl font-bold text-gray-900 md:text-5xl">
             New Story
           </h1>
@@ -244,6 +258,38 @@ ${storyText}
 
           {/* SIDEBAR */}
           <aside className="space-y-8 md:col-span-4">
+                <div>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Category
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full border-b border-gray-300 bg-transparent py-2.5 text-sm text-gray-800 outline-none focus:border-black"
+              >
+                <option value="" disabled hidden>Select Category</option>
+                <option value="technology">Technology</option>
+                <option value="science">Science</option>
+                <option value="art">Art</option>
+                <option value="culture">Culture</option>
+              </select>
+            </div>
+           <div>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                Cover Image
+              </label>
+              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
+                {preview ? (
+                  <img src={preview} alt="Cover preview" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-sm text-gray-400 group-hover:text-black">
+                    + Upload Cover Image
+                  </span>
+                )}
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              </label>
+            </div>
+
             <div className="flex flex-col gap-3 border border-gray-200 bg-white p-6 shadow-sm">
               <button
                 type="button"
@@ -262,38 +308,9 @@ ${storyText}
               </button>
             </div>
 
-            <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full border-b border-gray-300 bg-transparent py-2.5 text-sm text-gray-800 outline-none focus:border-black"
-              >
-                <option value="" disabled hidden>Select Category</option>
-                <option value="technology">Technology</option>
-                <option value="science">Science</option>
-                <option value="art">Art</option>
-                <option value="culture">Culture</option>
-              </select>
-            </div>
+            
 
-            <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Cover Image
-              </label>
-              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
-                {preview ? (
-                  <img src={preview} alt="Cover preview" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-sm text-gray-400 group-hover:text-black">
-                    + Upload Cover Image
-                  </span>
-                )}
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-              </label>
-            </div>
+           
           </aside>
         </form>
 
