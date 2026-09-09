@@ -12,6 +12,7 @@
 **/
 
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Story = {
   id: string;
@@ -148,7 +149,9 @@ const topics = [
 ];
 
 export default function Feed() {
-  const [stories] = useState<Story[]>(initialStories);
+
+   const navigate = useNavigate();
+
   const [stories, ] = useState<Story[]>(initialStories);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
@@ -213,25 +216,7 @@ export default function Feed() {
     }
   };
 
-  // --------------------------------------------------
-  // READ NEXT / LOAD MORE
-  // --------------------------------------------------
-
-  const handleReadNext = () => {
-    setVisibleCount((currentCount) => {
-      const nextCount = currentCount + 3;
-
-      if (nextCount >= filteredStories.length) {
-        return filteredStories.length;
-      }
-
-      return nextCount;
-    });
-  };
-
-  // --------------------------------------------------
-  // TOPIC FILTER
-  // --------------------------------------------------
+  
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -388,47 +373,10 @@ export default function Feed() {
                 </button>
               </div>
             )}
-
-            {/* =====================================
-                READ NEXT
-            ===================================== */}
-
-            {visibleCount < filteredStories.length && (
-              <div className="border-t border-[#ECE6E0] pt-10">
-                <div className="flex justify-center">
-                  <button
-                    type="button"
-                    onClick={handleReadNext}
-                    className="flex items-center gap-3 border border-[#1A1A1A] px-8 py-3 font-hanken text-xs font-medium uppercase tracking-[0.18em] transition-all hover:bg-[#1A1A1A] hover:text-white"
-                  >
-                    Read Next Folio
-
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <path d="M12 5v14" />
-                      <path d="m19 12-7 7-7-7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ALL STORIES MESSAGE */}
-
-            {visibleCount >= filteredStories.length &&
-              filteredStories.length > 3 && (
-                <p className="text-center font-hanken text-xs uppercase tracking-[0.15em] text-[#8A8581]">
-                  You have reached the end of the folio.
-                </p>
-              )}
           </section>
 
+           
+                 
           {/* =========================================
               SIDEBAR
           ========================================= */}
@@ -489,6 +437,24 @@ export default function Feed() {
 
              <section>
                  <div className="mb-4">
+
+                  <div className="mb-5 flex items-center justify-end">
+               <button
+                  type="button"
+                   onClick={() => navigate("/new-story")}
+                   className="group flex  fixed items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
+                    aria-label="Add Story"
+                    >
+               <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 group-hover:max-w-20 group-hover:opacity-100">
+                    Add Story
+                </span>
+
+               <span className="text-lg transition-transform duration-200 group-hover:translate-x-1">
+                 →
+                 </span>
+               </button>
+         </div>
+
                   <h3 className="font-playfair text-2xl font-semibold">
                   Categories
                   </h3>
