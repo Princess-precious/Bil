@@ -11,17 +11,21 @@
     * - Modification    : 
 **/
 import Navbar from '../components/Navbar';
-import Hero from '../HomePage/Hero';
-import Trending from '../HomePage/Trending';
+import Carousel from '../components/Carousel';
 import Footer from '../components/footer';
 
 function Home() {
   return(
     <>
-      <Navbar/>
-      <Hero/>
-      <Trending/>
-      <Footer/>
+      <Navbar className="bg-transparent text-white! border-b border-[#373737]"/>
+    
+      <Carousel/>
+      
+      
+      <div className="absolute bottom-0 left-0 w-full z-20">
+        <Footer className="border-b border-[#373737] bg-transparent text-white"/>
+      </div>
+       
     </> 
   );
 }

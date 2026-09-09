@@ -22,23 +22,30 @@
     * - Author          : HP
     * - Modification    : 
 **/
-import { Link } from "react-router-dom";
+import {useLocation, Link } from "react-router-dom";
 
-function Footer(){
+type footerProps ={
+  className?:string;
+}
+
+function Footer({className}: footerProps){
+  const location = useLocation()
+  const ishome = location.pathname === "/"
+
   return(
-    <section className="bg-[#efeded] py-4 px-12 flex flex-col gap-4 md:flex-row items-center justify-between h-auto text-center md:text-start border-t-1 border-white">
+    <section className={`${className}   py-4 px-12 flex flex-col gap-4 md:flex-row items-center justify-between h-auto text-center md:text-start ${ishome? "border-[#373737]" : "border-white"} border-t-1`}>
       <div>
-        <h1 className="text-4xl font-bold text-[#1a1a1a]">BIL</h1>
-        <p className="mt-6 text-xs text-[#1a1a1a]">
+        <h1 className="text-4xl font-bold ">BIL</h1>
+        <p className="mt-6 text-xs ">
           © 2026 BIL. All rights reserved. Clean and Panache.
         </p>
       </div>
       <div className="flex flex-col md:flex-row gap-4">
-        <Link to="" className="text-xs underline text-[#1a1a1a] hover:opacity-80 active:opacity-80">ABOUT</Link>
-        <Link to="" className="text-xs underline text-[#1a1a1a] hover:opacity-80 active:opacity-80">PRIVACY</Link>
-        <Link to="" className="text-xs underline text-[#1a1a1a] hover:opacity-80 active:opacity-80">TERMS</Link>
-        <Link to="" className="text-xs underline text-[#1a1a1a] hover:opacity-80 active:opacity-80">CONTACT</Link>
-        <Link to="" className="text-xs underline text-[#1a1a1a] hover:opacity-80 active:opacity-80">NEWSLETTER</Link>
+        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">ABOUT</Link>
+        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">PRIVACY</Link>
+        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">TERMS</Link>
+        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">CONTACT</Link>
+        <Link to="" className="text-xs underline  hover:opacity-80 active:opacity-80">NEWSLETTER</Link>
       </div>
     </section>
   );
