@@ -424,25 +424,8 @@ ${storyText}
 
           {/* SIDEBAR */}
           <aside className="space-y-8 md:col-span-4">
-            <div className="flex flex-col gap-3 border border-gray-200 bg-white p-6 shadow-sm">
-              <button
-                type="button"
-                onClick={handleSaveChanges}
-                className="w-full bg-black py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800"
-              >
-                Save Changes
-              </button>
 
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="w-full border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-widest text-black transition hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-            </div>
-
-            <div>
+              <div>
               <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Category
               </label>
@@ -462,12 +445,13 @@ ${storyText}
               </select>
             </div>
 
+
             <div>
               <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Cover Image
               </label>
 
-              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
+               <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
                 {preview ? (
                   <img
                     src={preview}
@@ -480,7 +464,7 @@ ${storyText}
                   </span>
                 )}
 
-                <input
+                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
@@ -492,6 +476,26 @@ ${storyText}
                 Click the image to choose a new cover image.
               </p>
             </div>
+
+            <div className="flex flex-col gap-3 border border-gray-200 bg-white p-6 shadow-sm">
+              <button
+                type="button"
+                onClick={handleSaveChanges}
+                className="w-full bg-black py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800"
+              >
+                Save Changes
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="w-full border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-widest text-black transition hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+
+    
           </aside>
         </form>
 
