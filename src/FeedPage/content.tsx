@@ -149,7 +149,6 @@ const topics = [
 
 export default function Feed() {
   const [stories] = useState<Story[]>(initialStories);
-  const [stories, ] = useState<Story[]>(initialStories);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState("All");

@@ -32,7 +32,7 @@ function Carousel(){
   return(
     <div  className="relative h-screen overflow-hidden">
 
-      <div className="flex h-full transition-transform duration-1000 ease-in-out" style={{transform: `translateX(-${currentSlide * 100}%)`,}} >
+      <div className="flex h-full transition-transform duration-3000 ease-in-out" style={{transform: `translateX(-${currentSlide * 100}%)`,}} >
         <section className="relative h-screen min-w-full bg-cover bg-center" style={{ backgroundImage: `url(${woman})` }}>
           <div className="absolute inset-0 bg-black/50"></div>
         
