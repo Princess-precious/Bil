@@ -103,11 +103,11 @@ export default function SignUp() {
 
             {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl text-italic">
-                "Every story begins with a single thought."
+              <p className="max-w-md text-2xl text-italic px-2">
+                "Every story begins <br></br> with a single thought."
               </p>
 
-              <p className="mt-3 text-xs uppercase tracking-widest">  
+              <p className="mt-3 text-xs  px-2 uppercase tracking-widest">  
                 Editorial / Culture
               </p>
             </div>
@@ -116,7 +116,13 @@ export default function SignUp() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full items-center justify-center bg-white px-8 py-5 md:w-1/2 font-fira-sans">
+        <div className="flex w-full px-10 items-center justify-center bg-white  py-8 md:w-1/2 font-fira-sans">
+               
+               <div className="absolute left-12 top-20 md:hidden ">
+               <h1 className="text-2xl font-bold text-black">
+                 BIL
+                </h1>
+               </div>
 
           <div className="w-full max-w-md">
 

@@ -15,11 +15,23 @@ import section1img from "../images/section1img.jpg"
 import firstcomment from "../images/firstcomment.jpg"
 import Footer from "../components/footer";
 
+
+
+
 function DemoArticle(){
   return(
     <>
     <Navbar/>
     <div className="flex flex-col items-center">
+     
+           <div className="left-12 top-24">
+             <span>
+              
+            </span>
+
+          </div>
+
+
 
       {/* SECTION 1 */}
       <section className="flex items-center justify-center bg-[#fbf9f8] mt-[80px] py-8 px-14 md:px-90">
