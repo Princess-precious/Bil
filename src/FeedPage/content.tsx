@@ -13,6 +13,7 @@
 
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Bookmark, Plus } from "lucide-react";
 
 type Story = {
   id: string;
@@ -153,6 +154,8 @@ export default function Feed() {
    const navigate = useNavigate();
 
   const [stories, ] = useState<Story[]>(initialStories);
+
+  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -216,7 +219,19 @@ export default function Feed() {
     }
   };
 
-  
+            //------------------------
+            //SAVED STORY
+            //------------------------
+
+          const handleSaveStory = (storyId: string) => {
+          setSavedStoryIds((current) => {
+          if (current.includes(storyId)) {
+           return current.filter((id) => id !== storyId);
+             }
+
+          return [...current, storyId];
+         });
+    };
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -256,6 +271,7 @@ export default function Feed() {
     <div className="min-h-screen bg-[#FBF9F8] text-[#1A1A1A]">
       <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          
           {/* =========================================
               MAIN FEED
           ========================================= */}
@@ -330,6 +346,15 @@ export default function Feed() {
                       >
                         Share
                       </button>
+
+                         <button
+                           type="button"
+                           onClick={() => handleSaveStory(story.id)}
+                           aria-label="Save story"
+                        >
+                          <Bookmark size={20} strokeWidth={1.5} 
+                          className="text-black"/>
+                </button>
                     </div>
                   </div>
 
@@ -449,9 +474,12 @@ export default function Feed() {
                     Add Story
                 </span>
 
-               <span className="text-lg transition-transform duration-200 group-hover:translate-x-1">
-                 →
-                 </span>
+               {/* <span className="text-lg  transition-transform duration-200 group-hover:translate-x-1">
+                 ＋
+                 </span> */}
+
+                 <Plus size={30} strokeWidth={1.5} 
+                     className="text-[#B35D52]"/>
                </button>
          </div>
 
