@@ -23,6 +23,5 @@ Features
 - Image carousel
 - Responsive design
 
-## Project Status
-
-🚧 This project is currently in development.
+Project Status
+This project is currently in development.
