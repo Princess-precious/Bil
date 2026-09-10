@@ -26,6 +26,7 @@ function Navbar({className}:NavbarProps) {
   const location = useLocation();
   
   const isHome = location.pathname === "/"
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
@@ -42,17 +43,17 @@ function Navbar({className}:NavbarProps) {
         
 
         {/* 2 */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
 
           {/* Search */}
           {!isHome && (
-            <div className="relative flex items-center gap-2">
+            <div className="flex items-center gap-2">
 
             {showSearchBar && (
               <input
                 type="search"
                 placeholder="Search..."
-                className={`${isHome ? "border-white" : "border-black"} border rounded-2xl  p-2 outline-none text-xs absolute right-10 animate-search md:w-[700px]`}
+                className={`${isHome ? "border-white" : "border-black"} border rounded-2xl  p-2 outline-none text-xs absolute left-1/2 -translate-x-1/2 animate-search md:w-[700px]`}
               />
             )}
             <button
@@ -76,14 +77,6 @@ function Navbar({className}:NavbarProps) {
               </svg>
             </button>
           </div>
-          )}
-
-          {!isHome && (
-            <div className="md:flex md:items-c">
-              <Link to="/new-story" className="text-sm p-2 hover:underline active:underline hover:opacity-80 active:opacity-80">
-                Add Story
-              </Link>
-            </div>
           )}
           
           {isSignedIn ? (
