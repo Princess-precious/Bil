@@ -14,14 +14,18 @@ import Navbar from "../components/Navbar"
 import section1img from "../images/section1img.jpg"
 import firstcomment from "../images/firstcomment.jpg"
 import Footer from "../components/footer";
+import feedtechnology from "../../public/feedtechnology.png"
+import { useNavigate } from "react-router-dom";
 
 
 
 
 function DemoArticle(){
+  const navigate = useNavigate();
   return(
     <>
     <Navbar/>
+    <div className="flex flex-col items-center font-hanken">
     <div className="flex flex-col items-center">
      
            <div className="left-12 top-24">
@@ -147,6 +151,70 @@ function DemoArticle(){
           
         </div>
       </section>
+
+      {/* SUGGESTIONS */}
+      <section className="flex flex-col p-14">
+        <h1 className="text-2xl md:text-4xl font-bold text-[#b35d52] p-8">Suggestions</h1>
+
+        <div className="grid grid-cols-1     md:grid-cols-3 ">
+          {/* CARD 1 */}
+          <div className="flex flex-col gap-2 p-8">
+            <img src={feedtechnology}></img>
+            <h1 className="text-sm">
+              <span className="text-[#b35d52]">TECHNOLOGY & MIN </span>/ MARCUS THRONE
+            </h1>
+            <h1 className="text-xl font-bold">
+              Silicon Sentience: The Philosophy of Code
+            </h1>
+            <p className="text-[10px] md:xs">
+              As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.
+            </p>
+          </div>
+
+          {/* CARD 2 */}
+          <div className="flex flex-col gap-2 p-8">
+            <img src={feedtechnology}></img>
+            <h1 className="text-sm">
+              <span className="text-[#b35d52]">TECHNOLOGY & MIN </span>/ MARCUS THRONE
+            </h1>
+            <h1 className="text-xl font-bold">
+              Silicon Sentience: The Philosophy of Code
+            </h1>
+            <p className="text-[10px] md:xs">
+              As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.
+            </p>
+          </div>
+
+          {/* CARD 3 */}
+          <div className="flex flex-col gap-2 p-8">
+            <img src={feedtechnology}></img>
+            <h1 className="text-sm">
+             <span className="text-[#b35d52]">TECHNOLOGY & MIN </span>/ MARCUS THRONE
+            </h1>
+            <h1 className="text-xl font-bold">
+              Silicon Sentience: The Philosophy of Code
+            </h1>
+            <p className="text-[10px] md:xs">
+              As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.
+            </p>
+          </div>
+        </div>
+      </section>
+      {/* Back button */}
+      <button
+      onClick={() => navigate(-1)}
+      className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+      >
+        ←
+      </button>
+
+      {/* Scroll to top button */}
+      <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+      >
+        ↑
+      </button>
 
     </div>
     <Footer/>

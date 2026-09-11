@@ -152,7 +152,8 @@ const topics = [
 export default function Feed() {
   
 
-   const navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   const [stories,  ] = useState<Story[]>(initialStories);
 
