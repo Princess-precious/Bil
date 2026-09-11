@@ -19,8 +19,8 @@ import SignIn from './pages/SignIn';
 import NewStory from './pages/NewStory';
 import UserProfile from './pages/UserProfile';
 import EditStory from './pages/EditStory';
-
-
+import ForgetPassword from './pages/ForgetPassword';
+import ChangePassword from './pages/ChangePassword';
 
 function App() {
     return(
@@ -34,10 +34,12 @@ function App() {
                 <Route path="/new-story" element={<NewStory />} />
                 <Route path="/edit-story/:id" element={<EditStory />} />
                 <Route path="/user-profile" element={<UserProfile />} />
-            
-            </Routes>
-        </BrowserRouter>
+                <Route path="/forget-password" element={<ForgetPassword />} />
+                <Route path="/change-password" element={<ChangePassword />} />
+           
+               </Routes>
+            </BrowserRouter>
 
     );
 }
-export default App;
+export  default App;

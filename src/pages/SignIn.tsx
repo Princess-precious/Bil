@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -79,13 +78,14 @@ export default function SignIn() {
 
     setError("");
     setSuccess("Password reset instructions have been sent to your email.");
+    navigate("/forget-password")
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       {/* MAIN MODAL */}
-      <div className="flex h-[90vh] w-[95vw] max-w-5xl  md:w-[50vw] overflow-hidden rounded-lg bg-white">
+      <div className="flex h-[90vh] w-[95vw] max-w-5xl  md:w-[60vw] overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
@@ -121,7 +121,7 @@ export default function SignIn() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full items-center justify-center bg-white px-8 py-5 md:w-1/2 font-fira-sans">
+        <div className="flex w-full items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira-sans">
 
           <div className="w-full max-w-md">
 
