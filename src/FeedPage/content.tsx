@@ -149,9 +149,9 @@ const topics = [
 ];
 
 export default function Feed() {
-  const [stories] = useState<Story[]>(initialStories);
 
-   const navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   const [stories, ] = useState<Story[]>(initialStories);
   const [showAllTopics, setShowAllTopics] = useState(false);

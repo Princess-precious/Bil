@@ -27,7 +27,9 @@ function Navbar({className}:NavbarProps) {
   
   const isHome = location.pathname === "/"
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
 
+  
   return (
     <>
       <nav className={`${className} fixed top-0 left-0 w-full bg-[#fbf9f8] py-4 px-4 md:px-14 flex items-center justify-between h-[80px]  z-50`}>
@@ -53,9 +55,53 @@ function Navbar({className}:NavbarProps) {
               <input
                 type="search"
                 placeholder="Search..."
-                className={`${isHome ? "border-white" : "border-black"} border rounded-2xl  p-2 outline-none text-xs absolute left-1/2 -translate-x-1/2 animate-search md:w-[700px]`}
+                onChange = {(e) => setSearchQuery(e.target.value)}
+                onFocus = {() => setSearchFocused(true)}
+                className="border-b border-black  p-2 outline-none text-xs absolute left-1/2 -translate-x-1/2 animate-search  md:w-[700px]"
               />
             )}
+
+            {showSearchBar && searchFocused && (
+              <div className="flex flex-col bg-[#272525]  md:w-[700px] h-auto absolute top-[56px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
+                {/* SUGGESTIONS */}
+                {!searchQuery && (
+                  <div className="flex flex-row gap-2 flex-wrap ">
+                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80 ">
+                      <p>Entertainment Stories</p>
+                    </div>
+                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                      <p>The Wealth of Africa</p>
+                    </div>
+                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                      <p>Aesthetics</p>
+                    </div>
+                  
+                  </div>
+                )}
+
+                {/* Searches */}
+                {searchQuery && (
+                  <div className="flex flex-col">
+                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
+                      <p>Aesthetics</p>
+                    </div>
+
+                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
+                      <p>Aesthetics</p>
+                    </div>
+
+                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
+                      <p>Aesthetics</p>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )} 
+
             <button
               type="button"
               onClick={() => setShowSearchBar(!showSearchBar)}
