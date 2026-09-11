@@ -80,7 +80,7 @@ export default function SignUp() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       {/* MAIN MODAL */}
-      <div className="flex h-[90vh] w-[95vw] max-w-5xl md:w-1/2 overflow-hidden rounded-lg bg-white">
+      <div className="flex h-[90vh] w-[95vw] max-w-5xl md:w-[60vw] overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
@@ -103,11 +103,11 @@ export default function SignUp() {
 
             {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md text-2xl text-italic px-2">
-                "Every story begins <br></br> with a single thought."
+              <p className="max-w-md text-2xl text-italic px-4">
+                "Every story begins with a single thought."
               </p>
 
-              <p className="mt-3 text-xs  px-2 uppercase tracking-widest">  
+              <p className="mt-3 text-xs  px-4 uppercase tracking-widest">
                 Editorial / Culture
               </p>
             </div>
@@ -116,7 +116,7 @@ export default function SignUp() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full px-10 items-center justify-center bg-white  py-8 md:w-1/2 font-fira-sans">
+        <div className="flex w-full px-10 items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira sans">
                
                <div className="absolute left-12 top-20 md:hidden ">
                <h1 className="text-2xl font-bold text-black">

@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -66,30 +65,31 @@ export default function SignIn() {
     }, 1500);
   };
 
-  // const handleForgotPassword = () => {
-  //   if (!email.trim()) {
-  //     setError("Please enter your email address first.");
-  //     return;
-  //   }
+  const handleForgotPassword = () => {
+    if (!email.trim()) {
+      setError("Please enter your email address first.");
+      return;
+    }
 
-  //   if (!email.includes("@")) {
-  //     setError("Please enter a valid email address.");
-  //     return;
-  //   }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
-  //   setError("");
-  //   setSuccess("Password reset instructions have been sent to your email.");
-  // };
+    setError("");
+    setSuccess("Password reset instructions have been sent to your email.");
+    navigate("/forget-password")
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       {/* MAIN MODAL */}
-      <div className="flex h-[90vh] w-[95vw] max-w-5xl  md:w-[50vw] overflow-hidden rounded-lg bg-white">
+      <div className="flex h-[90vh] w-[95vw] max-w-5xl  md:w-[60vw] overflow-hidden rounded-lg bg-white">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
-          <div className="relative h-full  overflow-hidden">
+          <div className="relative h-full overflow-hidden">
 
             <img
               src="signin.jpg"
@@ -121,13 +121,8 @@ export default function SignIn() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full items-center justify-center bg-white px-10 py-8 md:w-1/2 font-fira-sans">
-              
-              <div className="absolute left-12 top-20 md:hidden ">
-               <h1 className="text-2xl font-bold text-black">
-                 BIL
-                </h1>
-               </div>
+        <div className="flex w-full items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira-sans">
+
           <div className="w-full max-w-md">
 
             {/* HEADING */}
@@ -213,13 +208,13 @@ export default function SignIn() {
                   Remember me
                 </label>
 
-                {/* <button
+                <button
                   type="button"
                   onClick={handleForgotPassword}
                   className="text-xs font-medium text-black underline"
                 >
                   Forgot password?
-                </button> */}
+                </button>
 
               </div>
 

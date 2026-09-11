@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bookmark} from "lucide-react"
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 
@@ -24,13 +24,7 @@ export default function UserProfile() {
   const [editBio, setEditBio] = useState(bio);
   const [editImage, setEditImage] = useState(profileImage);
 
-  // ================= TABS =================
-
-  const [activeTab, setActiveTab] = useState<
-    "my-stories" | "saved-stories"
-  >("my-stories");
-
-  // ================= MY STORIES =================
+  // ================= STORIES =================
 
   const stories = [
     {
@@ -56,27 +50,6 @@ export default function UserProfile() {
         "Why the empty spaces between our monuments define the character of our cities more than the structures themselves.",
       image: "/profileHero.jpg",
       category: "Urbanism",
-    },
-  ];
-
-  // ================= SAVED STORIES =================
-
-  const savedStories = [
-    {
-      id: 4,
-      title: "The Future of Sustainable Architecture",
-      content:
-        "Exploring how architects are using sustainable materials and innovative designs to create environmentally responsible spaces.",
-      image: "/story.jpg",
-      category: "Architecture",
-    },
-    {
-      id: 5,
-      title: "The Philosophy Behind Minimalism",
-      content:
-        "A deeper look at how minimalism influences modern design, culture, and the way we experience our surroundings.",
-      image: "/profileHero.jpg",
-      category: "Design",
     },
   ];
 
@@ -148,7 +121,7 @@ export default function UserProfile() {
 
       <Navbar />
 
-      <main className="mx-auto my-12 w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
+      <main className="mx-auto w-full max-w-6xl my-12 flex-grow px-6 pb-32 pt-16 md:px-12">
         {/* ================= PROFILE HEADER ================= */}
 
         <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
@@ -164,7 +137,7 @@ export default function UserProfile() {
 
           {/* PROFILE INFORMATION */}
 
-          <div className="mb-6 flex max-w-2xl flex-col gap-6">
+          <div className="flex max-w-2xl mb-6 flex-col gap-6">
             <div>
               <h1 className="mb-2 text-4xl font-bold text-gray-900 md:text-5xl">
                 {name}
@@ -269,6 +242,15 @@ export default function UserProfile() {
               />
             </div>
 
+            {/* CHANGE PASSWORD */}
+               <button
+               type="button"
+              onClick={() => navigate("/change-password")}
+              className="text-sm font-medium text-black underline mb-4 hover:text-gray-600"
+                   >
+               Change Password
+               </button>
+
             {/* PROFILE ACTIONS */}
 
             <div className="flex gap-4">
@@ -294,217 +276,137 @@ export default function UserProfile() {
         {/* ================= TABS ================= */}
 
         <div className="mb-12 flex gap-8 border-b border-gray-300">
-          {/* MY STORIES TAB */}
-
           <button
             type="button"
-            onClick={() => setActiveTab("my-stories")}
-            className={`pb-4 text-sm uppercase tracking-widest transition-colors ${
-              activeTab === "my-stories"
-                ? "border-b-2 border-black font-semibold text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className="border-b-2 border-black pb-4 text-sm font-semibold uppercase tracking-widest text-black"
           >
             My Stories
           </button>
 
-          {/* SAVED STORIES TAB */}
-
           <button
             type="button"
-            onClick={() => setActiveTab("saved-stories")}
-            className={`pb-4 text-sm uppercase tracking-widest transition-colors ${
-              activeTab === "saved-stories"
-                ? "border-b-2 border-black font-semibold text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className="pb-4 text-sm uppercase tracking-widest text-gray-500 transition-colors hover:text-black"
           >
             Saved Stories
           </button>
         </div>
 
-        {/* ================= MY STORIES ================= */}
+        {/* ================= STORIES ================= */}
 
-        {activeTab === "my-stories" && (
-          <section className="grid grid-cols-1 gap-8 md:grid-cols-12">
-            {/* ================= STORY 1 ================= */}
+        <section className="grid grid-cols-1 gap-8 md:grid-cols-12">
+          {/* ================= STORY 1 ================= */}
 
-            <article className="md:col-span-8">
-              <div className="group flex flex-col gap-6">
-                {/* IMAGE */}
+          <article className="md:col-span-8">
+            <div className="group flex flex-col gap-6">
+              {/* IMAGE */}
 
-                <div className="aspect-video w-full overflow-hidden">
-                  <img
-                    src={stories[0].image}
-                    alt="Brutalist concrete architecture"
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                {/* STORY INFORMATION */}
-
-                <div className="flex flex-col gap-3">
-                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                    {stories[0].category}
-                  </span>
-
-                  <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600">
-                    {stories[0].title}
-                  </h2>
-
-                  <p className="line-clamp-2 text-base text-gray-600">
-                    {stories[0].content}
-                  </p>
-
-                  {/* EDIT STORY */}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      console.log("Edit button clicked");
-                      navigate("/edit-story/1");
-                    }}
-                    className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white"
-                  >
-                    Edit Story
-                  </button>
-                </div>
+              <div className="aspect-video w-full overflow-hidden">
+                <img
+                  src={stories[0].image}
+                  alt="Brutalist concrete architecture"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
               </div>
-            </article>
 
-            {/* ================= SECONDARY STORIES ================= */}
+              {/* STORY INFORMATION */}
 
-            <div className="flex flex-col gap-12 md:col-span-4">
-              {/* ================= STORY 2 ================= */}
-
-              <article className="group flex flex-col gap-4 border-b border-gray-300 pb-8">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    src={stories[1].image}
-                    alt="Concrete and glass materials"
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
+              <div className="flex flex-col gap-3">
                 <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                  {stories[1].category}
+                  {stories[0].category}
                 </span>
 
-                <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
-                  {stories[1].title}
-                </h3>
-
-                <p className="line-clamp-2 text-base text-gray-600">
-                  {stories[1].content}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => handleEditStory(stories[1].id)}
-                  className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
-                >
-                  Edit Story
-                </button>
-              </article>
-
-              {/* ================= STORY 3 ================= */}
-
-              <article className="group flex flex-col gap-4">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    src={stories[2].image}
-                    alt="Urban architecture"
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                  {stories[2].category}
-                </span>
-
-                <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
-                  {stories[2].title}
-                </h3>
-
-                <p className="line-clamp-2 text-base text-gray-600">
-                  {stories[2].content}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => handleEditStory(stories[2].id)}
-                  className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
-                >
-                  Edit Story
-                </button>
-              </article>
-            </div>
-          </section>
-        )}
-
-        {/* ================= SAVED STORIES ================= */}
-
-        {activeTab === "saved-stories" && (
-          <section>
-            {savedStories.length > 0 ? (
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-                {savedStories.map((story) => (
-                  <article
-                    key={story.id}
-                    className="group flex flex-col gap-4 md:col-span-4"
-                  >
-                    {/* IMAGE */}
-
-                    <div className="aspect-[4/3] w-full overflow-hidden">
-                      <img
-                        src={story.image}
-                        alt={story.title}
-                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                    </div>
-
-                    {/* CATEGORY */}
-
-                    <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                      {story.category}
-                    </span>
-
-                    {/* TITLE */}
-
-                    <h3 className="text-xl font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
-                      {story.title}
-                    </h3>
-
-                    {/* CONTENT */}
-
-                    <p className="line-clamp-2 text-base text-gray-600">
-                      {story.content}
-                    </p>
-
-                    {/* READ STORY */}
-
-                    <button
-                      type="button"
-                      className="w-fit border border-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-black transition-colors hover:bg-black hover:text-white"
-                    >
-                      Read Story
-                    </button>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="py-20 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  No Saved Stories
+                <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600">
+                  {stories[0].title}
                 </h2>
 
-                <p className="mt-3 text-gray-500">
-                  Stories you save will appear here.
+                <p className="line-clamp-2 text-base text-gray-600">
+                  {stories[0].content}
                 </p>
+
+                {/* EDIT STORY */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log("Edit button clicked");
+                    navigate("/edit-story/1");
+                  }}
+                  className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white"
+                >
+                  Edit Story
+                </button>
               </div>
-            )}
-          </section>
-        )}
+            </div>
+          </article>
+
+          {/* ================= SECONDARY STORIES ================= */}
+
+          <div className="flex flex-col gap-12 md:col-span-4">
+            {/* ================= STORY 2 ================= */}
+
+            <article className="group flex flex-col gap-4 border-b border-gray-300 pb-8">
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={stories[1].image}
+                  alt="Concrete and glass materials"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+
+              <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                {stories[1].category}
+              </span>
+
+              <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                {stories[1].title}
+              </h3>
+
+              <p className="line-clamp-2 text-base text-gray-600">
+                {stories[1].content}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => handleEditStory(stories[1].id)}
+                className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+              >
+                Edit Story
+              </button>
+            </article>
+
+            {/* ================= STORY 3 ================= */}
+
+            <article className="group flex flex-col gap-4">
+              <div className="aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={stories[2].image}
+                  alt="Urban architecture"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+
+              <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                {stories[2].category}
+              </span>
+
+              <h3 className="text-lg font-bold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+                {stories[2].title}
+              </h3>
+
+              <p className="line-clamp-2 text-base text-gray-600">
+                {stories[2].content}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => handleEditStory(stories[2].id)}
+                className="w-fit bg-black px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+              >
+                Edit Story
+              </button>
+            </article>
+          </div>
+        </section>
       </main>
 
       {/* ================= FOOTER ================= */}
