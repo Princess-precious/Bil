@@ -42,7 +42,7 @@ export default function ChangePassword() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
 
       {/* MAIN MODAL */}
-      <div className="flex h-[90vh] w-[95vw] max-w-5xl overflow-hidden rounded-lg bg-white md:w-[50vw]">
+      <div className="flex h-[90vh] w-[95vw] max-w-5xl overflow-hidden rounded-lg bg-white md:w-[60vw]">
 
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">

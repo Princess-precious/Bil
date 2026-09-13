@@ -25,7 +25,7 @@ export default function ForgetPassword() {
   }
 
   setSuccess(
-    "Password reset link sent successfully! Please check your email."
+    "Password reset link sent successfully! Please check your email or spam."
   );
 };
 

@@ -21,6 +21,7 @@ import UserProfile from './pages/UserProfile';
 import EditStory from './pages/EditStory';
 import ForgetPassword from './pages/ForgetPassword';
 import ChangePassword from './pages/ChangePassword';
+import EditProfile from './pages/EditProfile';
 
 function App() {
     return(
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/new-story" element={<NewStory />} />
                 <Route path="/edit-story/:id" element={<EditStory />} />
                 <Route path="/user-profile" element={<UserProfile />} />
+                <Route path="/edit-profile" element={<EditProfile/>}/>
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/change-password" element={<ChangePassword />} />
            
