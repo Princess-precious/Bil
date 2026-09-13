@@ -1,17 +1,17 @@
 /**
-    * @description      : 
-    * @author           : HP
-    * @group            : 
-    * @created          : 09/09/2026 - 14:29:55
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 09/09/2026
-    * - Author          : HP
-    * - Modification    : 
-**/
+ * @description      :
+ * @author           : HP
+ * @group            :
+ * @created          : 09/09/2026 - 14:29:55
+ *
+ * MODIFICATION LOG
+ * - Version         : 1.0.0
+ * - Date            : 09/09/2026
+ * - Author          : HP
+ * - Modification    :
+ */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bookmark, Plus } from "lucide-react";
 
@@ -43,7 +43,7 @@ const initialStories: Story[] = [
     excerpt:
       "A meditation on the enduring language of brutalism, where raw concrete becomes a canvas for light, shadow, and human scale.",
     date: "Oct 12",
-    coverImage: "/feedarchitecture.png",
+    coverImage: "/feedarchitecture.jpg",
     caption: "Barbican Estate, London — Monochrome Study",
   },
   {
@@ -150,20 +150,28 @@ const topics = [
 ];
 
 export default function Feed() {
-  
-
-
   const navigate = useNavigate();
 
-  const [stories,  ] = useState<Story[]>(initialStories);
+  const [stories] = useState<Story[]>(initialStories);
 
+  // Saved story IDs
   const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
 
   const [showAllTopics, setShowAllTopics] = useState(false);
-
   const [selectedTopic, setSelectedTopic] = useState("All");
-
   const [visibleCount, setVisibleCount] = useState(3);
+
+  // --------------------------------------------------
+  // LOAD SAVED STORIES FROM LOCAL STORAGE
+  // --------------------------------------------------
+
+  useEffect(() => {
+    const saved = JSON.parse(
+      localStorage.getItem("savedStoryIds") || "[]"
+    );
+
+    setSavedStoryIds(saved);
+  }, []);
 
   // --------------------------------------------------
   // FILTER STORIES BY TOPIC
@@ -217,24 +225,39 @@ export default function Feed() {
         alert("Unable to share this story.");
       }
     } catch (error) {
-      // User cancelled the share menu.
       console.log("Share cancelled:", error);
     }
   };
 
-            //------------------------
-            //SAVED STORY
-            //------------------------
+  // --------------------------------------------------
+  // SAVED STORY
+  // --------------------------------------------------
 
-          const handleSaveStory = (storyId: string) => {
-          setSavedStoryIds((current) => {
-          if (current.includes(storyId)) {
-           return current.filter((id) => id !== storyId);
-             }
+  const handleSaveStory = (storyId: string) => {
+    setSavedStoryIds((current) => {
+      let updatedIds: string[];
 
-          return [...current, storyId];
-         });
-    };
+      if (current.includes(storyId)) {
+        // Remove story if it is already saved
+        updatedIds = current.filter((id) => id !== storyId);
+      } else {
+        // Add story if it is not saved
+        updatedIds = [...current, storyId];
+      }
+
+      // Save updated IDs to localStorage
+      localStorage.setItem(
+        "savedStoryIds",
+        JSON.stringify(updatedIds)
+      );
+
+      return updatedIds;
+    });
+  };
+
+  // --------------------------------------------------
+  // TOPIC CLICK
+  // --------------------------------------------------
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -280,12 +303,13 @@ export default function Feed() {
           ========================================= */}
 
           <section className="space-y-16 lg:col-span-8">
+
             {/* ALL STORIES BUTTON */}
 
             {selectedTopic !== "All" && (
               <div className="flex items-center justify-between border-b border-[#ECE6E0] pb-4">
                 <div className="font-hanken text-xs uppercase tracking-[0.2em] text-[#8A8581]">
-                  Filtered by:{" "}
+                  Filtered by{" "}
                   <span className="text-[#B35D52]">
                     {selectedTopic}
                   </span>
@@ -312,9 +336,11 @@ export default function Feed() {
                   key={story.id}
                   className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
                 >
+
                   {/* TEXT */}
 
                   <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
+
                     <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
                       <span className="text-[#B35D52]">
                         {story.category}
@@ -338,9 +364,12 @@ export default function Feed() {
                     </p>
 
                     <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+
                       <span>{story.date}</span>
 
                       <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+
+                      {/* SHARE */}
 
                       <button
                         type="button"
@@ -350,14 +379,30 @@ export default function Feed() {
                         Share
                       </button>
 
-                         <button
-                           type="button"
-                           onClick={() => handleSaveStory(story.id)}
-                           aria-label="Save story"
-                        >
-                          <Bookmark size={20} strokeWidth={1.5} 
-                          className="text-black"/>
-                </button>
+                      {/* SAVE */}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleSaveStory(story.id)
+                        }
+                        aria-label={
+                          SavedStoryIDs.includes(story.id)
+                            ? "Unsave story"
+                            : "Save story"
+                        }
+                      >
+                        <Bookmark
+                          size={20}
+                          strokeWidth={1.5}
+                          className={
+                            SavedStoryIDs.includes(story.id)
+                              ? "fill-black text-black"
+                              : "text-black"
+                          } 
+                        />
+                      </button>
+
                     </div>
                   </div>
 
@@ -365,6 +410,7 @@ export default function Feed() {
 
                   <div className="order-first md:order-last md:col-span-5">
                     <figure>
+
                       <div className="group/img relative aspect-[4/3] overflow-hidden bg-[#F4F0EB]">
                         <img
                           src={story.coverImage}
@@ -378,12 +424,15 @@ export default function Feed() {
                       <figcaption className="mt-2 text-right font-playfair text-[11px] italic text-[#8A8581]">
                         {story.caption}
                       </figcaption>
+
                     </figure>
                   </div>
+
                 </article>
               ))
             ) : (
               <div className="border-y border-[#ECE6E0] py-20 text-center">
+
                 <h2 className="font-playfair text-2xl">
                   No stories found
                 </h2>
@@ -399,23 +448,26 @@ export default function Feed() {
                 >
                   View all stories
                 </button>
+
               </div>
             )}
+
           </section>
 
-           
-                 
           {/* =========================================
               SIDEBAR
           ========================================= */}
 
           <aside className="space-y-12 lg:col-span-4 lg:border-l lg:border-[#ECE6E0] lg:pl-10">
+
             {/* =====================================
                 FOR YOU
             ===================================== */}
 
             <section>
+
               <div className="mb-6 flex items-baseline justify-between">
+
                 <h3 className="font-playfair text-2xl font-semibold">
                   <span className="text-[#B35D52]">
                     For You
@@ -425,23 +477,28 @@ export default function Feed() {
                 <span className="font-hanken text-[10px] uppercase tracking-[0.18em] text-[#8A8581]">
                   Curated
                 </span>
+
               </div>
 
               <div className="space-y-6">
+
                 {forYouStories.map((item, index) => (
                   <button
                     key={`${item.id}-${index}`}
                     type="button"
-                    onClick={() => handleForYouClick(item.id)}
+                    onClick={() =>
+                      handleForYouClick(item.id)
+                    }
                     className="group block w-full text-left"
                   >
+
                     <div className="flex gap-4">
+
                       <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
                         {String(index + 1).padStart(2, "0")}
                       </span>
 
                       <div>
-                        
 
                         <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
                           {item.title}
@@ -450,93 +507,116 @@ export default function Feed() {
                         <p className="mt-1 font-hanken text-xs text-[#8A8581]">
                           {item.category}
                         </p>
+
                       </div>
+
                     </div>
+
                   </button>
                 ))}
+
               </div>
+
             </section>
 
+            {/* =====================================
+                EXPLORE TOPICS
+            ===================================== */}
 
+            <section>
 
-           {/* =====================================
-                      EXPLORE TOPICS
-                ===================================== */}
+              <div className="mb-4">
 
-             <section>
-                 <div className="mb-4">
+                {/* ADD STORY BUTTON */}
 
-                  <div className="mb-5 flex items-center justify-end">
-               <button
-                  type="button"
+                <div className="mb-5 flex items-center justify-end">
+
+                  
+
+                 <button
+                   type="button"
                    onClick={() => navigate("/new-story")}
-                   className="group flex  fixed items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-black transition-colors hover:text-[#9E4E44]"
-                    aria-label="Add Story"
-                    >
-               <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 group-hover:max-w-20 group-hover:opacity-100 text-black text-sm ">
-                    Add Story
+                   aria-label="Add Story"
+                   className="group fixed bottom-6 right-6 z-50 flex items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-black"
+                  >
+                <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 group-hover:max-w-20 group-hover:opacity-100">
+                   Add Story
                 </span>
 
-               {/* <span className="text-lg  transition-transform duration-200 group-hover:translate-x-1">
-                 ＋
-              //    </span> */}
+                   <Plus
+                       size={40}
+                       strokeWidth={1.5}
+                      className="text-black"
+                     />
+                 </button>
 
-                 <Plus size={40} strokeWidth={1.5}
-                     className="text-black"/>
-               </button>
-         </div>
+                </div>
 
-                  <h3 className="font-playfair text-2xl font-semibold">
+                <h3 className="font-playfair text-2xl font-semibold">
                   Categories
-                  </h3>
+                </h3>
 
-                 <p className="mt-3 font-hanken text-sm leading-6 text-[#8A8581]">
-                    Filter our continuous catalog through core
-                    disciplines and philosophical threads:
-                 </p>
-               </div>
+                <p className="mt-3 font-hanken text-sm leading-6 text-[#8A8581]">
+                  Filter our continuous catalog through core
+                  disciplines and philosophical threads:
+                </p>
 
-               <div className="space-y-2">
-                    {(showAllTopics ? topics : topics.slice(0, 7)).map((topic) => {
-                     const isActive = selectedTopic === topic.name;
-                     
+              </div>
 
-                     return (
-                        <button
-                           key={topic.name}
-                             type="button"
-                               onClick={() => handleTopicClick(topic.name)}
-                               className={`flex w-full items-center justify-between border-b border-[#ECE6E0] py-3 text-left font-hanken text-sm transition-colors ${
-                               isActive
-                              ? "text-[#B35D52]"
-                            : "text-[#5C5855] hover:text-[#B35D52]"
+              <div className="space-y-2">
+
+                {(showAllTopics
+                  ? topics
+                  : topics.slice(0, 7)
+                ).map((topic) => {
+
+                  const isActive =
+                    selectedTopic === topic.name;
+
+                  return (
+                    <button
+                      key={topic.name}
+                      type="button"
+                      onClick={() =>
+                        handleTopicClick(topic.name)
+                      }
+                      className={`flex w-full items-center justify-between border-b border-[#ECE6E0] py-3 text-left font-hanken text-sm transition-colors ${
+                        isActive
+                          ? "text-[#B35D52]"
+                          : "text-[#5C5855] hover:text-[#B35D52]"
                       }`}
-                     >
-                    <span>{topic.name}</span>
+                    >
+
+                      <span>{topic.name}</span>
 
                       <span className="text-xs text-[#8A8581]">
-                         {topic.count}
+                        {topic.count}
                       </span>
-                    </button>
-                       );
-                      })}
-                  </div>
 
-                  <button
-                    type="button"
-                     onClick={() => setShowAllTopics((current) => !current)}
-                     className="mt-6 font-hanken text-xs uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
-                    >
-                     {showAllTopics ? "Show less ↑" : "View full index →"}
-                  </button>
-                  
-        
-               </section>
-              
+                    </button>
+                  );
+                })}
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowAllTopics((current) => !current)
+                }
+                className="mt-6 font-hanken text-xs uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
+              >
+                {showAllTopics
+                  ? "Show less ↑"
+                  : "View full index →"}
+              </button>
+
+            </section>
+
           </aside>
+
         </div>
-        </main>
-        </div>
-    
+      </main>
+    </div>
   );
 }
