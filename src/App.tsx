@@ -19,6 +19,8 @@ import SignIn from './pages/SignIn';
 import NewStory from './pages/NewStory';
 import UserProfile from './pages/UserProfile';
 import EditStory from './pages/EditStory';
+import Privacy from "./pages/privacy"
+import Settings from './pages/settings';
 
 
 
@@ -34,7 +36,8 @@ function App() {
                 <Route path="/new-story" element={<NewStory />} />
                 <Route path="/edit-story/:id" element={<EditStory />} />
                 <Route path="/user-profile" element={<UserProfile />} />
-            
+                <Route path="/privacy" element={<Privacy/>}/>
+                <Route path="/settings" element={<Settings/>}/>
             </Routes>
         </BrowserRouter>
 
