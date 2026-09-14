@@ -75,6 +75,15 @@ function Navbar({className}:NavbarProps) {
                     <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
                       <p>Aesthetics</p>
                     </div>
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80 ">
+                      <p>Entertainment Stories</p>
+                    </div>
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                      <p>The Wealth of Africa</p>
+                    </div>
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                      <p>Aesthetics</p>
+                    </div>
                   
                   </div>
                 )}

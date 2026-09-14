@@ -23,7 +23,8 @@ import { useNavigate } from "react-router-dom";
 export default function DemoArticle(){
   const navigate = useNavigate();
   return(
-    <div>
+    
+    <>
     <Navbar/>
     <div className="flex flex-col items-center font-hanken">
     <div className="flex flex-col items-center">
@@ -218,9 +219,10 @@ export default function DemoArticle(){
 
       </div>
     </div>
-    </div>
+    
     <Footer/>
-</div>
+  </>
+  
   
 );
 }
