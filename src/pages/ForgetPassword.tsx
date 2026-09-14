@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 14/09/2026 - 13:40:45
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 14/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 
 import { useState } from "react";
 
@@ -69,7 +81,7 @@ export default function ForgetPassword() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full items-center justify-center bg-white px-16 py-5 font-fira sans md:w-1/2">
+        <div className="flex w-full items-center justify-center bg-white px-16 py-5 font-fira-sans md:w-1/2">
 
           {/* MOBILE LOGO */}
           <div className="absolute left-12 top-20 md:hidden">
@@ -112,7 +124,7 @@ export default function ForgetPassword() {
 
               {/* EMAIL */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Email Address
                 </label>
 

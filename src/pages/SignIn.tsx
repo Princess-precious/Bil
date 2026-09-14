@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 14/09/2026 - 13:28:00
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 14/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -193,7 +205,7 @@ export default function SignIn() {
               </button>
               {/* EMAIL */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Email Address
                 </label>
 
@@ -208,7 +220,7 @@ export default function SignIn() {
 
               {/* PASSWORD */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Password
                 </label>
 
@@ -234,7 +246,7 @@ export default function SignIn() {
               {/* REMEMBER ME + FORGOT PASSWORD */}
               <div className="flex items-center justify-between">
 
-                <label className="flex items-center gap-2 text-xs text-gray-600">
+                <label className="flex items-center gap-2 text-[11px] text-gray-600">
                   <input
                     type="checkbox"
                     checked={rememberMe}
