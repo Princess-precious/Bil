@@ -219,7 +219,7 @@ export default function DemoArticle(){
 
       
     </div>
-    
+    </div>
     <Footer/>
   </>
   
