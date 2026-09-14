@@ -21,8 +21,10 @@ import UserProfile from './pages/UserProfile';
 import EditStory from './pages/EditStory';
 import Privacy from "./pages/privacy"
 import Settings from './pages/settings';
+import About from "./pages/about"
 
-
+import ForgetPassword from './pages/ForgetPassword';
+import ChangePassword from './pages/ChangePassword';
 
 function App() {
     return(
@@ -38,9 +40,11 @@ function App() {
                 <Route path="/user-profile" element={<UserProfile />} />
                 <Route path="/privacy" element={<Privacy/>}/>
                 <Route path="/settings" element={<Settings/>}/>
+                <Route path="/forget-password" element={<ForgetPassword />} />
+                <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/about" element={<About/>}/>
             </Routes>
         </BrowserRouter>
-
     );
 }
-export default App;
+export  default App;

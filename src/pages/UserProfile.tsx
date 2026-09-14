@@ -242,6 +242,15 @@ export default function UserProfile() {
               />
             </div>
 
+            {/* CHANGE PASSWORD */}
+               <button
+               type="button"
+              onClick={() => navigate("/change-password")}
+              className="text-sm font-medium text-black underline mb-4 hover:text-gray-600"
+                   >
+               Change Password
+               </button>
+
             {/* PROFILE ACTIONS */}
 
             <div className="flex gap-4">

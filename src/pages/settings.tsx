@@ -13,8 +13,21 @@
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar"
 import {Link} from "react-router-dom"
+import { useState } from "react";
 
 function Settings(){
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const handleDeleteAccount = () => {
+    setShowDeleteModal(false);
+    setShowToast(true);
+
+    setTimeout(() => {
+    setShowToast(false);
+    }, 3000);
+  };
+
   return(
     <>
       <Navbar/>
@@ -38,7 +51,7 @@ function Settings(){
             <p className="text-xs">Update your login passphrase or configure two-factor authentication to secure your editorial drafts.</p>
           </div>
           <div className="flex items-center">
-            <Link to="" className="text-white text-xs whitespace-nowrap  bg-black px-4 py-2 hover:opacity-80 focus:opacity-80">Change Password</Link>
+            <Link to="/change-password" className="text-white text-xs whitespace-nowrap  bg-black px-4 py-2 hover:opacity-80 focus:opacity-80">Change Password</Link>
           </div>
         </section>
 
@@ -68,10 +81,56 @@ function Settings(){
             </p>
           </div>
           <div className="flex items-center">
-            <Link to="" className="text-white text-xs whitespace-nowrap  bg-[#b35d52] px-4 py-2 hover:opacity-80 focus:opacity-80">Delete Account</Link>
+            <button 
+            onClick={() => setShowDeleteModal(true)}
+            className="text-white text-xs whitespace-nowrap  bg-[#b35d52] px-4 py-2 hover:opacity-80 focus:opacity-80">Delete Account</button>
           </div>
         </section>
+
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+
+            <div className="w-full max-w-md bg-[#fbf9f8] p-6 shadow-lg">
+
+              <h2 className="font-playfair text-2xl font-bold">
+                Delete Account?
+              </h2>
+
+              <p className="mt-2 text-xs text-gray-600">
+                Are you sure you want to permanently delete your account?
+                This action cannot be undone.
+              </p>
+
+              <div className="mt-6 flex justify-end gap-3">
+
+                <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-xs bg-[#eeebeb] hover:opacity-80"
+                >
+                 No
+                </button>
+
+                <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2 text-xs text-white bg-[#b35d52] hover:opacity-80"
+                >
+                  Yes, Delete
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
       </div>
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-[200] bg-black text-white px-5 py-3 shadow-lg">
+          <p className="text-xs">
+            Account deleted successfully.
+          </p>
+        </div>
+      )}
       <Footer/>
     </>
   );

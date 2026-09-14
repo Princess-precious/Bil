@@ -62,17 +62,17 @@ function Navbar({className}:NavbarProps) {
             )}
 
             {showSearchBar && searchFocused && (
-              <div className="flex flex-col bg-[#272525]  md:w-[700px] h-auto absolute top-[56px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
+              <div className="flex flex-col bg-[#F0EDE8] border border-[#D6D0C8] md:w-[700px] h-auto absolute top-[56px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
                 {/* SUGGESTIONS */}
                 {!searchQuery && (
                   <div className="flex flex-row gap-2 flex-wrap ">
-                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80 ">
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80 ">
                       <p>Entertainment Stories</p>
                     </div>
-                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
                       <p>The Wealth of Africa</p>
                     </div>
-                    <div className="border border-white text-white rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
+                    <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80">
                       <p>Aesthetics</p>
                     </div>
                   
@@ -82,17 +82,17 @@ function Navbar({className}:NavbarProps) {
                 {/* Searches */}
                 {searchQuery && (
                   <div className="flex flex-col">
-                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
                       <p>Aesthetics</p>
                     </div>
 
-                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
                       <p>Aesthetics</p>
                     </div>
 
-                    <div className="flex flex-row text-white p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
+                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
                       <p>Aesthetics</p>
                     </div>
@@ -103,9 +103,14 @@ function Navbar({className}:NavbarProps) {
             )} 
 
             <button
-              type="button"
-              onClick={() => setShowSearchBar(!showSearchBar)}
               className="cursor-pointer"
+              type="button"
+              onClick={() =>{ 
+                setShowSearchBar(!showSearchBar)
+                setSearchFocused(false);
+                setSearchQuery("");
+              }
+            } 
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

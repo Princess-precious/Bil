@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "lucide-react": "^1.45.0",
     "quill": "^2.0.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.18.3",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

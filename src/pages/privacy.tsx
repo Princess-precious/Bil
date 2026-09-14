@@ -10,6 +10,7 @@
     * - Author          : HP
     * - Modification    : 
 **/
+import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 function Privacy(){
   return(
@@ -72,7 +73,15 @@ function Privacy(){
             If you have questions regarding our privacy architecture, Swiss FADP / GDPR protocols, or wish to clarify any handling of your reader data, our editorial team handles inquiries directly.
           </p>
         </section>
+        <section className="flex flex-row p-4 bg-[#eeebeb] gap-20 md:gap-80 mb-10">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xs text-[#b35d52]">Direct Editorial Contact</h1>
+            <button className="text-xs">privacy@biljournal.com</button>
+          </div>
+          <button className="text-white text-xs whitespace-nowrap  bg-black px-4 py-2 hover:opacity-80 focus:opacity-80 rounded-md">SEND</button>
+        </section>
       </div>
+      <Footer/>
     </>
   );
 }

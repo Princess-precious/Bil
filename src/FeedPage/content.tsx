@@ -13,6 +13,7 @@
 
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Bookmark, Plus } from "lucide-react";
 
 type Story = {
   id: string;
@@ -149,11 +150,15 @@ const topics = [
 ];
 
 export default function Feed() {
+  
 
 
   const navigate = useNavigate();
 
-  const [stories, ] = useState<Story[]>(initialStories);
+  const [stories,  ] = useState<Story[]>(initialStories);
+
+  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
+
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -217,7 +222,19 @@ export default function Feed() {
     }
   };
 
-  
+            //------------------------
+            //SAVED STORY
+            //------------------------
+
+          const handleSaveStory = (storyId: string) => {
+          setSavedStoryIds((current) => {
+          if (current.includes(storyId)) {
+           return current.filter((id) => id !== storyId);
+             }
+
+          return [...current, storyId];
+         });
+    };
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -257,6 +274,7 @@ export default function Feed() {
     <div className="min-h-screen bg-[#FBF9F8] text-[#1A1A1A]">
       <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+
           {/* =========================================
               MAIN FEED
           ========================================= */}
@@ -331,6 +349,15 @@ export default function Feed() {
                       >
                         Share
                       </button>
+
+                         <button
+                           type="button"
+                           onClick={() => handleSaveStory(story.id)}
+                           aria-label="Save story"
+                        >
+                          <Bookmark size={20} strokeWidth={1.5} 
+                          className="text-black"/>
+                </button>
                     </div>
                   </div>
 
@@ -443,16 +470,19 @@ export default function Feed() {
                <button
                   type="button"
                    onClick={() => navigate("/new-story")}
-                   className="group flex  fixed items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
+                   className="group flex  fixed items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-black transition-colors hover:text-[#9E4E44]"
                     aria-label="Add Story"
                     >
-               <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 group-hover:max-w-20 group-hover:opacity-100">
+               <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 group-hover:max-w-20 group-hover:opacity-100 text-black text-sm ">
                     Add Story
                 </span>
 
-               <span className="text-lg transition-transform duration-200 group-hover:translate-x-1">
-                 →
-                 </span>
+               {/* <span className="text-lg  transition-transform duration-200 group-hover:translate-x-1">
+                 ＋
+              //    </span> */}
+
+                 <Plus size={40} strokeWidth={1.5}
+                     className="text-black"/>
                </button>
          </div>
 
@@ -469,6 +499,7 @@ export default function Feed() {
                <div className="space-y-2">
                     {(showAllTopics ? topics : topics.slice(0, 7)).map((topic) => {
                      const isActive = selectedTopic === topic.name;
+                     
 
                      return (
                         <button
@@ -498,14 +529,14 @@ export default function Feed() {
                     >
                      {showAllTopics ? "Show less ↑" : "View full index →"}
                   </button>
+                  
+        
                </section>
-                
-                      
-
-            
+              
           </aside>
         </div>
-      </main>
-    </div>
+        </main>
+        </div>
+    
   );
 }
