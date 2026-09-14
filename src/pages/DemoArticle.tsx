@@ -216,7 +216,7 @@ export default function DemoArticle(){
         ↑
       </button>
 
-      </div>
+      
     </div>
     </div>
     <Footer/>

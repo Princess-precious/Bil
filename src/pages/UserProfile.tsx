@@ -1,7 +1,8 @@
 
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Settings } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
@@ -256,6 +257,15 @@ export default function UserProfile() {
               >
                 Share
               </button>
+
+               <button
+                 type="button"
+                 onClick={() => navigate("/settings")}
+                 aria-label="Settings"
+                  className="flex items-center justify-center rounded-md border border-black px-4 py-3 text-black transition-colors hover:bg-gray-100"
+                >
+                <Settings size={20} strokeWidth={1.5} />
+                </button>
 
             </div>
 
