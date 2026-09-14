@@ -203,7 +203,7 @@ export default function DemoArticle(){
       </section>
       {/* Back button */}
       <button
-      onClick={() => navigate(-1)}
+      onClick={() => navigate("/feed")}
       className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
       >
         ←

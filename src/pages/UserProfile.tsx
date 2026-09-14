@@ -12,7 +12,7 @@
 **/
 
 
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Settings } from "lucide-react";
 
@@ -35,7 +35,7 @@ export default function UserProfile() {
   // ================= ACTIVE TAB =================
 
   const [activeTab, setActiveTab] = useState<
-    "my-stories" | "saved-stories"
+    "my-stories" | "saved-stories"|"save draft"
   >("my-stories");
 
   // ================= SAVED STORY IDs =================
@@ -320,6 +320,19 @@ export default function UserProfile() {
           >
             Saved Stories
           </button>
+          <button
+            type="button"
+            onClick={() =>
+              setActiveTab("save draft")
+            }
+            className={`border-b-2 pb-4 text-sm font-semibold uppercase tracking-widest transition-colors ${
+              activeTab === "saved-stories"
+                ? "border-black text-black"
+                : "border-transparent text-gray-500 hover:text-black"
+            }`}
+          >
+            Saved Draft
+          </button>
 
         </div>
 
@@ -580,7 +593,12 @@ export default function UserProfile() {
 
           </section>
         )}
-
+            <button
+              onClick={() => navigate("/feed")}
+             className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+      >
+        ←
+      </button>
       </main>
 
       {/* ================= FOOTER ================= */}
