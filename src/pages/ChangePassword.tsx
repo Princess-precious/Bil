@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 14/09/2026 - 13:24:09
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 14/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye,EyeOff } from "lucide-react";
@@ -35,7 +47,7 @@ export default function ChangePassword() {
     }
 
     // Password successfully changed
-    navigate("/signin");
+    navigate("/feed");
   };
 
   return (
@@ -110,7 +122,7 @@ export default function ChangePassword() {
 
               {/* Old PASSWORD */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Old Password
                 </label>
 
@@ -138,7 +150,7 @@ export default function ChangePassword() {
 
               {/* NEW PASSWORD */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   New Password
                 </label>
 
@@ -166,7 +178,7 @@ export default function ChangePassword() {
 
               {/* CONFIRM PASSWORD */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Confirm Password
                 </label>
 
@@ -204,7 +216,7 @@ export default function ChangePassword() {
                 type="submit"
                 className="w-full rounded-3xl bg-black py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-800"
               >
-                Next
+                SAVED
               </button>
 
             </form>

@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 14/09/2026 - 13:13:01
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 14/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -43,7 +55,7 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
+    <div className="flex min-h-screen flex-col  text-gray-900 antialiased">
 
       {/* ================= NAVBAR ================= */}
 
@@ -75,15 +87,13 @@ export default function EditProfile() {
 
         {/* ================= EDIT PROFILE FORM ================= */}
 
-        <div className="rounded-md border border-gray-300 p-6 md:p-8">
+        <div className="rounded-md bg-[#f5f5f5] p-6 md:p-15">
 
           {/* ================= PROFILE IMAGE ================= */}
 
           <div className="mb-8">
 
-            <label className="mb-3 block text-sm font-semibold">
-              Profile Image
-            </label>
+            
 
             <div className="flex items-center gap-5">
 

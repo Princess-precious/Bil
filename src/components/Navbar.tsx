@@ -45,7 +45,7 @@ function Navbar({className}:NavbarProps) {
         
 
         {/* 2 */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-6">
 
           {/* Search */}
           {!isHome && (
@@ -62,7 +62,7 @@ function Navbar({className}:NavbarProps) {
             )}
 
             {showSearchBar && searchFocused && (
-              <div className="flex flex-col bg-[#F0EDE8] border border-[#D6D0C8] md:w-[700px] h-auto absolute top-[56px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
+              <div className="flex flex-col bg-[#F0EDE8] border border-[#D6D0C8] md:w-[700px] h-auto absolute top-[65px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
                 {/* SUGGESTIONS */}
                 {!searchQuery && (
                   <div className="flex flex-row gap-2 flex-wrap ">

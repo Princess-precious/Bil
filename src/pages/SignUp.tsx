@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 14/09/2026 - 13:39:15
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 14/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -116,7 +128,7 @@ export default function SignUp() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex w-full px-10 items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira sans">
+        <div className="flex w-full px-10 items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira-sans">
                
                <div className="absolute left-12 top-20 md:hidden ">
                <h1 className="text-2xl font-bold text-black">
@@ -157,7 +169,7 @@ export default function SignUp() {
 
               {/* NAME */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Name
                 </label>
 
@@ -172,7 +184,7 @@ export default function SignUp() {
 
               {/* USERNAME */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   User Name
                 </label>
 
@@ -187,7 +199,7 @@ export default function SignUp() {
 
               {/* EMAIL */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Email Address
                 </label>
 
@@ -202,7 +214,7 @@ export default function SignUp() {
 
               {/* PASSWORD */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
+                <label className="mb-1 block text-[11px] font-medium text-gray-900">
                   Password
                 </label>
 
