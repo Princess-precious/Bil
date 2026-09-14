@@ -218,6 +218,7 @@ export default function DemoArticle(){
 
       </div>
     </div>
+    </div>
     <Footer/>
 </div>
   

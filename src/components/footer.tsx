@@ -40,8 +40,8 @@ function Footer({className}: footerProps){
         </p>
       </div>
       <div className="flex flex-row gap-4">
-        <Link to="" className=" text-[10px] md:text-xs underline  hover:opacity-80 active:opacity-80">ABOUT</Link>
-        <Link to="" className="text-[10px] md:text-xs underline  hover:opacity-80 active:opacity-80">PRIVACY</Link>
+        <Link to="/about" className=" text-[10px] md:text-xs underline  hover:text-[#b35d52] focus:text-[#b35d52]">ABOUT</Link>
+        <Link to="/privacy" className="text-[10px] md:text-xs underline  hover:text-[#b35d52] focus:text-[#b35d52]">PRIVACY</Link>
       </div>
     </section>
   );
