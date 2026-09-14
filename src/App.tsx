@@ -25,6 +25,7 @@ import About from "./pages/about"
 
 import ForgetPassword from './pages/ForgetPassword';
 import ChangePassword from './pages/ChangePassword';
+import EditProfile from './pages/EditProfile';
 
 function App() {
     return(
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/user-profile" element={<UserProfile />} />
                 <Route path="/privacy" element={<Privacy/>}/>
                 <Route path="/settings" element={<Settings/>}/>
+                <Route path="/edit-profile" element={<EditProfile/>}/>
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/about" element={<About/>}/>

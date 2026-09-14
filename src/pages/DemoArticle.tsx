@@ -20,10 +20,10 @@ import { useNavigate } from "react-router-dom";
 
 
 
-function DemoArticle(){
+export default function DemoArticle(){
   const navigate = useNavigate();
   return(
-    <>
+    <div>
     <Navbar/>
     <div className="flex flex-col items-center font-hanken">
     <div className="flex flex-col items-center">
@@ -216,12 +216,11 @@ function DemoArticle(){
         ↑
       </button>
 
+      </div>
     </div>
     </div>
     <Footer/>
-    </>
+</div>
   
-  );
+);
 }
-
-export default DemoArticle;
