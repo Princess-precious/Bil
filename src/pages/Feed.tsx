@@ -10,16 +10,23 @@
     * - Author          : HP
     * - Modification    : 
 **/
+import { useStories } from "../lib/hooks/useStories";
 import Navbar from '../components/Navbar';
 import Content from '../FeedPage/content';
 import Footer from '../components/footer';
 
 function Feed() {
+  const { data, isLoading, isError, error } = useStories();
+  console.log("DATA:", data);
+  console.log("LOADING:", isLoading);
+  console.log("ERROR:", isError);
+  console.log("ERROR DETAILS:", error);
+  console.log("Stories:", data);
   return(
     <>
         <Navbar/>
         
-        <Content/>
+        <Content stories={data?? [] }/>
         <Footer/>
     </>
     
