@@ -23,12 +23,14 @@ export const http = {
   publicRequest: async (
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     url: string,
-    data?: unknown
+    data?: unknown,
+    headers?: Record<string, string>
   ) => {
     return api.request({
       method,
       url,
       data,
+      headers,
     });
   },
 };

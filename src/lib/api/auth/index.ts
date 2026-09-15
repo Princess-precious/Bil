@@ -20,6 +20,13 @@ password:string;
 
 }
 
+export interface LoginResponse {
+  data: {
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
 
 export interface GoogleLoginData {
   credential: string;
@@ -45,7 +52,7 @@ export interface forgetPasswordData{
 }
 
 
-export async function signinUser( data:loginData){ 
+export async function signinUser( data:loginData):Promise<LoginResponse>{ 
   const response = await http.publicRequest(
     "POST",
     "/auth/login",
@@ -59,11 +66,31 @@ export async function signinUser( data:loginData){
 
 
 export async function googlelogin( data:GoogleLoginData){ 
+      
+  const response = await http.publicRequest(
+    "POST",
+    "/auth/login",
+    data
+  );
+
+  return response.data;
 
     
 }
 
 export async function signupUser( data:signupData){ 
+const idempotencyKey = crypto.randomUUID();
+
+  const response = await http.publicRequest(
+    "POST",
+    "auth/register",
+    data,
+    {
+       "Idempotency-Key": idempotencyKey,
+    }
+  );
+
+  return response.data;
 
 
 }
@@ -72,7 +99,9 @@ export async function changepassword( data:changePasswordData){
 
     
 }
+
 export async function forgetpassword( data:forgetPasswordData){ 
 
+  
     
 }
