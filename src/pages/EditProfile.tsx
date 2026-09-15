@@ -48,9 +48,8 @@ export default function EditProfile() {
   // ================= SAVE CHANGES =================
 
   const handleSaveChanges = () => {
-    // For now, just return to profile.
-    // Later, this is where you will send the data to your backend.
-
+    //backend needed
+    
     navigate("/user-profile");
   };
 
