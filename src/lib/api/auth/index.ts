@@ -1,3 +1,6 @@
+import { data } from "react-router-dom";
+import { http } from "../../https";
+
 /**
     * @description      : 
     * @author           : HP
@@ -10,6 +13,66 @@
     * - Author          : HP
     * - Modification    : 
 **/
-export async function signinUser(){
-  
+export interface loginData{
+
+email:string;
+password:string;
+
+}
+
+
+export interface GoogleLoginData {
+  credential: string;
+}
+
+export interface signupData{
+    name:string;
+    username:string;
+    email:string;
+    password:string;
+}
+
+
+export interface changePasswordData{
+    oldPassword:string;
+    newPassword:string;
+    confirmPassword:string;
+}
+
+
+export interface forgetPasswordData{
+    email:string;
+}
+
+
+export async function signinUser( data:loginData){ 
+  const response = await http.publicRequest(
+    "POST",
+    "/auth/login",
+    data
+  );
+
+  return response.data;
+
+
 } 
+
+
+export async function googlelogin( data:GoogleLoginData){ 
+
+    
+}
+
+export async function signupUser( data:signupData){ 
+
+
+}
+
+export async function changepassword( data:changePasswordData){ 
+
+    
+}
+export async function forgetpassword( data:forgetPasswordData){ 
+
+    
+}
