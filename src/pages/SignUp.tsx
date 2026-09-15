@@ -12,6 +12,10 @@
 **/
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { signupUser}  from  "../lib/api/auth";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -24,7 +28,40 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+ 
+
+
+
+    const signupMutation = useMutation({
+        mutationFn: signupUser,
+
+         onSuccess: (result) => {
+       console.log("Signup successful:", result);
+
+        setSuccess("Account created successfully!");
+
+        setName("");
+        setUsername("");
+        setEmail("");
+        setPassword("");
+
+        navigate("/feed");
+    },
+
+    onError: (error) => {
+        console.error("Signup failed:", error);
+           
+            if (axios.isAxiosError(error)) {
+    console.log("Status:", error.response?.status);
+    console.log("Backend response:",JSON.stringify (error.response?.data,null,2)
+  );
+  }
+
+  setError("Signup failed. Please check the information you entered.");
+      
+       
+     },
+   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,32 +97,14 @@ export default function SignUp() {
       setError("Please enter a valid email address.");
       return;
     }
+     
+      signupMutation.mutate({
+      name,
+      username,
+      email,
+      password,
+    });
 
-    // Start loading
-    setIsLoading(true);
-
-    // Simulate signup
-    setTimeout(() => {
-      console.log("New User:", {
-        name,
-        username,
-        email,
-        password,
-      });
-
-      setIsLoading(false);
-      setSuccess("Account created successfully!");
-
-
-       
-      // Clear form
-      setName("");
-      setUsername("");
-      setEmail("");
-      setPassword("");
-
-      navigate("/new-story");
-    }, 1500);
   };
 
   return (
@@ -240,10 +259,10 @@ export default function SignUp() {
               {/* SIGN UP BUTTON */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={signupMutation.isPending}
                 className="w-full bg-black py-3 text-xs font-semibold uppercase  rounded-3xl tracking-widest text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isLoading ? "Creating Account..." : "Sign Up"}
+                {signupMutation.isPending ? "Creating Account..." : "Sign Up"}
               </button>
 
             </form>
