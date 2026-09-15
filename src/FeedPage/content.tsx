@@ -11,9 +11,13 @@
  * - Modification    :
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bookmark, Plus } from "lucide-react";
+
+type ContentProps = {
+  stories: Story[]; 
+};
 
 type Story = {
   id: string;
@@ -33,76 +37,7 @@ type ForYouStory = {
   category: string;
 };
 
-const initialStories: Story[] = [
-  {
-    id: "article-1",
-    category: "ARCHITECTURE",
-    author: "ELENA ROSTOVA",
-    title:
-      "The Brutalist Revival: Concrete Poetics in the Modern City",
-    excerpt:
-      "A meditation on the enduring language of brutalism, where raw concrete becomes a canvas for light, shadow, and human scale.",
-    date: "Oct 12",
-    coverImage: "/feedarchitecture.jpg",
-    caption: "Barbican Estate, London — Monochrome Study",
-  },
-  {
-    id: "article-2",
-    category: "TECHNOLOGY & MIND",
-    author: "MARCUS THRONE",
-    title: "Silicon Sentience: The Philosophy of Code",
-    excerpt:
-      "As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.",
-    date: "Oct 10",
-    coverImage: "/feedtechnology.png",
-    caption: "Synthesized Neural Topology — Vector Render",
-  },
-  {
-    id: "article-3",
-    category: "CULTURE & CINEMA",
-    author: "JULIAN MORAND",
-    title:
-      "The Aesthetics of Silence: Why Modern Cinema Craves Stillness",
-    excerpt:
-      "In an age of constant noise, filmmakers are rediscovering the power of negative space, stillness, and silence.",
-    date: "Oct 08",
-    coverImage: "/feedcinema.png",
-    caption: "Still from Tarkovsky Retrospective",
-  },
-  {
-    id: "article-4",
-    category: "DESIGN",
-    author: "SOFIA RENARD",
-    title: "The Quiet Geometry of Contemporary Design",
-    excerpt:
-      "Exploring how restraint, proportion, and negative space are shaping a new visual language in modern design.",
-    date: "Oct 06",
-    coverImage: "/feedarchitecture.png",
-    caption: "Study in Contemporary Form",
-  },
-  {
-    id: "article-5",
-    category: "PHILOSOPHY",
-    author: "ADRIAN VALE",
-    title: "The Architecture of Solitude",
-    excerpt:
-      "Why certain spaces make us feel alone, reflective, and strangely connected to ourselves.",
-    date: "Oct 04",
-    coverImage: "/feedcinema.png",
-    caption: "Interior Study — Quiet Spaces",
-  },
-  {
-    id: "article-6",
-    category: "ARTIFICIAL INTELLIGENCE",
-    author: "NORA KLEIN",
-    title: "When Machines Become Creative Partners",
-    excerpt:
-      "The relationship between human imagination and artificial intelligence is changing the way we create.",
-    date: "Oct 02",
-    coverImage: "/feedtechnology.png",
-    caption: "Synthetic Intelligence — Visual Study",
-  },
-];
+
 
 const forYouStories: ForYouStory[] = [
   {
@@ -149,33 +84,24 @@ const topics = [
   { name: "Culture", count: 25 },
 ];
 
-export default function Feed() {
+export default function Feed({stories} : ContentProps) {
   const navigate = useNavigate();
 
-  const [stories] = useState<Story[]>(initialStories);
+  console.log("From Feeds page", stories)
+
+  
 
   // Saved story IDs
-  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
+  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>(() => {
+  return JSON.parse(
+    localStorage.getItem("savedStoryIds") || "[]"
+  );
+  });
 
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("All");
   const [visibleCount, setVisibleCount] = useState(3);
 
-  // --------------------------------------------------
-  // LOAD SAVED STORIES FROM LOCAL STORAGE
-  // --------------------------------------------------
-
-  useEffect(() => {
-    const saved = JSON.parse(
-      localStorage.getItem("savedStoryIds") || "[]"
-    );
-
-    setSavedStoryIds(saved);
-  }, []);
-
-  // --------------------------------------------------
-  // FILTER STORIES BY TOPIC
-  // --------------------------------------------------
 
   const filteredStories = useMemo(() => {
     if (selectedTopic === "All") {
@@ -200,10 +126,7 @@ export default function Feed() {
 
   const visibleStories = filteredStories.slice(0, visibleCount);
 
-  // --------------------------------------------------
-  // SHARE FUNCTION
-  // --------------------------------------------------
-
+ 
   const handleShare = async (story: Story) => {
     const storyUrl =
       window.location.origin +
@@ -229,10 +152,7 @@ export default function Feed() {
     }
   };
 
-  // --------------------------------------------------
-  // SAVED STORY
-  // --------------------------------------------------
-
+  
   const handleSaveStory = (storyId: string) => {
     setSavedStoryIds((current) => {
       let updatedIds: string[];
@@ -255,9 +175,6 @@ export default function Feed() {
     });
   };
 
-  // --------------------------------------------------
-  // TOPIC CLICK
-  // --------------------------------------------------
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -269,9 +186,7 @@ export default function Feed() {
     });
   };
 
-  // --------------------------------------------------
-  // FOR YOU CLICK
-  // --------------------------------------------------
+  
 
   const handleForYouClick = (storyId: string) => {
     const element = document.getElementById(storyId);
@@ -284,10 +199,6 @@ export default function Feed() {
     }
   };
 
-  // --------------------------------------------------
-  // RESET TOPIC
-  // --------------------------------------------------
-
   const showAllStories = () => {
     setSelectedTopic("All");
     setVisibleCount(3);
@@ -298,9 +209,6 @@ export default function Feed() {
       <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
 
-          {/* =========================================
-              MAIN FEED
-          ========================================= */}
 
           <section className="space-y-16 lg:col-span-8">
 

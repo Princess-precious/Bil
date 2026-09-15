@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 15/09/2026 - 15:01:53
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 15/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Quill from "quill";
@@ -147,9 +159,6 @@ export default function EditStory() {
     }
   }, [story]);
 
-  // =========================
-  // IMAGE UPLOAD
-  // =========================
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
