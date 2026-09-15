@@ -12,6 +12,10 @@
 **/
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {signinUser}  from "../lib/api/auth";
+import {useMutation}  from  "@tanstack/react-query";
+
+
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -26,7 +30,7 @@ export default function SignIn() {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setError("");
@@ -50,31 +54,44 @@ export default function SignIn() {
       return;
     }
 
-    // Start loading
-    setIsLoading(true);
+         setIsLoading(true);
 
-    // Temporary login simulation
-    setTimeout(() => {
-      console.log("Login details:", {
-        email,
-        password,
-        rememberMe,
-      });
+           try {
+        const result = await signinUser({
+           email,
+           password,
+          });
 
-      setIsLoading(false);
-      setSuccess("Signed in successfully!");
+        console.log("Login successful:", result);
+      
+        localStorage.setItem("accessToken", result.data.accessToken);
+        localStorage.setItem("refreshToken", result.data.refreshToken);
 
-      if (rememberMe) {
-        localStorage.setItem("rememberMe", "true");
-      }
 
-      // Clear form
+
+       setSuccess("Signed in successfully!");
+
+     if (rememberMe) {
+    localStorage.setItem("rememberMe", "true");
+     }
+
       setEmail("");
       setPassword("");
 
-      // Navigate after login simulation
-      navigate("/new-story");
-    }, 1500);
+       navigate("/feed");
+      } catch (error) {
+        console.error("Login failed:", error);
+
+        setError(
+         error instanceof Error
+      ? error.message
+      : "Login failed. Please try again."
+      );
+       } finally {
+         setIsLoading(false);
+      }   
+
+      
   };
 
   const handleForgotPassword = () => {
