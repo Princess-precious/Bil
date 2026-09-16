@@ -13,6 +13,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {signinUser}  from "../lib/api/auth";
+import { googlelogin } from "../lib/api/auth";
 import {useMutation}  from  "@tanstack/react-query";
 
 
@@ -79,36 +80,25 @@ export default function SignIn() {
       setPassword("");
 
        navigate("/feed");
-      } catch (error) {
-        console.error("Login failed:", error);
+      } 
+      catch (error: any) {
+  console.error("Login failed:", error);
+  console.log("Status:", error.response?.status);
+  console.log("Backend response:", error.response?.data);
 
-        setError(
-         error instanceof Error
-      ? error.message
-      : "Login failed. Please try again."
-      );
-       } finally {
-         setIsLoading(false);
-      }   
+  setError(
+    error.response?.data?.detail ||
+    error.response?.data?.message ||
+    "Login failed. Please try again."
+  );
+}
 
       
   };
 
   const handleForgotPassword = () => {
-    if (!email.trim()) {
-      setError("Please enter your email address first.");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    setError("");
-    setSuccess("Password reset instructions have been sent to your email.");
-    navigate("/forget-password")
-  };
+  navigate("/forget-password");
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
@@ -156,7 +146,7 @@ export default function SignIn() {
 
             {/* HEADING */}
             <h2 className="text-2xl font-semibold  text-center text-gray-900">
-              Login!
+              Login
             </h2>
 
             {/* <p className="mt-1 text-sm leading-5 text-gray-900">
@@ -186,10 +176,8 @@ export default function SignIn() {
 
               <button
             type="button"
-             onClick={() => {
-             console.log("Continue with Google clicked");
-              }}
-              className="flex w-full items-center justify-center gap-3 border border-gray-300 bg-white px-5 py-3 font-fira-sans text-sm transition hover:bg-gray-50"
+             onClick={googlelogin}
+              className="flex w-full items-center justify-center gap-3 border border-gray-700 bg-white px-5 py-3 font-fira-sans text-sm transition hover:bg-white rounded-3xl"
               >
            <svg
            width="20"
@@ -231,7 +219,7 @@ export default function SignIn() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
+                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  "
                 />
               </div>
 
@@ -247,7 +235,7 @@ export default function SignIn() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-700 bg-white px-4 py-2.5 pr-20 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
+                    className="w-full border border-gray-700 bg-white px-4 py-2.5 pr-20 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  "
                   />
 
                   <button

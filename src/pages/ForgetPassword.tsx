@@ -12,6 +12,13 @@
 **/
 
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { forgetpassword } from "../lib/api/auth";
+
+
+
+
 
 export default function ForgetPassword() {
   
@@ -19,6 +26,40 @@ export default function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [ success,setSuccess]=useState("");
+
+const forgotMutation = useMutation({
+  mutationFn: forgetpassword,
+
+  onSuccess: (result) => {
+    console.log("Forgot password successful:", result);
+
+    setSuccess(
+      "Password reset link sent successfully! Please check your email or spam."
+    );
+  },
+
+  onError: (error) => {
+    console.error("Forgot password failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      const backendMessage = error.response?.data?.message;
+
+      if (backendMessage) {
+        setError(
+          Array.isArray(backendMessage)
+            ? backendMessage.join(", ")
+            : backendMessage
+        );
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } else {
+      setError("Something went wrong. Please try again.");
+    }
+  },
+});
+
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -36,9 +77,7 @@ export default function ForgetPassword() {
     return;
   }
 
-  setSuccess(
-    "Password reset link sent successfully! Please check your email or spam."
-  );
+  forgotMutation.mutate({ email });
 };
 
   return (

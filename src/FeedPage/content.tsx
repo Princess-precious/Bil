@@ -262,7 +262,7 @@ export default function Feed({stories} : ContentProps) {
                         {story.author}
                       </span>
                     </div>
-
+                    
                     <h2 className="font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] md:text-4xl">
                       {story.title}
                     </h2>

@@ -16,10 +16,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+     /* Decorators */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+  
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
