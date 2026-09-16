@@ -1,5 +1,6 @@
 import { data } from "react-router-dom";
 import { http } from "../../https";
+import { AuthService } from "../../Auth/AuthService";
 
 /**
     * @description      : 
@@ -69,13 +70,14 @@ export async function signinUser( data:loginData):Promise<LoginResponse>{
     data
   );
 
+  await AuthService.login(response.data)
+
+
   return response.data;
-
-
 } 
 
 
-export async function googlelogin(){ 
+export async function googleLogin(){ 
       
   window.location.href = `${import.meta.env.VITE_BILLET_API_URL}/auth/google`;
 
@@ -114,7 +116,7 @@ export async function changepassword(data: changePasswordData) {
   return response.data;
 }
 
-export async function forgetpassword( data:forgetPasswordData){ 
+export async function forgetPassword( data:forgetPasswordData){ 
 
    const response = await http.publicRequest(
     "POST",

@@ -10,7 +10,7 @@
     * - Author          : HP
     * - Modification    : 
 **/
-import { useScrollAnimation } from "../hooks/useScrollAnimation";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 
 function Hero() {
   const topAnimation = useScrollAnimation<HTMLDivElement>("top")
