@@ -1,9 +1,24 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 16/09/2026 - 05:57:01
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 16/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Settings, Trash2 } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
+
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/api/users";
 
 type Draft = {
   title?: string;
@@ -14,17 +29,15 @@ type Draft = {
 };
 
 export default function UserProfile() {
+  const { data, isLoading, error } = useQuery({
+  queryKey: ["userProfile"],
+  queryFn: getUserProfile,
+});
+
   const navigate = useNavigate();
 
-  // ================= PROFILE INFORMATION =================
-
-  const [name] = useState("Elias Thorne");
-
-  const [bio] = useState(
-    "Cultural critic and architectural historian documenting the intersection of brutalism and modern urbanism. Exploring quiet luxury in concrete spaces."
-  );
-
-  const [profileImage] = useState("/userprofile.jpg");
+//PROFILE INFO
+  
 
   // ================= ACTIVE TAB =================
 
@@ -233,7 +246,7 @@ export default function UserProfile() {
 
           <div className="mt-10 h-32 w-32 shrink-0 overflow-hidden rounded-full border-2 border-gray-300 p-1 md:h-48 md:w-48">
             <img
-              src={profileImage}
+              src={data?.profileImage || "/userprofile.jpg"}
               alt="Author portrait"
               className="h-full w-full rounded-full object-cover transition-transform duration-700 ease-out hover:scale-105"
             />
@@ -245,11 +258,11 @@ export default function UserProfile() {
 
             <div>
               <h1 className="mb-2 text-4xl font-bold text-gray-900 md:text-5xl">
-                {name}
+                {data?.name}
               </h1>
 
               <p className="text-lg text-gray-600">
-                {bio}
+                {data?.bio || "No bio available"}
               </p>
             </div>
 

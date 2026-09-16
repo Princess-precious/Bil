@@ -12,7 +12,7 @@
 **/
 import { useStories } from "../lib/hooks/useStories";
 import Navbar from '../components/Navbar';
-import Content from '../FeedPage/content';
+import Content from '../components/Feed/content';
 import Footer from '../components/footer';
 
 function Feed() {

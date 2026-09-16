@@ -14,23 +14,42 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BILLET_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 export const http = {
   publicRequest: async (
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     url: string,
-    data?: unknown,
-    headers?: Record<string, string>
+    data?: unknown
   ) => {
     return api.request({
       method,
       url,
       data,
-      headers,
+    });
+  },
+
+
+  privateRequest: async (
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+    url: string,
+    data?: unknown,
+    headers?: Record<string, string>
+  ) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    return api.request({
+      method,
+      url,
+      data,
+      headers: {
+        ...(data instanceof FormData ? {} : { "Content-Type": "application/json" }),
+        ...headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
   },
 };
+
+
+ 

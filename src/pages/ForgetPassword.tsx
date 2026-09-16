@@ -14,7 +14,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { forgetpassword } from "../lib/api/auth";
+import { forgetPassword } from "../lib/api/auth";
 
 
 
@@ -28,7 +28,7 @@ export default function ForgetPassword() {
   const [ success,setSuccess]=useState("");
 
 const forgotMutation = useMutation({
-  mutationFn: forgetpassword,
+  mutationFn: forgetPassword,
 
   onSuccess: (result) => {
     console.log("Forgot password successful:", result);

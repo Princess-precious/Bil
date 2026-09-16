@@ -10,26 +10,63 @@
     * - Author          : HP
     * - Modification    : 
 **/
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getUserProfile, updateUserProfile, updateProfileImage } from "../lib/api/users";
+
+
+
 export default function EditProfile() {
   const navigate = useNavigate();
 
-  // ================= PROFILE INFORMATION =================
+  const { data} = useQuery({
+  queryKey: ["userProfile"],
+  queryFn: getUserProfile,
+  });
 
-  const [name, setName] = useState("Elias Thorne");
+  const updateProfileMutation = useMutation({
+    mutationFn: updateUserProfile,
+
+    onError: (error) => {
+      console.error("Failed to update profile:", error);
+    },
+  });
+
+  const updateImageMutation = useMutation({
+    mutationFn: updateProfileImage,
+
+    onError: (error) => {
+      console.error("Failed to update profile image:", error);
+    },
+  });
+  //PROFILE INFORMATION
+
+  const [name, setName] = useState("Elias Thorne")
+  const [username, setUsername] = useState("");;
 
   const [bio, setBio] = useState(
     "Cultural critic and architectural historian documenting the intersection of brutalism and modern urbanism. Exploring quiet luxury in concrete spaces."
   );
 
+  useEffect(() => {
+   if (!data) return;
+
+   setName(data.name);
+   setUsername(data.username);
+   setBio(data.bio || "");
+  }, [data]);
+
   const [profileImage, setProfileImage] = useState(
     "/userprofile.jpg"
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  
 
   // ================= IMAGE CHANGE =================
 
@@ -39,18 +76,32 @@ export default function EditProfile() {
     const file = e.target.files?.[0];
 
     if (!file) return;
+    
+    setImageFile(file);
 
     const imageUrl = URL.createObjectURL(file);
 
     setProfileImage(imageUrl);
   };
 
-  // ================= SAVE CHANGES =================
+  //SAVE CHANGES
 
-  const handleSaveChanges = () => {
-    //backend needed
-    
-    navigate("/user-profile");
+  const handleSaveChanges = async () => {
+    try {
+      await updateProfileMutation.mutateAsync({
+        name,
+        username,
+        bio,
+      });
+
+      if (imageFile) {
+        await updateImageMutation.mutateAsync(imageFile);
+      }
+
+      navigate("/user-profile");
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+    }
   };
 
   return (
@@ -136,6 +187,19 @@ export default function EditProfile() {
 
           </div>
 
+          <div className="mb-6">
+            <label className="mb-2 block text-sm font-semibold">
+              Username
+            </label>
+
+            <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-black"
+            />
+          </div>
+
           {/* ================= BIO ================= */}
 
           <div className="mb-8">
@@ -152,6 +216,8 @@ export default function EditProfile() {
             />
 
           </div>
+
+          
 
           {/* ================= CHANGE PASSWORD ================= */}
 
