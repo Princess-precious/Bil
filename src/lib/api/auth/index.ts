@@ -52,6 +52,16 @@ export interface forgetPasswordData{
 }
 
 
+export interface resetPasswordData {
+  token: string;
+  password: string;
+}
+
+
+
+
+
+
 export async function signinUser( data:loginData):Promise<LoginResponse>{ 
   const response = await http.publicRequest(
     "POST",
@@ -65,15 +75,9 @@ export async function signinUser( data:loginData):Promise<LoginResponse>{
 } 
 
 
-export async function googlelogin( data:GoogleLoginData){ 
+export async function googlelogin(){ 
       
-  const response = await http.publicRequest(
-    "POST",
-    "/auth/login",
-    data
-  );
-
-  return response.data;
+  window.location.href = `${import.meta.env.VITE_BILLET_API_URL}/auth/google`;
 
     
 }
@@ -95,13 +99,40 @@ const idempotencyKey = crypto.randomUUID();
 
 }
 
-export async function changepassword( data:changePasswordData){ 
+export async function changepassword(data: changePasswordData) {
+  const accessToken = localStorage.getItem("accessToken");
 
-    
+  const response = await http.publicRequest(
+    "PATCH",
+    "/auth/change-password",
+    data,
+    {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  );
+
+  return response.data;
 }
 
 export async function forgetpassword( data:forgetPasswordData){ 
 
-  
+   const response = await http.publicRequest(
+    "POST",
+    "/auth/forgot-password",
+    data,
+  );
+   return response.data;
+}
     
+
+
+
+export async function resetpassword(data: resetPasswordData) {
+  const response = await http.publicRequest(
+    "PATCH",
+    "/auth/reset-password",
+    data
+  );
+
+  return response.data;
 }

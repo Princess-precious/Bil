@@ -22,7 +22,7 @@ import EditStory from './pages/EditStory';
 import Privacy from "./pages/privacy"
 import Settings from './pages/settings';
 import About from "./pages/about"
-
+import ResetPassword from "./pages/ResetPassword"
 import ForgetPassword from './pages/ForgetPassword';
 import ChangePassword from './pages/ChangePassword';
 import EditProfile from './pages/EditProfile';
@@ -45,6 +45,7 @@ function App() {
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/about" element={<About/>}/>
+                <Route path="/reset-password" element={<ResetPassword />}/>
             </Routes>
         </BrowserRouter>
     );
