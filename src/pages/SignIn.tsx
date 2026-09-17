@@ -17,7 +17,7 @@ import {signinUser}  from "../lib/api/auth";
 import { googleLogin } from "../lib/api/auth";
 //import {useMutation}  from  "@tanstack/react-query";
 import { AuthService } from "../lib/Auth/AuthService";
-
+import { useAuth } from "../../src/useAuth";
 
 
 export default function SignIn() {
@@ -32,6 +32,7 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsSignedIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,6 +65,8 @@ export default function SignIn() {
            email,
            password,
           });
+
+          setIsSignedIn(true);
 
         console.log("Login successful: ===== Step 1", result.data);
         // AuthService.login(result.data)

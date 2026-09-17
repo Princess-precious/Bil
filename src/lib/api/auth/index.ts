@@ -1,4 +1,4 @@
-import { data } from "react-router-dom";
+
 import { http } from "../../https";
 import { AuthService } from "../../Auth/AuthService";
 
@@ -63,18 +63,22 @@ export interface resetPasswordData {
 
 
 
-export async function signinUser( data:loginData):Promise<LoginResponse>{ 
+export async function signinUser(data: loginData) {
   const response = await http.publicRequest(
     "POST",
     "/auth/login",
     data
   );
 
-  await AuthService.login(response.data)
+  console.log(
+    "This is the expected response from the api call",
+    response.data.data
+  );
 
+  AuthService.login(response.data.data);
 
-  return response.data;
-} 
+  return response.data.data;
+}
 
 
 export async function googleLogin(){ 

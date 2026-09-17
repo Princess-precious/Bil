@@ -15,8 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import {createArticle, publishArticle}  from  "../lib/api/Newstory";
+import remarkGfm  from "remark-gfm"
 import { getCategories } from "../lib/api/category";
 import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
 import Footer from "../components/footer";
