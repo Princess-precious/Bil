@@ -63,7 +63,7 @@ export const getStories = async (): Promise<Story[]> => {
 export const getMyStories = async (): Promise<Story[]> => {
   const response = await http.publicRequest(
     "GET",
-    "/articles/my-article"
+    "/articles/me/articles"
   );
 
   const articles = response.data.data.articles;
