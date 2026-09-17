@@ -12,7 +12,7 @@ export const updateArticle = async (
 ) => {
   const response = await http.publicRequest(
     "PATCH",
-    `/api/v1/articles/${id}`,
+    `/articles/${id}`,
     data
   );
 
@@ -29,7 +29,7 @@ export const updateCoverImage = async (
 
   const response = await http.publicRequest(
     "POST",
-    `/api/v1/articles/${id}/cover-image`,
+    `/articles/${id}/cover-image`,
     formData
   );
 
