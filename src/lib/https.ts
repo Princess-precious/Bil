@@ -15,6 +15,10 @@ import { AuthService } from "./Auth/AuthService";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BILLET_API_URL,
+
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 export const http = {
@@ -22,6 +26,7 @@ export const http = {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     url: string,
     data?: unknown,
+    headers?:Record<string, string>
     headers?: Record<string, string>
   ) => {
     return api.request({
@@ -38,7 +43,13 @@ export const http = {
     data?: unknown,
     headers?: Record<string, string>
   ) => {
-    const accessToken = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      throw new Error("Access token does not exist");
+    }
+
+    const isFormData = data instanceof FormData;
 
     if (!accessToken) {
       throw new Error("Access token does not exist");
@@ -49,11 +60,16 @@ export const http = {
       url,
       data,
       headers: {
+        ...(isFormData
+          ? {}
+          : { "Content-Type": "application/json" }),
+
+        Authorization: `Bearer ${token}`,
+
         ...(data instanceof FormData
           ? {}
           : { "Content-Type": "application/json" }),
         ...headers,
-        Authorization: `Bearer ${accessToken}`,
       },
     });
   },

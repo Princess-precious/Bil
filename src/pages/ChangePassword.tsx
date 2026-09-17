@@ -82,13 +82,13 @@ export default function ChangePassword() {
       return;
     }
 
-    // Check password length
+   
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
     }
 
-    // Check password match
+    
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;

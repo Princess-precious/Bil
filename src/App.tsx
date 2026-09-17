@@ -33,7 +33,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/feed" element={<Feed/>}/>
-                <Route path="/demoarticle" element={<DemoArticle/>}/>
+                <Route path="/story/:id" element={<DemoArticle/>}/>
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/new-story" element={<NewStory />} />
