@@ -5,22 +5,21 @@
  * @created          : 07/09/2026 - 13:24:32
  *
  * MODIFICATION LOG
- * - Version         : 1.0.0
+ * - Version         : 1.0.1
  * - Date            : 07/09/2026
  * - Author          : HP
- * - Modification    :
+ * - Modification    : Upload cover image via dedicated uploadCoverImage endpoint after article creation
  */
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
-import remarkGfm  from "remark-gfm"
-import {createArticle, publishArticle} from "../lib/api/articles"
-import { getCategories } from "../lib/api/category";
-import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
 import remarkGfm from "remark-gfm";
-import {createArticle, publishArticle}  from  "../lib/api/articles"; 
+import { createArticle, publishArticle, uploadCoverImage } from "../lib/api/articles";
+import { getCategories } from "../lib/api/category";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import axios from "axios";
@@ -34,20 +33,18 @@ type Draft = {
 };
 
 export default function NewStory() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  const {
-  data: categories = [],
-  isLoading: categoriesLoading,
-} = useQuery({
-  queryKey: ["categories"],
-  queryFn: getCategories,
-});
-
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
 
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -65,7 +62,6 @@ export default function NewStory() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
-  
   useEffect(() => {
     if (!editorRef.current || quillRef.current) return;
 
@@ -83,12 +79,10 @@ export default function NewStory() {
 
     quillRef.current = quill;
 
-    // Listen for changes inside the editor
     quill.on("text-change", () => {
       setContent(quill.root.innerHTML);
     });
 
-    
     const savedDraft = localStorage.getItem("storyDraft");
 
     if (savedDraft) {
@@ -118,49 +112,44 @@ export default function NewStory() {
     };
   }, []);
 
-  
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (!file) return;
 
     setImage(file);
 
     const reader = new FileReader();
-
     reader.onloadend = () => {
       setPreview(reader.result as string);
     };
-
     reader.readAsDataURL(file);
   };
 
-  
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      setAiResponse("You must be logged in to use the AI assistant.");
+      return;
+    }
 
     let requestMessage = "";
 
     if (aiAction !== null) {
-      const storyText =
-        quillRef.current?.getText().trim() || "";
+      const storyText = quillRef.current?.getText().trim() || "";
 
       if (!storyText) {
-        setAiResponse(
-          "Write or paste a story into the editor first."
-        );
+        setAiResponse("Write or paste a story into the editor first.");
         return;
       }
 
       const instructions = {
         improve:
           "Improve the clarity, flow, grammar, and engagement of this story. Return only the improved story.",
-
         quote:
           "Suggest one relevant quote that fits this story. Briefly explain why it fits and where it could be placed.",
-
         rewrite:
           "Rewrite this story to be more engaging while preserving its meaning. Return only the rewritten story.",
       };
@@ -174,8 +163,7 @@ Story:
 ${storyText}
       `.trim();
     } else {
-      const storyText =
-        quillRef.current?.getText().trim() || "";
+      const storyText = quillRef.current?.getText().trim() || "";
 
       requestMessage = `
 User instruction:
@@ -198,7 +186,7 @@ ${storyText}
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Bearer": `Bearer ${"token  "}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             message: requestMessage,
@@ -207,7 +195,6 @@ ${storyText}
       );
 
       const text = await response.text();
-
       let result;
 
       try {
@@ -223,22 +210,15 @@ ${storyText}
 
       if (!response.ok) {
         throw new Error(
-          result.detail ||
-            result.message ||
-            `HTTP Error ${response.status}`
+          result.detail || result.message || `HTTP Error ${response.status}`
         );
       }
 
       const responseContent =
-        result.data ||
-        result.response ||
-        result.message ||
-        text;
+        result.data || result.response || result.message || text;
 
       if (!responseContent) {
-        throw new Error(
-          "Backend returned an empty response."
-        );
+        throw new Error("Backend returned an empty response.");
       }
 
       setAiResponse(responseContent);
@@ -253,9 +233,6 @@ ${storyText}
     }
   };
 
-  /*
-   * Handle AI quick actions.
-   */
   const handleAIQuickAction = (
     prompt: string,
     action: "improve" | "quote" | "rewrite" | null
@@ -264,24 +241,14 @@ ${storyText}
     setAiAction(action);
   };
 
-  /*
-   * Insert AI response into Quill.
-   */
   const handleInsertToEditor = () => {
     if (quillRef.current && aiResponse) {
-      const range =
-        quillRef.current.getSelection(true);
+      const range = quillRef.current.getSelection(true);
 
-      quillRef.current.insertText(
-        range.index,
-        `\n${aiResponse}\n`
-      );
+      quillRef.current.insertText(range.index, `\n${aiResponse}\n`);
     }
   };
 
-  /*
-   * Clear AI assistant.
-   */
   const handleClearAI = () => {
     setAiPrompt("");
     setAiResponse("");
@@ -291,165 +258,152 @@ ${storyText}
   /*
    * SAVE DRAFT
    */
-  
-const handleSaveDraft = async () => {
-  if (!title.trim()) {
-    return setMessage("Please enter an article title.");
-  }
+  const handleSaveDraft = async () => {
+    if (!title.trim()) {
+      return setMessage("Please enter an article title.");
+    }
 
-  if (!content.trim()) {
-    return setMessage("Please write your story.");
-  }
+    if (!content.trim()) {
+      return setMessage("Please write your story.");
+    }
 
-  if (!category) {
-    return setMessage("Please select a category.");
-  }
+    if (!category) {
+      return setMessage("Please select a category.");
+    }
 
-  try {
-    setMessage("Saving draft...");
+    try {
+      setMessage("Saving draft...");
 
-    const article = await createArticle({
-      title,
-      content,
-      categoryId: category,
-      excerpt,
-      status: "draft",
-      file: image ?? undefined,
-    });
+      // 1. Create draft article
+      const article = await createArticle({
+        title,
+        content,
+        categoryId: category,
+        excerpt,
+        status: "draft",
+      });
 
-    console.log("Created draft:", article);
+      const articleId = article?.data?.id || article?.id;
 
-    setMessage("Draft saved successfully.");
+      // 2. Upload cover image if selected
+      if (articleId && image) {
+        setMessage("Uploading cover image...");
+        await uploadCoverImage(articleId, image);
+      }
 
-    // Keep localStorage as a temporary backup
-    const draft: Draft = {
-      title,
-      excerpt,
-      content,
-      category,
-      image: preview,
-    };
+      setMessage("Draft saved successfully.");
 
-    localStorage.setItem(
-      "storyDraft",
-      JSON.stringify(draft)
-    );
+      const draft: Draft = {
+        title,
+        excerpt,
+        content,
+        category,
+        image: preview,
+      };
 
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  } catch (error) {
-  console.error("Failed to save draft:", error);
+      localStorage.setItem("storyDraft", JSON.stringify(draft));
 
-  if (axios.isAxiosError(error)) {
-    console.error("Status:", error.response?.status);
-    console.error("Response:", error.response?.data);
-  }
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    } catch (error) {
+      console.error("Failed to save draft:", error);
 
-  setMessage("Failed to save draft. Please check the console.");
-}
-  
-};
-    
+      if (axios.isAxiosError(error)) {
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+      }
+
+      setMessage("Failed to save draft. Please check the console.");
+    }
+  };
+
+  /*
+   * PUBLISH STORY
+   */
   const handlePublish = async () => {
-  if (!title.trim()) {
-    return setMessage(
-      "Please enter an article title."
-    );
-  }
-
-  if (!content.trim()) {
-    return setMessage(
-      "Please write your story."
-    );
-  }
-
-  if (!category) {
-    return setMessage(
-      "Please select a category."
-    );
-  }
-
-  try {
-    setMessage("Creating article...");
-
-    // First create the article as a draft
-    const article = await createArticle({
-      title,
-      content,
-      categoryId: category,
-      excerpt,
-      status: "draft",
-      file: image ?? undefined,
-    });
-
-    console.log("FULL CREATED ARTICLE RESPONSE:", article);
-    console.log("ARTICLE ID:", article?.id);
-    console.log("ARTICLE DATA:", article?.data);
-    console.log("ARTICLE DATA ID:", article?.data?.id);
-    
-    const articleId = article.data.id;
-
-    if (!articleId) {
-      throw new Error(
-        "Article ID was not returned by the backend."
-      );
-    }
-      
-     const token = localStorage.getItem("accessToken");
-
-     console.log("ACCESS TOKEN EXISTS:", !!token);
-     console.log("ACCESS TOKEN:", token);
-    
-    setMessage("Publishing article...");
-
-    await publishArticle(articleId);
-
-    await queryClient.invalidateQueries({
-    queryKey: ["stories"],
-    });
-
-    await queryClient.invalidateQueries({
-     queryKey: ["my-stories"],
-    });
-
-setMessage("Story published successfully.");
-
-    
-    setTitle("");
-    setExcerpt("");
-    setContent("");
-    setCategory("");
-    setImage(null);
-    setPreview(null);
-
-    if (quillRef.current) {
-      quillRef.current.setText("");
+    if (!title.trim()) {
+      return setMessage("Please enter an article title.");
     }
 
-    handleClearAI();
-    setShowAI(false);
+    if (!content.trim()) {
+      return setMessage("Please write your story.");
+    }
 
-    
-    localStorage.removeItem("storyDraft");
+    if (!category) {
+      return setMessage("Please select a category.");
+    }
 
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
-   catch (error) {
-  console.error("Failed to publish article:", error);
+    try {
+      setMessage("Creating article...");
 
-  if (axios.isAxiosError(error)) {
-    console.error("Status:", error.response?.status);
-    console.error("Response:", error.response?.data);
-  }
+      // 1. Create base article first
+      const article = await createArticle({
+        title,
+        content,
+        categoryId: category,
+        excerpt,
+        status: "draft",
+      });
 
-  setMessage("Failed to publish article. Please check the console.");
-}
-};
+      const articleId = article?.data?.id || article?.id;
 
-  
+      if (!articleId) {
+        throw new Error("Article ID was not returned by the backend.");
+      }
+
+      // 2. Upload the cover image using its dedicated endpoint
+      if (image) {
+        setMessage("Uploading cover image...");
+        await uploadCoverImage(articleId, image);
+      }
+
+      // 3. Publish article
+      setMessage("Publishing article...");
+      await publishArticle(articleId);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["stories"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["my-stories"],
+      });
+
+      setMessage("Story published successfully.");
+
+      setTitle("");
+      setExcerpt("");
+      setContent("");
+      setCategory("");
+      setImage(null);
+      setPreview(null);
+
+      if (quillRef.current) {
+        quillRef.current.setText("");
+      }
+
+      handleClearAI();
+      setShowAI(false);
+
+      localStorage.removeItem("storyDraft");
+
+      setTimeout(() => {
+        setMessage("");
+        navigate("/feed");
+      }, 1500);
+    } catch (error) {
+      console.error("Failed to publish article:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+      }
+
+      setMessage("Failed to publish article. Please check the console.");
+    }
+  };
+
   return (
     <>
       <main className="relative mx-auto w-full max-w-6xl px-6 py-24 md:px-12 md:py-32">
@@ -466,12 +420,7 @@ setMessage("Story published successfully.");
             className="flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800"
           >
             <span>✨</span>
-
-            <span>
-              {showAI
-                ? "Close Assistant"
-                : "Ask AI"}
-            </span>
+            <span>{showAI ? "Close Assistant" : "Ask AI"}</span>
           </button>
         </header>
 
@@ -491,9 +440,7 @@ setMessage("Story published successfully.");
               type="text"
               placeholder="Article Title"
               value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full border-b border-gray-200 pb-3 text-3xl font-bold outline-none focus:border-black placeholder:text-gray-300"
             />
 
@@ -501,17 +448,12 @@ setMessage("Story published successfully.");
               placeholder="Write a brief excerpt..."
               rows={1}
               value={excerpt}
-              onChange={(e) =>
-                setExcerpt(e.target.value)
-              }
+              onChange={(e) => setExcerpt(e.target.value)}
               className="w-full resize-none border-b border-gray-200 pb-3 text-lg text-gray-600 outline-none focus:border-black placeholder:text-gray-300"
             />
 
             <div className="min-h-[450px] border-y border-gray-200 py-4">
-              <div
-                ref={editorRef}
-                className="min-h-[400px] w-full"
-              />
+              <div ref={editorRef} className="min-h-[400px] w-full" />
             </div>
           </div>
 
@@ -525,22 +467,18 @@ setMessage("Story published successfully.");
 
               <select
                 value={category}
-                onChange={(e) =>
-                  setCategory(e.target.value)
-                }
+                onChange={(e) => setCategory(e.target.value)}
                 className="w-full border-b border-gray-300 bg-transparent py-2.5 text-sm text-gray-800 outline-none focus:border-black"
               >
                 <option value="" disabled hidden>
                   Select Category
                 </option>
-                  
-                  {categories.map((item) => (
+
+                {categories.map((item: any) => (
                   <option key={item.id} value={item.id}>
-                     {item.name}
-                    </option>
-                    ))}
-                
-               
+                    {item.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -593,15 +531,26 @@ setMessage("Story published successfully.");
           </aside>
         </form>
 
+        <button
+          onClick={() => navigate("/feed")}
+          className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+        >
+          ←
+        </button>
+
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+        >
+          ↑
+        </button>
+
         {/* AI ASSISTANT */}
         {showAI && (
           <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-gray-200 bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
               <div className="flex items-center gap-2">
-                <span className="text-lg">
-                  ✨
-                </span>
-
+                <span className="text-lg">✨</span>
                 <h3 className="font-semibold text-gray-900">
                   AI Writing Assistant
                 </h3>
@@ -627,26 +576,22 @@ setMessage("Story published successfully.");
                   {[
                     {
                       label: "Improve writing",
-                      prompt:
-                        "Help me improve the writing in my story",
+                      prompt: "Help me improve the writing in my story",
                       action: "improve",
                     },
                     {
                       label: "Suggest quote",
-                      prompt:
-                        "Suggest a relevant quote for my story",
+                      prompt: "Suggest a relevant quote for my story",
                       action: "quote",
                     },
                     {
                       label: "Continue writing",
-                      prompt:
-                        "Help me continue writing my story",
+                      prompt: "Help me continue writing my story",
                       action: null,
                     },
                     {
                       label: "Rewrite",
-                      prompt:
-                        "Rewrite my story to make it more engaging",
+                      prompt: "Rewrite my story to make it more engaging",
                       action: "rewrite",
                     },
                   ].map((item) => (
@@ -675,9 +620,7 @@ setMessage("Story published successfully.");
               <div className="relative rounded-lg border border-gray-200 bg-gray-50 p-2 focus-within:border-black focus-within:bg-white">
                 <textarea
                   value={aiPrompt}
-                  onChange={(e) =>
-                    setAiPrompt(e.target.value)
-                  }
+                  onChange={(e) => setAiPrompt(e.target.value)}
                   placeholder="Ask AI for suggestions, rewrites, or quotes..."
                   rows={3}
                   className="w-full resize-none bg-transparent p-2 text-sm outline-none placeholder:text-gray-400"
@@ -695,15 +638,10 @@ setMessage("Story published successfully.");
                   <button
                     type="button"
                     onClick={handleAIRequest}
-                    disabled={
-                      aiLoading ||
-                      !aiPrompt.trim()
-                    }
+                    disabled={aiLoading || !aiPrompt.trim()}
                     className="rounded-md bg-black px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-gray-800 disabled:opacity-40"
                   >
-                    {aiLoading
-                      ? "Thinking..."
-                      : "Generate"}
+                    {aiLoading ? "Thinking..." : "Generate"}
                   </button>
                 </div>
               </div>
@@ -718,9 +656,7 @@ setMessage("Story published successfully.");
 
                     <button
                       type="button"
-                      onClick={
-                        handleInsertToEditor
-                      }
+                      onClick={handleInsertToEditor}
                       className="text-xs font-medium text-black hover:underline"
                     >
                       + Insert into Story
@@ -728,9 +664,7 @@ setMessage("Story published successfully.");
                   </div>
 
                   <div className="prose prose-sm text-sm leading-relaxed text-gray-700">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                    >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {aiResponse}
                     </ReactMarkdown>
                   </div>

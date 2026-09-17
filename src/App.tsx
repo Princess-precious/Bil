@@ -26,6 +26,8 @@ import ResetPassword from "./pages/ResetPassword"
 import ForgetPassword from './pages/ForgetPassword';
 import ChangePassword from './pages/ChangePassword';
 import EditProfile from './pages/EditProfile';
+import OAuthSuccess from './components/OAuthSuccess';
+
 
 function App() {
     return(
@@ -46,6 +48,7 @@ function App() {
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/about" element={<About/>}/>
                 <Route path="/reset-password" element={<ResetPassword />}/>
+                <Route path="/oauth-success" element={<OAuthSuccess />} />
             </Routes>
         </BrowserRouter>
     );
