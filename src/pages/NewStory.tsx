@@ -16,9 +16,12 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import {createArticle, publishArticle}  from  "../lib/api/Newstory"; 
+import {createArticle, publishArticle}  from  "../lib/api/Newstory";
+import { getCategories } from "../lib/api/category";
+import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
+import axios from "axios";
 
 type Draft = {
   title: string;
@@ -29,10 +32,20 @@ type Draft = {
 };
 
 export default function NewStory() {
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+
+  const {
+  data: categories = [],
+  isLoading: categoriesLoading,
+} = useQuery({
+  queryKey: ["categories"],
+  queryFn: getCategories,
+});
+
 
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -50,10 +63,7 @@ export default function NewStory() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
-  /*
-   * Create the Quill editor
-   * and restore saved draft if one exists.
-   */
+  
   useEffect(() => {
     if (!editorRef.current || quillRef.current) return;
 
@@ -76,7 +86,7 @@ export default function NewStory() {
       setContent(quill.root.innerHTML);
     });
 
-    // Restore saved draft
+    
     const savedDraft = localStorage.getItem("storyDraft");
 
     if (savedDraft) {
@@ -106,12 +116,7 @@ export default function NewStory() {
     };
   }, []);
 
-  /*
-   * Handle cover image upload.
-   *
-   * FileReader converts the image into a Data URL
-   * so it can be stored in localStorage.
-   */
+  
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -130,9 +135,7 @@ export default function NewStory() {
     reader.readAsDataURL(file);
   };
 
-  /*
-   * Send request to AI backend.
-   */
+  
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
 
@@ -193,6 +196,7 @@ ${storyText}
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Bearer": `Bearer ${"token  "}`,
           },
           body: JSON.stringify({
             message: requestMessage,
@@ -285,7 +289,37 @@ ${storyText}
   /*
    * SAVE DRAFT
    */
-  const handleSaveDraft = () => {
+  
+const handleSaveDraft = async () => {
+  if (!title.trim()) {
+    return setMessage("Please enter an article title.");
+  }
+
+  if (!content.trim()) {
+    return setMessage("Please write your story.");
+  }
+
+  if (!category) {
+    return setMessage("Please select a category.");
+  }
+
+  try {
+    setMessage("Saving draft...");
+
+    const article = await createArticle({
+      title,
+      content,
+      categoryId: category,
+      excerpt,
+      status: "draft",
+      file: image ?? undefined,
+    });
+
+    console.log("Created draft:", article);
+
+    setMessage("Draft saved successfully.");
+
+    // Keep localStorage as a temporary backup
     const draft: Draft = {
       title,
       excerpt,
@@ -299,39 +333,87 @@ ${storyText}
       JSON.stringify(draft)
     );
 
-    setMessage("Draft saved successfully.");
-
     setTimeout(() => {
       setMessage("");
     }, 3000);
-  };
+  } catch (error) {
+  console.error("Failed to save draft:", error);
 
-  /*
-   * PUBLISH STORY
-   */
-  const handlePublish = () => {
-    if (!title.trim()) {
-      return setMessage(
-        "Please enter an article title."
-      );
-    }
+  if (axios.isAxiosError(error)) {
+    console.error("Status:", error.response?.status);
+    console.error("Response:", error.response?.data);
+  }
 
-    if (!content.trim()) {
-      return setMessage(
-        "Please write your story."
-      );
-    }
-
-    if (!category) {
-      return setMessage(
-        "Please select a category."
-      );
-    }
-
-    setMessage(
-      "Story published successfully."
+  setMessage("Failed to save draft. Please check the console.");
+}
+  
+};
+    
+  const handlePublish = async () => {
+  if (!title.trim()) {
+    return setMessage(
+      "Please enter an article title."
     );
+  }
 
+  if (!content.trim()) {
+    return setMessage(
+      "Please write your story."
+    );
+  }
+
+  if (!category) {
+    return setMessage(
+      "Please select a category."
+    );
+  }
+
+  try {
+    setMessage("Creating article...");
+
+    // First create the article as a draft
+    const article = await createArticle({
+      title,
+      content,
+      categoryId: category,
+      excerpt,
+      status: "draft",
+      file: image ?? undefined,
+    });
+
+    console.log("FULL CREATED ARTICLE RESPONSE:", article);
+    console.log("ARTICLE ID:", article?.id);
+    console.log("ARTICLE DATA:", article?.data);
+    console.log("ARTICLE DATA ID:", article?.data?.id);
+    
+    const articleId = article.data.id;
+
+    if (!articleId) {
+      throw new Error(
+        "Article ID was not returned by the backend."
+      );
+    }
+      
+     const token = localStorage.getItem("accessToken");
+
+     console.log("ACCESS TOKEN EXISTS:", !!token);
+     console.log("ACCESS TOKEN:", token);
+    
+    setMessage("Publishing article...");
+
+    await publishArticle(articleId);
+
+    await queryClient.invalidateQueries({
+    queryKey: ["stories"],
+    });
+
+    await queryClient.invalidateQueries({
+     queryKey: ["my-stories"],
+    });
+
+setMessage("Story published successfully.");
+
+    
     setTitle("");
     setExcerpt("");
     setContent("");
@@ -346,14 +428,26 @@ ${storyText}
     handleClearAI();
     setShowAI(false);
 
-    // Remove draft after publishing
+    
     localStorage.removeItem("storyDraft");
 
     setTimeout(() => {
       setMessage("");
     }, 3000);
-  };
+  }
+   catch (error) {
+  console.error("Failed to publish article:", error);
 
+  if (axios.isAxiosError(error)) {
+    console.error("Status:", error.response?.status);
+    console.error("Response:", error.response?.data);
+  }
+
+  setMessage("Failed to publish article. Please check the console.");
+}
+};
+
+  
   return (
     <>
       <main className="relative mx-auto w-full max-w-6xl px-6 py-24 md:px-12 md:py-32">
@@ -437,22 +531,14 @@ ${storyText}
                 <option value="" disabled hidden>
                   Select Category
                 </option>
-
-                <option value="technology">
-                  Technology
-                </option>
-
-                <option value="science">
-                  Science
-                </option>
-
-                <option value="art">
-                  Art
-                </option>
-
-                <option value="culture">
-                  Culture
-                </option>
+                  
+                  {categories.map((item) => (
+                  <option key={item.id} value={item.id}>
+                     {item.name}
+                    </option>
+                    ))}
+                
+               
               </select>
             </div>
 

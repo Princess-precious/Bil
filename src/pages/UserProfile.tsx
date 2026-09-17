@@ -19,6 +19,7 @@ import Footer from "../components/footer";
 
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../lib/api/users";
+import { getMyStories } from "../lib/api/stories";
 
 type Draft = {
   title?: string;
@@ -33,7 +34,14 @@ export default function UserProfile() {
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
 });
-
+     const {
+  data: stories = [],
+  isLoading: storiesLoading,
+  error: storiesError,
+} = useQuery({
+  queryKey: ["my-stories"],
+  queryFn: getMyStories,
+});
   const navigate = useNavigate();
 
 //PROFILE INFO
@@ -55,33 +63,8 @@ export default function UserProfile() {
 
   // ================= MY STORIES =================
 
-  const stories = [
-    {
-      id: 1,
-      title: "The Weight of Silence: Brutalism in the Modern Era",
-      content:
-        "An exploration of how heavy concrete forms are being reimagined to create spaces of profound tranquility and quiet contemplation in bustling metropolises.",
-      image: "/profileHero.jpg",
-      category: "Architecture",
-    },
-    {
-      id: 2,
-      title: "Texture & Time: Materials That Age With Grace",
-      content:
-        "A look at how materials change and develop character over time.",
-      image: "/story.jpg",
-      category: "Design Theory",
-    },
-    {
-      id: 3,
-      title: "Negative Space in City Planning",
-      content:
-        "Why the empty spaces between our monuments define the character of our cities more than the structures themselves.",
-      image: "/profileHero.jpg",
-      category: "Urbanism",
-    },
-  ];
-
+ 
+   
   // ================= FEED STORIES =================
 
   const feedStories = [
@@ -195,11 +178,11 @@ export default function UserProfile() {
     }
   };
 
-  // ================= EDIT STORY =================
-
-  const handleEditStory = (storyId: number) => {
-    navigate(`/edit-story/${storyId}`);
-  };
+  const handleEditStory = (story: (typeof stories)[number]) => {
+  navigate(`/edit-story/${story.id}`, {
+    state: { story },
+  });
+};
 
   // ================= REMOVE SAVED STORY =================
 
@@ -270,10 +253,10 @@ export default function UserProfile() {
 
             <div className="flex items-center gap-8 text-base text-gray-900">
               <div>
-                <span className="font-bold text-black">
-                  142
-                </span>{" "}
-                Stories
+               <span className="font-bold text-black">
+                  {stories.length}
+                   </span>{" "}
+                     Stories
               </div>
             </div>
 
@@ -375,148 +358,96 @@ export default function UserProfile() {
 
         </div>
 
-        {/* ======================================================
-            MY STORIES
-        ====================================================== */}
+       {activeTab === "my-stories" && (
+  <section className="flex flex-col gap-16">
 
-        {activeTab === "my-stories" && (
-          <section className="flex flex-col gap-16">
+    {storiesLoading ? (
+      <div className="py-20 text-center">
+        <p className="text-gray-500">
+          Loading your stories...
+        </p>
+      </div>
+    ) : storiesError ? (
+      <div className="border-y border-gray-300 py-20 text-center">
+        <h2 className="text-2xl font-bold">
+          Failed to load stories
+        </h2>
 
-            {/* STORY 1 */}
+        <p className="mt-3 text-gray-500">
+          Please try again later.
+        </p>
+      </div>
+    ) : stories.length === 0 ? (
+      <div className="border-y border-gray-300 py-20 text-center">
+        <h2 className="text-3xl font-bold">
+          No stories yet
+        </h2>
 
-            <article className="border-b border-gray-300 pb-16">
+        <p className="mx-auto mt-4 max-w-md text-gray-500">
+          Your published stories will appear here.
+        </p>
 
-              <div className="group flex flex-col gap-6">
+        <button
+          type="button"
+          onClick={() => navigate("/new-story")}
+          className="mt-8 bg-black px-6 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+        >
+          Create a Story
+        </button>
+      </div>
+    ) : (
+      stories.map((story) => (
+        <article
+          key={story.id}
+          className="border-b border-gray-300 pb-16"
+        >
+          <div className="group flex flex-col gap-6">
 
-                <div className="aspect-video w-full overflow-hidden">
-                  <img
-                    src={stories[0].image}
-                    alt={stories[0].title}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
+            <div className="aspect-video w-full overflow-hidden">
+              <img
+                src={story.coverImage || "/profileHero.jpg"}
+                alt={story.title}
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            </div>
 
-                <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
 
-                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                    {stories[0].category}
-                  </span>
+              <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                {story.category || "Uncategorized"}
+              </span>
 
-                  <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600 md:text-4xl">
-                    {stories[0].title}
-                  </h2>
+              <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600 md:text-4xl">
+                {story.title}
+              </h2>
 
-                  <p className="line-clamp-2 text-base text-gray-600">
-                    {stories[0].content}
-                  </p>
+              <p className="line-clamp-2 text-base text-gray-600">
+                {story.excerpt}
+              </p>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleEditStory(stories[0].id)
-                    }
-                    className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
-                  >
-                    Edit Story
-                  </button>
+              <button
+                type="button"
+                onClick={() => handleEditStory(story)}
+                className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+              >
+                Edit Story
+              </button>
 
-                </div>
+            </div>
+          </div>
+        </article>
+      ))
+    )}
 
-              </div>
+  </section>
+)}
+        
+                  
+          
+               
+                  
 
-            </article>
-
-            {/* STORY 2 */}
-
-            <article className="border-b border-gray-300 pb-16">
-
-              <div className="group flex flex-col gap-6">
-
-                <div className="aspect-video w-full overflow-hidden">
-                  <img
-                    src={stories[1].image}
-                    alt={stories[1].title}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3">
-
-                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                    {stories[1].category}
-                  </span>
-
-                  <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600 md:text-4xl">
-                    {stories[1].title}
-                  </h2>
-
-                  <p className="line-clamp-2 text-base text-gray-600">
-                    {stories[1].content}
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleEditStory(stories[1].id)
-                    }
-                    className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
-                  >
-                    Edit Story
-                  </button>
-
-                </div>
-
-              </div>
-
-            </article>
-
-            {/* STORY 3 */}
-
-            <article>
-
-              <div className="group flex flex-col gap-6">
-
-                <div className="aspect-video w-full overflow-hidden">
-                  <img
-                    src={stories[2].image}
-                    alt={stories[2].title}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3">
-
-                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                    {stories[2].category}
-                  </span>
-
-                  <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600 md:text-4xl">
-                    {stories[2].title}
-                  </h2>
-
-                  <p className="line-clamp-2 text-base text-gray-600">
-                    {stories[2].content}
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleEditStory(stories[2].id)
-                    }
-                    className="w-fit bg-black px-5 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
-                  >
-                    Edit Story
-                  </button>
-
-                </div>
-
-              </div>
-
-            </article>
-
-          </section>
-        )}
-
+               
         {/* ======================================================
             SAVED STORIES
         ====================================================== */}

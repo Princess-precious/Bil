@@ -2,16 +2,23 @@
     * @description      : 
     * @author           : HP
     * @group            : 
-    * @created          : 14/09/2026 - 13:28:00
+    * @created          : 16/09/2026 - 14:23:42
     * 
     * MODIFICATION LOG
     * - Version         : 1.0.0
-    * - Date            : 14/09/2026
+    * - Date            : 16/09/2026
     * - Author          : HP
     * - Modification    : 
 **/
+
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {signinUser}  from "../lib/api/auth";
+import { googleLogin } from "../lib/api/auth";
+//import {useMutation}  from  "@tanstack/react-query";
+import { AuthService } from "../lib/Auth/AuthService";
+
+
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -26,7 +33,7 @@ export default function SignIn() {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setError("");
@@ -50,48 +57,52 @@ export default function SignIn() {
       return;
     }
 
-    // Start loading
-    setIsLoading(true);
+         setIsLoading(true);
 
-    // Temporary login simulation
-    setTimeout(() => {
-      console.log("Login details:", {
-        email,
-        password,
-        rememberMe,
-      });
+           try {
+        const result = await signinUser({
+           email,
+           password,
+          });
 
-      setIsLoading(false);
-      setSuccess("Signed in successfully!");
+        console.log("Login successful: ===== Step 1", result.data);
+        // AuthService.login(result.data)
 
-      if (rememberMe) {
-        localStorage.setItem("rememberMe", "true");
-      }
 
-      // Clear form
+
+       setSuccess("Signed in successfully!");
+
+       setIsLoading(false);
+
+     if (rememberMe) {
+    localStorage.setItem("rememberMe", "true");
+     }
+
       setEmail("");
       setPassword("");
 
-      // Navigate after login simulation
-      navigate("/new-story");
-    }, 1500);
+       navigate("/feed");
+      } 
+      catch (error: any) {
+  console.error("Login failed:", error);
+  console.log("Status:", error.response?.status);
+  console.log("Backend response:", error.response?.data);
+
+  setError(
+    error.response?.data?.detail ||
+    error.response?.data?.message ||
+    "Login failed. Please try again."
+  );
+
+  setIsLoading(false);
+}
+
+      
   };
 
   const handleForgotPassword = () => {
-    if (!email.trim()) {
-      setError("Please enter your email address first.");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    setError("");
-    setSuccess("Password reset instructions have been sent to your email.");
-    navigate("/forget-password")
-  };
+  navigate("/forget-password");
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
@@ -139,7 +150,7 @@ export default function SignIn() {
 
             {/* HEADING */}
             <h2 className="text-2xl font-semibold  text-center text-gray-900">
-              Login!
+              Login
             </h2>
 
             {/* <p className="mt-1 text-sm leading-5 text-gray-900">
@@ -169,10 +180,8 @@ export default function SignIn() {
 
               <button
             type="button"
-             onClick={() => {
-             console.log("Continue with Google clicked");
-              }}
-              className="flex w-full items-center justify-center gap-3 border border-gray-300 bg-white px-5 py-3 font-fira-sans text-sm transition hover:bg-gray-50"
+             onClick={googleLogin}
+              className="flex w-full items-center justify-center gap-3 border border-gray-700 bg-white px-5 py-3 font-fira-sans text-sm transition hover:bg-white rounded-3xl"
               >
            <svg
            width="20"
@@ -214,7 +223,7 @@ export default function SignIn() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
+                  className="w-full border border-gray-700 bg-white px-4 py-2.5 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  "
                 />
               </div>
 
@@ -230,7 +239,7 @@ export default function SignIn() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-700 bg-white px-4 py-2.5 pr-20 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  hover:placeholder:text-white"
+                    className="w-full border border-gray-700 bg-white px-4 py-2.5 pr-20 text-sm rounded-3xl outline-none focus:border-black placeholder:text-gray-800  "
                   />
 
                   <button

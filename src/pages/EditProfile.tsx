@@ -44,7 +44,7 @@ export default function EditProfile() {
       console.error("Failed to update profile image:", error);
     },
   });
-  //PROFILE INFORMATION
+  
 
   const [name, setName] = useState("Elias Thorne")
   const [username, setUsername] = useState("");;
@@ -68,7 +68,6 @@ export default function EditProfile() {
 
   
 
-  // ================= IMAGE CHANGE =================
 
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -84,7 +83,7 @@ export default function EditProfile() {
     setProfileImage(imageUrl);
   };
 
-  //SAVE CHANGES
+  
 
   const handleSaveChanges = async () => {
     try {
@@ -107,13 +106,11 @@ export default function EditProfile() {
   return (
     <div className="flex min-h-screen flex-col  text-gray-900 antialiased">
 
-      {/* ================= NAVBAR ================= */}
 
       <Navbar />
 
       <main className="mx-auto w-full max-w-4xl flex-grow px-6 pb-32 pt-24 md:px-12">
 
-        {/* ================= HEADER ================= */}
 
         <div className="mb-12">
 
@@ -135,12 +132,10 @@ export default function EditProfile() {
 
         </div>
 
-        {/* ================= EDIT PROFILE FORM ================= */}
 
         <div className="rounded-md bg-[#f5f5f5] p-6 md:p-15">
 
-          {/* ================= PROFILE IMAGE ================= */}
-
+          
           <div className="mb-8">
 
             
@@ -170,8 +165,7 @@ export default function EditProfile() {
 
           </div>
 
-          {/* ================= NAME ================= */}
-
+          
           <div className="mb-6">
 
             <label className="mb-2 block text-sm font-semibold">
@@ -200,8 +194,7 @@ export default function EditProfile() {
             />
           </div>
 
-          {/* ================= BIO ================= */}
-
+          
           <div className="mb-8">
 
             <label className="mb-2 block text-sm font-semibold">
@@ -219,8 +212,7 @@ export default function EditProfile() {
 
           
 
-          {/* ================= CHANGE PASSWORD ================= */}
-
+          
           <button
             type="button"
             onClick={() => navigate("/change-password")}
@@ -229,8 +221,7 @@ export default function EditProfile() {
             Change Password
           </button>
 
-          {/* ================= ACTIONS ================= */}
-
+          
           <div className="flex gap-4">
 
             <button
