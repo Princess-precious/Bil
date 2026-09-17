@@ -159,7 +159,6 @@ export default function Feed() {
     });
   };
 
-  // Navigate to full story reader page
   const handleOpenStory = (storyId: string) => {
     navigate(`/story/${storyId}`);
   };
@@ -222,47 +221,39 @@ export default function Feed() {
             )}
 
             {visibleStories.length > 0 ? (
-              visibleStories.map((story) => (
-                <article
-                  id={story.id}
-                  key={story.id}
-                  className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
-                >
-                  <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
-                    <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
-                      <span className="text-[#B35D52]">
-                        {story.category}
-                      </span>
+              visibleStories.map((story) => {
+                // Safely extract cover image property candidates
+                const rawImage =
+                  story.coverImage ||
+                  (story as any).imageUrl ||
+                  (story as any).image;
 
-                      <span className="text-[#8A8581]">
-                        /
-                      </span>
+                // Check that the image URL is a non-empty string with non-whitespace content
+                const imageSrc =
+                  typeof rawImage === "string" && rawImage.trim() !== ""
+                    ? rawImage
+                    : null;
 
-                      <span className="text-[#5C5855]">
-                        {story.author}
-                      </span>
-                    </div>
+                return (
+                  <article
+                    id={story.id}
+                    key={story.id}
+                    className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
+                  >
+                    <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
+                      <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
+                        <span className="text-[#B35D52]">
+                          {story.category}
+                        </span>
 
-                    {/* Clickable Title */}
-                    <h2
-                      onClick={() => handleOpenStory(story.id)}
-                      className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
-                    >
-                      {story.title}
-                    </h2>
+                        <span className="text-[#8A8581]">
+                          /
+                        </span>
 
-                    <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
-                      {story.excerpt}
-                    </p>
-
-                    <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
-                      <span>
-                        {story.date
-                          ? new Date(story.date).toLocaleDateString()
-                          : ""}
-                      </span>
-
-                      <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+                        <span className="text-[#5C5855]">
+                          {story.author}
+                        </span>
+                      </div>
 
                       <button
                         type="button"
@@ -288,33 +279,85 @@ export default function Feed() {
                             SavedStoryIDs.includes(story.id)
                               ? "fill-black text-black"
                               : "text-black"
-                          }
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Clickable Cover Image */}
-                  <div className="order-first md:order-last md:col-span-5">
-                    <figure>
-                      <div
+                      <h2
                         onClick={() => handleOpenStory(story.id)}
-                        className="group/img relative aspect-[4/3] cursor-pointer overflow-hidden bg-[#F4F0EB]"
+                        className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
                       >
-                        {story.coverImage && (
-                          <img
-                            src={story.coverImage}
-                            alt={story.title}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-105"
-                          />
-                        )}
+                        {story.title}
+                      </h2>
 
-                        <div className="pointer-events-none absolute inset-0 bg-[#1A1A1A]/5" />
+                      <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
+                        {story.excerpt}
+                      </p>
+
+                      <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+                        <span>
+                          {story.date
+                            ? new Date(story.date).toLocaleDateString()
+                            : ""}
+                        </span>
+
+                        <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+
+                        <button
+                          type="button"
+                          onClick={() => handleShare(story)}
+                          className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
+                        >
+                          Share
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSaveStory(story.id)}
+                          aria-label={
+                            savedStoryIds.includes(story.id)
+                              ? "Unsave story"
+                              : "Save story"
+                          }
+                        >
+                          <Bookmark
+                            size={20}
+                            strokeWidth={1.5}
+                            className={
+                              savedStoryIds.includes(story.id)
+                                ? "fill-black text-black"
+                                : "text-black"
+                            }
+                          />
+                        </button>
                       </div>
-                    </figure>
-                  </div>
-                </article>
-              ))
+                    </div>
+
+                    {/* Clickable Cover Image */}
+                    <div className="order-first md:order-last md:col-span-5">
+                      <figure>
+                        <div
+                          onClick={() => handleOpenStory(story.id)}
+                          className="group/img relative aspect-[4/3] cursor-pointer overflow-hidden bg-[#F4F0EB]"
+                        >
+                          {imageSrc ? (
+                            <img
+                              src={imageSrc}
+                              alt={story.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center font-hanken text-xs text-[#8A8581]">
+                              No Cover Image
+                            </div>
+                          )}
+
+                          <div className="pointer-events-none absolute inset-0 bg-[#1A1A1A]/5" />
+                        </div>
+                      </figure>
+                    </div>
+                  </article>
+                );
+              })
             ) : (
               <div className="border-y border-[#ECE6E0] py-20 text-center">
                 <h2 className="font-playfair text-2xl">

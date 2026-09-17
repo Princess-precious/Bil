@@ -44,13 +44,15 @@ export const http = {
   headers?: Record<string, string>
 ) => {
     const token = localStorage.getItem("accessToken");
-
-    if (!token) {
+     if (!token) {
       throw new Error("Access token does not exist");
     }
 
+    
+
     const isFormData = data instanceof FormData;
 
+    
     return api.request({
       method,
       url,
@@ -62,6 +64,7 @@ export const http = {
 
         Authorization: `Bearer ${token}`,
 
+       
         ...headers,
       },
     });

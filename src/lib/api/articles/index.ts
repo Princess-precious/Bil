@@ -38,7 +38,8 @@ export const createArticle = async (data: CreateArticleData) => {
   }
 
   if (data.file) {
-    formData.append("file", data.file);
+    // Matched key to backend 'coverImage'
+    formData.append("coverImage", data.file);
   }
 
   const idempotencyKey = crypto.randomUUID();
@@ -100,3 +101,17 @@ export const getSavedArticles = async () => {
   return response.data;
 };
 
+
+export const uploadCoverImage = async (articleId: string, file: File) => {
+  const formData = new FormData();
+  
+  formData.append("coverImage", file);
+
+  const response = await http.privateRequest(
+    "POST",
+    `/articles/${articleId}/coverimage`,
+    formData
+  );
+
+  return response.data;
+};
