@@ -42,8 +42,11 @@ export interface Story {
   content: string;
 }
 
-export const getStories = async (): Promise<Story[]> => {
-  const response = await http.publicRequest("GET", "/articles");
+  export const getStories = async (search?: string): Promise<Story[]> => {
+  const response = await http.publicRequest(
+    "GET",
+    search ? `/articles?search=${encodeURIComponent(search)}` : "/articles"
+  );
 
   const articles = response.data.data.articles;
 

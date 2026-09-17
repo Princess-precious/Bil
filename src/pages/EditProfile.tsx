@@ -93,22 +93,35 @@ export default function EditProfile() {
   
 
   const handleSaveChanges = async () => {
-    try {
-      await updateProfileMutation.mutateAsync({
-        name,
-        username,
-        bio,
-      });
+  try {
+    console.log("1. Save button clicked");
 
-      if (imageFile) {
-        await updateImageMutation.mutateAsync(imageFile);
-      }
+    await updateProfileMutation.mutateAsync({
+      name,
+      username,
+      bio,
+    });
 
-      navigate("/user-profile");
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-    }
-  };
+    console.log("2. Profile information updated");
+
+    if (imageFile) {
+      console.log("3. Uploading image:", imageFile);
+      console.log("File name:", imageFile.name);
+      console.log("File type:", imageFile.type);
+      console.log("File size:", imageFile.size);
+
+      await updateImageMutation.mutateAsync(imageFile);
+
+      console.log("4. Image uploaded");
+    }    
+
+    console.log("5. Navigating to profile");
+
+    navigate("/user-profile");
+  } catch (error) {
+    console.error("SAVE CHANGES ERROR:", error);
+  }
+};
 
    
   return (

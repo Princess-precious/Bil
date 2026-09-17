@@ -23,18 +23,24 @@ import { http } from "../https";
 export class AuthService {
 
     static login(data) {
-    console.log("This is auth user data from authservice");
+    console.log("LOGIN DATA RECEIVED BY AUTHSERVICE:", data);
 
     localStorage.setItem("user", JSON.stringify(data));
 
     if (data.accessToken) {
+      console.log("ACCESS TOKEN FOUND");
       localStorage.setItem("accessToken", data.accessToken);
+    } else {
+      console.log("NO ACCESS TOKEN FOUND");
     }
 
     if (data.refreshToken) {
+      console.log("REFRESH TOKEN FOUND");
       localStorage.setItem("refreshToken", data.refreshToken);
+    } else {
+      console.log("NO REFRESH TOKEN FOUND");
     }
-  }
+}
   //Ensure user token is collected and stored to localstorage
 
   static async logout() {

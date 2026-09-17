@@ -15,6 +15,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AuthService } from "../lib/Auth/AuthService";
 import { useAuth } from "../useAuth";
+import { getStories } from "../../src/lib/api/stories";
+import type { Story } from "../../src/lib/api/stories";
 
 type NavbarProps ={
  className?: string;
@@ -29,19 +31,37 @@ function Navbar({className}:NavbarProps) {
   const isHome = location.pathname === "/"
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [searchResults, setSearchResults] = useState<Story[]>([]);
   const { setIsSignedIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await AuthService.logout();
-    } catch (error) {
-      console.error("Logout API failed:", error);
-    } finally {
-      setIsSignedIn(false);
-      navigate("/");
+  const handleSearch = async (value: string) => {
+    setSearchQuery(value);
+
+    if (!value.trim()) {
+      setSearchResults([]);
+      return;
     }
-  };
+
+    try {
+      const results = await getStories(value);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    }
+  };  
+
+    const handleLogout = async () => {
+      try {
+        await AuthService.logout();
+      } catch (error) {
+        console.error("Logout API failed:", error);
+      } finally {
+        setIsSignedIn(false);
+        navigate("/");
+      }
+    };
 
   
   
@@ -70,7 +90,7 @@ function Navbar({className}:NavbarProps) {
               <input
                 type="search"
                 placeholder="Search..."
-                onChange = {(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
                 onFocus = {() => setSearchFocused(true)}
                 className="border-b border-black  p-2 outline-none text-xs absolute left-1/2 -translate-x-1/2 animate-search  md:w-[700px]"
               />
@@ -79,7 +99,7 @@ function Navbar({className}:NavbarProps) {
             {showSearchBar && searchFocused && (
               <div className="flex flex-col bg-[#F0EDE8] border border-[#D6D0C8] md:w-[700px] h-auto absolute top-[65px] left-1/2 -translate-x-1/2 rounded-xl shadow-lg p-2 gap-2 ">
                 {/* SUGGESTIONS */}
-                {!searchQuery && (
+                {/* {!searchQuery && (
                   <div className="flex flex-row gap-2 flex-wrap ">
                     <div className="border border-[#AFA8A0] bg-[#E5E0D9] text-[#252321] rounded-2xl p-2 text-[10px]  hover:opacity-80 active:opacity-80 ">
                       <p>Entertainment Stories</p>
@@ -101,25 +121,36 @@ function Navbar({className}:NavbarProps) {
                     </div>
                   
                   </div>
-                )}
+                )} */}
 
                 {/* Searches */}
                 {searchQuery && (
                   <div className="flex flex-col">
-                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
-                      <p>Aesthetics</p>
-                    </div>
+                    {searchResults.length > 0 ? (
+                      searchResults.map((story) => (
+                        <div
+                          key={story.id}
+                          className="flex flex-row text-[#252321] p-2 text-[10px] hover:opacity-80 active:opacity-80 items-center gap-1 cursor-pointer"
+                          onClick={() => navigate(`/story/${story.id}`)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="10px"
+                            viewBox="0 -960 960 960"
+                            width="10px"
+                            fill="currentColor"
+                          >
+                            <path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z" />
+                          </svg>
 
-                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
-                      <p>Aesthetics</p>
-                    </div>
-
-                    <div className="flex flex-row text-[#252321] p-2 text-[10px]  hover:opacity-80 active:opacity-80 items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="currentColor"><path d="M704-240 320-624v344h-80v-480h480v80H376l384 384-56 56Z"/></svg>
-                      <p>Aesthetics</p>
-                    </div>
+                          <p>{story.title}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-[#252321] p-2 text-[10px]">
+                        No articles found.
+                      </p>
+                    )}
                   </div>
                 )}
 

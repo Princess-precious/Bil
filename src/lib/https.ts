@@ -27,7 +27,7 @@ export const http = {
     url: string,
     data?: unknown,
     headers?:Record<string, string>
-    headers?: Record<string, string>
+    
   ) => {
     return api.request({
       method,
@@ -37,12 +37,12 @@ export const http = {
     });
   },
 
-  privateRequest: async (
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-    url: string,
-    data?: unknown,
-    headers?: Record<string, string>
-  ) => {
+ privateRequest: async (
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+  url: string,
+  data?: unknown,
+  headers?: Record<string, string>
+) => {
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
@@ -50,10 +50,6 @@ export const http = {
     }
 
     const isFormData = data instanceof FormData;
-
-    if (!accessToken) {
-      throw new Error("Access token does not exist");
-    }
 
     return api.request({
       method,
@@ -66,9 +62,6 @@ export const http = {
 
         Authorization: `Bearer ${token}`,
 
-        ...(data instanceof FormData
-          ? {}
-          : { "Content-Type": "application/json" }),
         ...headers,
       },
     });
