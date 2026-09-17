@@ -39,6 +39,29 @@ export const createArticle = async (data: CreateArticleData) => {
   if (data.file) {
     formData.append("file", data.file);
   }
+
+  const idempotencyKey = crypto.randomUUID();
+
+  const response = await http.privateRequest(
+    "POST",
+    "/articles",
+    formData,
+    {
+      "Idempotency-Key": idempotencyKey,
+    }
+  );
+
+  return response.data;
+};
+
+export const publishArticle = async (id: string) => {
+  const response = await http.privateRequest(
+    "PATCH",
+    `/articles/${id}/publish`
+  );
+
+  return response.data;
+};
   const response = await http.publicRequest(
   "POST",
   "/api/v1/articles",

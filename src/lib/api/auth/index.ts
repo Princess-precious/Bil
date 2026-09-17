@@ -88,21 +88,19 @@ export async function googleLogin(){
     
 }
 
-export async function signupUser( data:signupData){ 
-const idempotencyKey = crypto.randomUUID();
+export async function signupUser(data: signupData) { 
+  const idempotencyKey = crypto.randomUUID();
 
   const response = await http.publicRequest(
     "POST",
-    "auth/register",
+    "/auth/register",
     data,
     {
-       "Idempotency-Key": idempotencyKey,
+      "Idempotency-Key": idempotencyKey,
     }
   );
 
   return response.data;
-
-
 }
 
 export async function changepassword(data: changePasswordData) {
