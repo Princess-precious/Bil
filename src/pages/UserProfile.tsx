@@ -19,6 +19,7 @@ import Footer from "../components/footer";
 
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../lib/api/users";
+import { AuthService } from "../lib/Auth/AuthService";
 
 type Draft = {
   title?: string;
@@ -32,12 +33,13 @@ export default function UserProfile() {
   const { data, isLoading, error } = useQuery({
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
+  enabled: !!localStorage.getItem("user")
 });
 
   const navigate = useNavigate();
 
 //PROFILE INFO
-  
+  const defaultProfileImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='18' fill='%23f5f5f5'/%3E%3Cpath d='M18 90c3-22 16-34 32-34s29 12 32 34' fill='%23f5f5f5'/%3E%3C/svg%3E`;
 
   // ================= ACTIVE TAB =================
 
@@ -246,7 +248,7 @@ export default function UserProfile() {
 
           <div className="mt-10 h-32 w-32 shrink-0 overflow-hidden rounded-full border-2 border-gray-300 p-1 md:h-48 md:w-48">
             <img
-              src={data?.profileImage || "/userprofile.jpg"}
+              src={data?.profileImage || defaultProfileImage}
               alt="Author portrait"
               className="h-full w-full rounded-full object-cover transition-transform duration-700 ease-out hover:scale-105"
             />

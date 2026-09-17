@@ -12,20 +12,27 @@
 **/
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar"
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import { useState } from "react";
+import { deleteAccount } from "../lib/api/users";
+import { useAuth } from "../../src/useAuth";
 
 function Settings(){
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const navigate = useNavigate();
+  const { setIsSignedIn } = useAuth();
 
-  const handleDeleteAccount = () => {
-    setShowDeleteModal(false);
-    setShowToast(true);
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount();
 
-    setTimeout(() => {
-    setShowToast(false);
-    }, 3000);
+      setShowDeleteModal(false);
+      setIsSignedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+    }
   };
 
   return(
