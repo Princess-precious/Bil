@@ -22,28 +22,23 @@ import { http } from "../https";
 
 export class AuthService {
 
-  static login (data) {
-    console.log("This is auth user data from authservice")
-    const storageData = localStorage.setItem("user", JSON.stringify(data));
-    return storageData;
-    // if (data.accessToken){
-      
-    // }
-    throw new Error("Could not set auth user credentials")
-    
+    static login(data) {
+    console.log("This is auth user data from authservice");
+
+    localStorage.setItem("user", JSON.stringify(data));
+
+    if (data.accessToken) {
+      localStorage.setItem("accessToken", data.accessToken);
+    }
+
+    if (data.refreshToken) {
+      localStorage.setItem("refreshToken", data.refreshToken);
+    }
   }
   //Ensure user token is collected and stored to localstorage
 
   static async logout() {
-    const currentUser = localStorage.getItem("user");
-
-    if (!currentUser) {
-      throw new Error("User does not exist");
-    }
-
-    const user = JSON.parse(currentUser);
-
-    const refreshToken = user.refreshToken;
+    const refreshToken = localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
       throw new Error("Refresh token does not exist");
@@ -51,14 +46,14 @@ export class AuthService {
 
     await http.publicRequest(
       "POST",
-      "/api/v1/auth/logout",
+      "/auth/logout",
       {
         refreshToken,
       }
     );
-
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   }
 
   static  getCurrentUser(){

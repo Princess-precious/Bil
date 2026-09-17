@@ -46,30 +46,30 @@ export default function EditProfile() {
   });
 
 
-  if (isLoading) {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      Loading profile...
-    </div>
-  );
-}
-  //PROFILE INFORMATION
+  // PROFILE INFORMATION
 
-  const [name, setName] = useState("")
-  const [username, setUsername] = useState("");;
-
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-   if (!data) return;
+    if (!data) return;
 
-   setName(data.name);
-   setUsername(data.username);
-   setBio(data.bio || "");
-   setProfileImage(data.profileImage || "");
+    setName(data.name);
+    setUsername(data.username);
+    setBio(data.bio || "");
+    setProfileImage(data.profileImage || "");
   }, [data]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading profile...
+      </div>
+    );
+  }
 
  
 
@@ -111,13 +111,7 @@ export default function EditProfile() {
     }
   };
 
-   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Loading profile...
-      </div>
-    );
-  }
+   
   return (
     <div className="flex min-h-screen flex-col  text-gray-900 antialiased">
 

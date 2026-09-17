@@ -359,7 +359,7 @@ export default function UserProfile() {
             Saved Stories
           </button>
 
-          {/* SAVED DRAFTS */}
+          {/*  DRAFTS */}
 
           <button
             type="button"
@@ -372,7 +372,7 @@ export default function UserProfile() {
                 : "border-transparent text-gray-500 hover:text-black"
             }`}
           >
-            Saved Drafts
+            Drafts
           </button>
 
         </div>
