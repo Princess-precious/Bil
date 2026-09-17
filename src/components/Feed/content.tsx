@@ -1,9 +1,27 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 17/09/2026 - 15:05:02
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 17/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
+
+import {
+  saveArticle,
+  unsaveArticle,
+  getSavedArticles,
+} from "../../lib/api/articles";
 
 const topics = [
   "Architecture",
@@ -23,30 +41,31 @@ const topics = [
   "Culture",
 ];
 
-const getSavedStoryIds = (): string[] => {
-  if (typeof window === "undefined") return [];
 
-  const raw = window.localStorage.getItem("savedStoryIds");
-  if (!raw) return [];
-
-  try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
 
 export default function Feed() {
   const navigate = useNavigate();
 
-  const [savedStoryIds, setSavedStoryIds] = useState<string[]>(getSavedStoryIds);
+  // Saved story IDs
+  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("savedStoryIds", JSON.stringify(savedStoryIds));
+  const loadSavedArticles = async () => {
+    try {
+      const response = await getSavedArticles();
+
+      console.log("SAVED ARTICLES RESPONSE:", response);
+
+      const savedIds = response.data.map((article: Story) => article.id);
+
+      setSavedStoryIds(savedIds);
+    } catch (error) {
+      console.error("FAILED TO LOAD SAVED ARTICLES:", error);
     }
-  }, [savedStoryIds]);
+  };
+
+  loadSavedArticles();
+}, []);
 
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -58,7 +77,7 @@ export default function Feed() {
     isError,
   } = useQuery<Story[]>({
     queryKey: ["stories"],
-    queryFn: getStories,
+    queryFn: () => getStories(),
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
@@ -103,15 +122,32 @@ export default function Feed() {
     }
   };
 
-  const handleSaveStory = (storyId: string) => {
-    setSavedStoryIds((current) => {
-      if (current.includes(storyId)) {
-        return current.filter((id) => id !== storyId);
-      }
+  const handleSaveStory = async (storyId: string) => {
+  console.log("SAVE BUTTON CLICKED:", storyId);
 
-      return [...current, storyId];
-    });
-  };
+  try {
+    if (SavedStoryIDs.includes(storyId)) {
+      console.log("UNSAVING ARTICLE:", storyId);
+
+      await unsaveArticle(storyId);
+
+      setSavedStoryIds((current) =>
+        current.filter((id) => id !== storyId)
+      );
+    } else {
+      console.log("SAVING ARTICLE:", storyId);
+
+      await saveArticle(storyId);
+
+      setSavedStoryIds((current) => [
+        ...current,
+        storyId,
+      ]);
+    }
+  } catch (error) {
+    console.error("FAILED TO SAVE/UNSAVE:", error);
+  }
+};
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -219,6 +255,30 @@ export default function Feed() {
                         </span>
                       </div>
 
+                      <button
+                        type="button"
+                        onClick={() => handleShare(story)}
+                        className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
+                      >
+                        Share
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleSaveStory(story.id)}
+                        aria-label={
+                          SavedStoryIDs.includes(story.id)
+                            ? "Unsave story"
+                            : "Save story"
+                        }
+                      >
+                        <Bookmark
+                          size={20}
+                          strokeWidth={1.5}
+                          className={
+                            SavedStoryIDs.includes(story.id)
+                              ? "fill-black text-black"
+                              : "text-black"
                       <h2
                         onClick={() => handleOpenStory(story.id)}
                         className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"

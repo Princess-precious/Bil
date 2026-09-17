@@ -46,30 +46,30 @@ export default function EditProfile() {
   });
 
 
-  if (isLoading) {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      Loading profile...
-    </div>
-  );
-}
-  //PROFILE INFORMATION
+  // PROFILE INFORMATION
 
-  const [name, setName] = useState("")
-  const [username, setUsername] = useState("");;
-
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-   if (!data) return;
+    if (!data) return;
 
-   setName(data.name);
-   setUsername(data.username);
-   setBio(data.bio || "");
-   setProfileImage(data.profileImage || "");
+    setName(data.name);
+    setUsername(data.username);
+    setBio(data.bio || "");
+    setProfileImage(data.profileImage || "");
   }, [data]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading profile...
+      </div>
+    );
+  }
 
  
 
@@ -93,30 +93,37 @@ export default function EditProfile() {
   
 
   const handleSaveChanges = async () => {
-    try {
-      await updateProfileMutation.mutateAsync({
-        name,
-        username,
-        bio,
-      });
+  try {
+    console.log("1. Save button clicked");
 
-      if (imageFile) {
-        await updateImageMutation.mutateAsync(imageFile);
-      }
+    await updateProfileMutation.mutateAsync({
+      name,
+      username,
+      bio,
+    });
 
-      navigate("/user-profile");
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-    }
-  };
+    console.log("2. Profile information updated");
 
-   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Loading profile...
-      </div>
-    );
+    if (imageFile) {
+      console.log("3. Uploading image:", imageFile);
+      console.log("File name:", imageFile.name);
+      console.log("File type:", imageFile.type);
+      console.log("File size:", imageFile.size);
+
+      await updateImageMutation.mutateAsync(imageFile);
+
+      console.log("4. Image uploaded");
+    }    
+
+    console.log("5. Navigating to profile");
+
+    navigate("/user-profile");
+  } catch (error) {
+    console.error("SAVE CHANGES ERROR:", error);
   }
+};
+
+   
   return (
     <div className="flex min-h-screen flex-col  text-gray-900 antialiased">
 

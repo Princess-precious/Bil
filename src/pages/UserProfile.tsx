@@ -20,7 +20,8 @@ import Footer from "../components/footer";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../lib/api/users";
 import { getMyStories } from "../lib/api/stories";
-import { AuthService } from "../lib/Auth/AuthService";
+import { getSavedArticles, unsaveArticle } from "../lib/api/articles";
+//import { AuthService } from "../lib/Auth/AuthService";
 
 type Draft = {
   title?: string;
@@ -31,19 +32,19 @@ type Draft = {
 };
 
 export default function UserProfile() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error} = useQuery({
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
   enabled: !!localStorage.getItem("user")
 });
-     const {
-  data: stories = [],
-  isLoading: storiesLoading,
-  error: storiesError,
-} = useQuery({
-  queryKey: ["my-stories"],
-  queryFn: getMyStories,
-});
+  const {
+    data: stories = [],
+    isLoading: storiesLoading,
+    error: storiesError,
+  } = useQuery({
+    queryKey: ["my-stories"],
+    queryFn: getMyStories,
+  });
   const navigate = useNavigate();
 
 //PROFILE INFO
@@ -57,8 +58,7 @@ export default function UserProfile() {
 
   // ================= SAVED STORY IDs =================
 
-  const [savedStoryIds, setSavedStoryIds] = useState<string[]>([]);
-
+  
   // ================= SAVED DRAFT =================
 
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -69,82 +69,10 @@ export default function UserProfile() {
    
   // ================= FEED STORIES =================
 
-  const feedStories = [
-    {
-      id: "article-1",
-      category: "ARCHITECTURE",
-      author: "ELENA ROSTOVA",
-      title:
-        "The Brutalist Revival: Concrete Poetics in the Modern City",
-      excerpt:
-        "A meditation on the enduring language of brutalism, where raw concrete becomes a canvas for light, shadow, and human scale.",
-      date: "Oct 12",
-      image: "/feedarchitecture.png",
-    },
-    {
-      id: "article-2",
-      category: "TECHNOLOGY & MIND",
-      author: "MARCUS THRONE",
-      title: "Silicon Sentience: The Philosophy of Code",
-      excerpt:
-        "As machines begin to mirror the complexity of human cognition, we ask what it means for code to understand.",
-      date: "Oct 10",
-      image: "/feedtechnology.png",
-    },
-    {
-      id: "article-3",
-      category: "CULTURE & CINEMA",
-      author: "JULIAN MORAND",
-      title:
-        "The Aesthetics of Silence: Why Modern Cinema Craves Stillness",
-      excerpt:
-        "In an age of constant noise, filmmakers are rediscovering the power of negative space, stillness, and silence.",
-      date: "Oct 08",
-      image: "/feedcinema.png",
-    },
-    {
-      id: "article-4",
-      category: "DESIGN",
-      author: "SOFIA RENARD",
-      title: "The Quiet Geometry of Contemporary Design",
-      excerpt:
-        "Exploring how restraint, proportion, and negative space are shaping a new visual language in modern design.",
-      date: "Oct 06",
-      image: "/feedarchitecture.png",
-    },
-    {
-      id: "article-5",
-      category: "PHILOSOPHY",
-      author: "ADRIAN VALE",
-      title: "The Architecture of Solitude",
-      excerpt:
-        "Why certain spaces make us feel alone, reflective, and strangely connected to ourselves.",
-      date: "Oct 04",
-      image: "/feedcinema.png",
-    },
-    {
-      id: "article-6",
-      category: "ARTIFICIAL INTELLIGENCE",
-      author: "NORA KLEIN",
-      title: "When Machines Become Creative Partners",
-      excerpt:
-        "The relationship between human imagination and artificial intelligence is changing the way we create.",
-      date: "Oct 02",
-      image: "/feedtechnology.png",
-    },
-  ];
+  
 
-  // ================= LOAD SAVED DATA =================
-
+  //  LOAD SAVED DATA 
   useEffect(() => {
-    // Load saved stories
-    const saved = JSON.parse(
-      localStorage.getItem("savedStoryIds") || "[]"
-    );
-
-    setSavedStoryIds(saved);
-
-    // Load saved draft
     const savedDraft = localStorage.getItem("storyDraft");
 
     if (savedDraft) {
@@ -157,11 +85,22 @@ export default function UserProfile() {
     }
   }, []);
 
+  
+
+
+
   // ================= GET SAVED STORIES =================
 
-  const savedStories = feedStories.filter((story) =>
-    savedStoryIds.includes(story.id)
-  );
+   const {
+      data: savedStories = [],
+      refetch: refetchSavedStories,
+    } = useQuery({
+      queryKey: ["saved-stories"],
+      queryFn: async () => {
+        const response = await getSavedArticles();
+        return response.data;
+      },
+    });
 
   // ================= SHARE PROFILE =================
 
@@ -186,19 +125,16 @@ export default function UserProfile() {
   });
 };
 
-  // ================= REMOVE SAVED STORY =================
+  //REMOVE SAVED STORY 
 
-  const handleRemoveSavedStory = (storyId: string) => {
-    const updatedIds = savedStoryIds.filter(
-      (id) => id !== storyId
-    );
+  const handleRemoveSavedStory = async (storyId: string) => {
+    try {
+      await unsaveArticle(storyId);
 
-    setSavedStoryIds(updatedIds);
-
-    localStorage.setItem(
-      "savedStoryIds",
-      JSON.stringify(updatedIds)
-    );
+      await refetchSavedStories();
+    } catch (error) {
+      console.error("Failed to remove saved story:", error);
+    }
   };
 
   // ================= DELETE DRAFT =================
@@ -342,7 +278,7 @@ export default function UserProfile() {
             Saved Stories
           </button>
 
-          {/* SAVED DRAFTS */}
+          {/*  DRAFTS */}
 
           <button
             type="button"
@@ -355,7 +291,7 @@ export default function UserProfile() {
                 : "border-transparent text-gray-500 hover:text-black"
             }`}
           >
-            Saved Drafts
+            Drafts
           </button>
 
         </div>
@@ -416,7 +352,9 @@ export default function UserProfile() {
             <div className="flex flex-col gap-3">
 
               <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                {story.category || "Uncategorized"}
+                {typeof story.category === "string"
+                ? story.category
+                : "Uncategorized"}  
               </span>
 
               <h2 className="text-3xl font-bold text-gray-900 transition-colors group-hover:text-gray-600 md:text-4xl">
@@ -475,7 +413,7 @@ export default function UserProfile() {
                       <div className="aspect-[4/3] w-full overflow-hidden">
 
                         <img
-                          src={story.image}
+                          src={story.coverImage || "/profileHero.jpg"}
                           alt={story.title}
                           className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                         />
@@ -489,7 +427,9 @@ export default function UserProfile() {
                     <div className="flex flex-col justify-center md:col-span-7">
 
                       <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                        {story.category}
+                        {typeof story.category === "string"
+                          ? story.category
+                          : story.category?.name || "Uncategorized"}
                       </span>
 
                       <h2 className="mt-3 text-3xl font-bold text-gray-900">
@@ -503,7 +443,7 @@ export default function UserProfile() {
                       <div className="mt-5 flex flex-wrap items-center gap-5">
 
                         <span className="text-sm text-gray-500">
-                          {story.author}
+                          {story.author?.name || story.author?.username || "Unknown author"}
                         </span>
 
                         <span className="h-1 w-1 rounded-full bg-gray-400" />

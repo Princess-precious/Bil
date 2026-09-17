@@ -26,7 +26,8 @@ export const http = {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     url: string,
     data?: unknown,
-    headers?: Record<string, string>
+    headers?:Record<string, string>
+    
   ) => {
     return api.request({
       method,
@@ -36,12 +37,12 @@ export const http = {
     });
   },
 
-  privateRequest: async (
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-    url: string,
-    data?: unknown,
-    headers?: Record<string, string>
-  ) => {
+ privateRequest: async (
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+  url: string,
+  data?: unknown,
+  headers?: Record<string, string>
+) => {
     const token = localStorage.getItem("accessToken");
      if (!token) {
       throw new Error("Access token does not exist");
