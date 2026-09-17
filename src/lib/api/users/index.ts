@@ -61,3 +61,12 @@ export async function updateProfileImage(file: File) {
 
   return response.data;
 }
+
+export async function deleteAccount() {
+  const response = await http.privateRequest(
+    "DELETE",
+    "/users/delete-account"
+  );
+
+  return response.data;
+}

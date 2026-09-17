@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 16/09/2026 - 16:36:43
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 16/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { http } from "../../https";
 
 export interface CreateArticleData {

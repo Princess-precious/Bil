@@ -12,38 +12,67 @@
 **/
 
 
-interface ILoginUser {
-  accessToken: string;
-  bearerToken: string;
-  name: string;
-}
+// interface ILoginUser {
+//   accessToken: string;
+//   bearerToken: string;
+//   name: string;
+// }
+
+import { http } from "../https";
 
 export class AuthService {
 
-  static async login (data: ILoginUser) {
-    if (data.accessToken){
-      localStorage.setItem("user", data.toString());
-    }
+  static login (data) {
+    console.log("This is auth user data from authservice")
+    const storageData = localStorage.setItem("user", JSON.stringify(data));
+    return storageData;
+    // if (data.accessToken){
+      
+    // }
     throw new Error("Could not set auth user credentials")
-    //Ensure user token is collected and stored to localstorage
+    
+  }
+  //Ensure user token is collected and stored to localstorage
+
+  static async logout() {
+    const currentUser = localStorage.getItem("user");
+
+    if (!currentUser) {
+      throw new Error("User does not exist");
+    }
+
+    const user = JSON.parse(currentUser);
+
+    const refreshToken = user.refreshToken;
+
+    if (!refreshToken) {
+      throw new Error("Refresh token does not exist");
+    }
+
+    await http.publicRequest(
+      "POST",
+      "/api/v1/auth/logout",
+      {
+        refreshToken,
+      }
+    );
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
   }
 
-  static async logout(){
-    localStorage.removeItem("user")
-    // Delete the user:ILoginUser from local storage
-  }
-
-  static async getCurrentUser(){
+  static  getCurrentUser(){
     const currentUser = localStorage.getItem("user");
     if (currentUser){
       return JSON.parse(currentUser);
+    }else{
+      throw Error ("User does not exist")
     }
-    throw Error ("User does not exist")
     //Fetch and return the user:IloginUser from local storage
   }
 
   static async isAuthenticated(){
-    if(await AuthService.getCurrentUser()){
+    if( AuthService.getCurrentUser()){
       return true
     }
     return false;

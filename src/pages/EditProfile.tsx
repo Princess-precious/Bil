@@ -24,7 +24,7 @@ import { getUserProfile, updateUserProfile, updateProfileImage } from "../lib/ap
 export default function EditProfile() {
   const navigate = useNavigate();
 
-  const { data} = useQuery({
+  const { data, isLoading} = useQuery({
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
   });
@@ -44,14 +44,23 @@ export default function EditProfile() {
       console.error("Failed to update profile image:", error);
     },
   });
+
+
+  if (isLoading) {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      Loading profile...
+    </div>
+  );
+}
   //PROFILE INFORMATION
 
-  const [name, setName] = useState("Elias Thorne")
+  const [name, setName] = useState("")
   const [username, setUsername] = useState("");;
 
-  const [bio, setBio] = useState(
-    "Cultural critic and architectural historian documenting the intersection of brutalism and modern urbanism. Exploring quiet luxury in concrete spaces."
-  );
+  const [bio, setBio] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
    if (!data) return;
@@ -59,12 +68,10 @@ export default function EditProfile() {
    setName(data.name);
    setUsername(data.username);
    setBio(data.bio || "");
+   setProfileImage(data.profileImage || "");
   }, [data]);
 
-  const [profileImage, setProfileImage] = useState(
-    "/userprofile.jpg"
-  );
-  const [imageFile, setImageFile] = useState<File | null>(null);
+ 
 
   
 
@@ -104,6 +111,13 @@ export default function EditProfile() {
     }
   };
 
+   if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading profile...
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen flex-col  text-gray-900 antialiased">
 
