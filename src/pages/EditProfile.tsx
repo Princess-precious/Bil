@@ -44,6 +44,15 @@ export default function EditProfile() {
       console.error("Failed to update profile image:", error);
     },
   });
+
+
+  if (isLoading) {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      Loading profile...
+    </div>
+  );
+}
   //PROFILE INFORMATION
 
   const [name, setName] = useState("")
