@@ -1,15 +1,15 @@
 /**
-    * @description      : 
-    * @author           : HP
-    * @group            : 
-    * @created          : 15/09/2026 - 13:48:27
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 15/09/2026
-    * - Author          : HP
-    * - Modification    : 
-**/
+ * @description      :
+ * @author           : HP
+ * @group            :
+ * @created          : 15/09/2026 - 13:48:27
+ *
+ * MODIFICATION LOG
+ * - Version         : 1.0.1
+ * - Date            : 18/09/2026
+ * - Author          : HP
+ * - Modification    : Use Cloudinary coverImage URL instead of public ID
+ */
 
 import { http } from "../../https";
 
@@ -19,14 +19,22 @@ interface ApiArticle {
   title: string;
   excerpt: string;
   publishedAt: string;
+
+  // Cloudinary image URL
+  coverImage: string | null;
+
+  // Cloudinary public ID, used for image management/deletion
   coverImagePublicId: string | null;
+
   author: {
     name: string;
   } | null;
+
   category: {
     name: string;
   } | null;
-  content?: string; 
+
+  content?: string;
   body?: string;
 }
 
@@ -42,10 +50,14 @@ export interface Story {
   content: string;
 }
 
-  export const getStories = async (search?: string): Promise<Story[]> => {
+export const getStories = async (
+  search?: string
+): Promise<Story[]> => {
   const response = await http.publicRequest(
     "GET",
-    search ? `/articles?search=${encodeURIComponent(search)}` : "/articles"
+    search
+      ? `/articles?search=${encodeURIComponent(search)}`
+      : "/articles"
   );
 
   const articles = response.data.data.articles;
@@ -58,8 +70,11 @@ export interface Story {
     title: article.title,
     excerpt: article.excerpt,
     date: article.publishedAt,
-    coverImage: article.coverImagePublicId || "",
-    content: article.content || article.body || "", // Added content mapping
+
+    // Use the actual Cloudinary URL
+    coverImage: article.coverImage || "",
+
+    content: article.content || article.body || "",
   }));
 };
 
@@ -79,8 +94,11 @@ export const getMyStories = async (): Promise<Story[]> => {
     title: article.title,
     excerpt: article.excerpt,
     date: article.publishedAt,
-    coverImage: article.coverImagePublicId || "",
-    content: article.content || article.body || "", 
+
+    // Use the actual Cloudinary URL
+    coverImage: article.coverImage || "",
+
+    content: article.content || article.body || "",
   }));
 };
 
@@ -102,8 +120,11 @@ export const getStoryBySlug = async (
     title: article.title,
     excerpt: article.excerpt,
     date: article.publishedAt,
-    coverImage: article.coverImagePublicId || "",
-    content: article.content || article.body || "", // Added content mapping
+
+    // Use the actual Cloudinary URL
+    coverImage: article.coverImage || "",
+
+    content: article.content || article.body || "",
   };
 };
 

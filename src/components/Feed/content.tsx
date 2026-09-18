@@ -21,7 +21,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
-
 import {
   saveArticle,
   unsaveArticle,
@@ -49,14 +48,27 @@ const topics = [
 export default function Feed() {
   const navigate = useNavigate();
 
-  // Saved story IDs
-  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
+  const [savedStoryIds, setSavedStoryIds] = useState<string[]>([]);
 
   useEffect(() => {
     const loadSavedArticles = async () => {
       try {
         const response = await getSavedArticles();
 
+        const articlesList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response?.data?.articles)
+          ? response.data.articles
+          : [];
+
+        const savedIds = articlesList
+          .map(
+            (article: any) =>
+              article.id || article._id || article.articleId
+          )
+          .filter(Boolean);
         console.log("SAVED ARTICLES RESPONSE:", response);
 
         const savedIds = response.data.map((article: Story) => article.id);
@@ -75,16 +87,56 @@ export default function Feed() {
   const [visibleCount, setVisibleCount] = useState(3);
 
   const {
-    data: stories = [],
+    data: rawStories = [],
     isLoading,
     isError,
   } = useQuery<Story[]>({
     queryKey: ["stories"],
-    queryFn: () => getStories(),
+    queryFn: async () => {
+      const res = await getStories();
+
+      return Array.isArray(res) ? res : res?.data || [];
+    },
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
   });
+
+  const stories = useMemo(() => {
+    return Array.isArray(rawStories) ? rawStories : [];
+  }, [rawStories]);
+
+  const getCategoryName = (story: any): string => {
+    if (typeof story.category === "string") {
+      return story.category;
+    }
+
+    if (story.category?.name) {
+      return story.category.name;
+    }
+
+    if (typeof story.categoryId === "string") {
+      return story.categoryId;
+    }
+
+    return "Uncategorized";
+  };
+
+  const getAuthorName = (story: any): string => {
+    if (typeof story.author === "string") {
+      return story.author;
+    }
+
+    if (story.author?.name) {
+      return story.author.name;
+    }
+
+    if (story.user?.name) {
+      return story.user.name;
+    }
+
+    return "Anonymous";
+  };
 
   const filteredStories = useMemo(() => {
     if (selectedTopic === "All") {
@@ -92,7 +144,7 @@ export default function Feed() {
     }
 
     return stories.filter((story) => {
-      const category = story.category?.toLowerCase() ?? "";
+      const category = getCategoryName(story).toLowerCase();
       const topic = selectedTopic.toLowerCase();
 
       return category.includes(topic);
@@ -102,10 +154,9 @@ export default function Feed() {
   const visibleStories = filteredStories.slice(0, visibleCount);
 
   const handleShare = async (story: Story) => {
-    const storyUrl =
-      window.location.origin +
-      window.location.pathname +
-      `#${story.id}`;
+    const storyId = story.id || (story as any)._id;
+
+    const storyUrl = `${window.location.origin}/story/${storyId}`;
 
     try {
       if (navigator.share) {
@@ -126,6 +177,28 @@ export default function Feed() {
   };
 
   const handleSaveStory = async (storyId: string) => {
+    const isCurrentlySaved = savedStoryIds.includes(storyId);
+
+    setSavedStoryIds((current) =>
+      isCurrentlySaved
+        ? current.filter((id) => id !== storyId)
+        : [...current, storyId]
+    );
+
+    try {
+      if (isCurrentlySaved) {
+        await unsaveArticle(storyId);
+      } else {
+        await saveArticle(storyId);
+      }
+    } catch (error) {
+      console.error("FAILED TO SAVE/UNSAVE ARTICLE:", error);
+
+      setSavedStoryIds((current) =>
+        isCurrentlySaved
+          ? [...current, storyId]
+          : current.filter((id) => id !== storyId)
+      );
     console.log("SAVE BUTTON CLICKED:", storyId);
 
     try {
@@ -203,7 +276,11 @@ export default function Feed() {
     <div className="min-h-screen bg-[#FBF9F8] text-[#1A1A1A]">
       <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+
+          {/* MAIN FEED */}
           <section className="space-y-16 lg:col-span-8">
+
+            {/* Active filter display */}
             {selectedTopic !== "All" && (
               <div className="flex items-center justify-between border-b border-[#ECE6E0] pb-4">
                 <div className="font-hanken text-xs uppercase tracking-[0.2em] text-[#8A8581]">
@@ -223,41 +300,55 @@ export default function Feed() {
               </div>
             )}
 
+            {/* STORIES LIST */}
             {visibleStories.length > 0 ? (
               visibleStories.map((story) => {
-                // Safely extract cover image property candidates
-                const rawImage =
-                  story.coverImage ||
-                  (story as any).imageUrl ||
-                  (story as any).image;
+                const storyId =
+                  story.id || (story as any)._id;
 
-                // Check that the image URL is a non-empty string with non-whitespace content
-                const imageSrc =
-                  typeof rawImage === "string" && rawImage.trim() !== ""
-                    ? rawImage
-                    : null;
+                const categoryName =
+                  getCategoryName(story);
+
+                const authorName =
+                  getAuthorName(story);
+
+                const isSaved =
+                  savedStoryIds.includes(storyId);
+
+                const coverImageUrl =
+                  story.coverImage;
 
                 return (
                   <article
-                    id={story.id}
-                    key={story.id}
-                    className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
+                    id={storyId}
+                    key={storyId}
+                    className="border-b border-[#ECE6E0] pb-16"
                   >
-                    <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
-                      <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
-                        <span className="text-[#B35D52]">
-                          {story.category}
-                        </span>
+                    {/* STORY CONTENT */}
+                    <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
 
-                        <span className="text-[#8A8581]">
-                          /
-                        </span>
+                      {/* TEXT CONTENT */}
+                      <div className="min-w-0 flex-1">
 
-                        <span className="text-[#5C5855]">
-                          {story.author}
-                        </span>
-                      </div>
+                        {/* Category / Author */}
+                        <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
+                          <span className="text-[#B35D52]">
+                            {categoryName}
+                          </span>
 
+                          <span className="text-[#8A8581]">
+                            /
+                          </span>
+
+                          <span className="text-[#5C5855]">
+                            {authorName}
+                          </span>
+                        </div>
+
+                        {/* Title */}
+                        <h2
+                          onClick={() =>
+                            handleOpenStory(storyId)
                       <h2
                         onClick={() => handleOpenStory(story.id)}
                         className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
@@ -294,7 +385,10 @@ export default function Feed() {
                               ? "Unsave story"
                               : "Save story"
                           }
+                          className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
                         >
+                          {story.title}
+                        </h2>
                           <Bookmark
                             size={20}
                             strokeWidth={1.5}
@@ -308,36 +402,89 @@ export default function Feed() {
                       </div>
                     </div>
 
-                    {/* Clickable Cover Image */}
-                    <div className="order-first md:order-last md:col-span-5">
-                      <figure>
-                        <div
-                          onClick={() => handleOpenStory(story.id)}
-                          className="group/img relative aspect-[4/3] cursor-pointer overflow-hidden bg-[#F4F0EB]"
-                        >
-                          {imageSrc ? (
-                            <img
-                              src={imageSrc}
-                              alt={story.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-105"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center font-hanken text-xs text-[#8A8581]">
-                              No Cover Image
-                            </div>
-                          )}
+                        {/* Excerpt */}
+                        <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
+                          {story.excerpt}
+                        </p>
 
-                          <div className="pointer-events-none absolute inset-0 bg-[#1A1A1A]/5" />
+                        {/* Date / Share / Bookmark */}
+                        <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+
+                          {/* Date */}
+                          <span>
+                            {story.createdAt ||
+                            (story as any).date
+                              ? new Date(
+                                  story.createdAt ||
+                                    (story as any).date
+                                ).toLocaleDateString()
+                              : ""}
+                          </span>
+
+                          <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+
+                          {/* Share */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleShare(story)
+                            }
+                            className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
+                          >
+                            Share
+                          </button>
+
+                          {/* Bookmark */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleSaveStory(storyId)
+                            }
+                            aria-label={
+                              isSaved
+                                ? "Unsave story"
+                                : "Save story"
+                            }
+                            className="transition-transform active:scale-95"
+                          >
+                            <Bookmark
+                              size={20}
+                              strokeWidth={1.5}
+                              className={
+                                isSaved
+                                  ? "fill-[#B35D52] text-[#B35D52]"
+                                  : "text-black hover:text-[#B35D52]"
+                              }
+                            />
+                          </button>
                         </div>
-                      </figure>
+                      </div>
+
+                      {/* COVER IMAGE */}
+                      {coverImageUrl && (
+                        <div className="w-full shrink-0 md:w-[38%]">
+                          <img
+                            src={coverImageUrl}
+                            alt={story.title}
+                            className="h-64 w-full object-cover"
+                            onError={(event) => {
+                              console.error(
+                                "FAILED TO LOAD COVER IMAGE:",
+                                coverImageUrl
+                              );
+
+                              event.currentTarget.style.display =
+                                "none";
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </article>
                 );
               })
             ) : (
+              /* EMPTY STATE */
               <div className="border-y border-[#ECE6E0] py-20 text-center">
                 <h2 className="font-playfair text-2xl">
                   No stories found
@@ -357,6 +504,7 @@ export default function Feed() {
               </div>
             )}
 
+            {/* LOAD MORE */}
             {visibleCount < filteredStories.length && (
               <div className="flex justify-center">
                 <button
@@ -370,7 +518,10 @@ export default function Feed() {
             )}
           </section>
 
+          {/* SIDEBAR */}
           <aside className="space-y-12 lg:col-span-4 lg:border-l lg:border-[#ECE6E0] lg:pl-10">
+
+            {/* FOR YOU */}
             <section>
               <div className="mb-6 flex items-baseline justify-between">
                 <h3 className="font-playfair text-2xl font-semibold">
@@ -385,39 +536,55 @@ export default function Feed() {
               </div>
 
               <div className="space-y-6">
-                {stories.slice(0, 4).map((story, index) => (
-                  <button
-                    key={story.id}
-                    type="button"
-                    onClick={() => handleOpenStory(story.id)}
-                    className="group block w-full text-left"
-                  >
-                    <div className="flex gap-4">
-                      <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                {stories
+                  .slice(0, 4)
+                  .map((story, index) => {
+                    const storyId =
+                      story.id ||
+                      (story as any)._id;
 
-                      <div>
-                        <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
-                          {story.title}
-                        </h4>
+                    return (
+                      <button
+                        key={storyId}
+                        type="button"
+                        onClick={() =>
+                          handleOpenStory(storyId)
+                        }
+                        className="group block w-full text-left"
+                      >
+                        <div className="flex gap-4">
+                          <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
+                            {String(index + 1).padStart(
+                              2,
+                              "0"
+                            )}
+                          </span>
 
-                        <p className="mt-1 font-hanken text-xs text-[#8A8581]">
-                          {story.category}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                          <div>
+                            <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
+                              {story.title}
+                            </h4>
+
+                            <p className="mt-1 font-hanken text-xs text-[#8A8581]">
+                              {getCategoryName(story)}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
               </div>
             </section>
 
+            {/* CATEGORIES INDEX */}
             <section>
               <div className="mb-4">
                 <div className="mb-5 flex items-center justify-end">
                   <button
                     type="button"
-                    onClick={() => navigate("/new-story")}
+                    onClick={() =>
+                      navigate("/new-story")
+                    }
                     aria-label="Add Story"
                     className="group fixed bottom-6 right-6 z-50 flex items-center gap-2 font-hanken text-xs font-medium uppercase tracking-[0.15em] text-black"
                   >
@@ -438,19 +605,26 @@ export default function Feed() {
                 </h3>
 
                 <p className="mt-3 font-hanken text-sm leading-6 text-[#8A8581]">
-                  Filter our continuous catalog through core disciplines and philosophical threads:
+                  Filter our continuous catalog through core
+                  disciplines and philosophical threads:
                 </p>
               </div>
 
               <div className="space-y-2">
-                {(showAllTopics ? topics : topics.slice(0, 7)).map((topic) => {
-                  const isActive = selectedTopic === topic;
+                {(showAllTopics
+                  ? topics
+                  : topics.slice(0, 7)
+                ).map((topic) => {
+                  const isActive =
+                    selectedTopic === topic;
 
                   return (
                     <button
                       key={topic}
                       type="button"
-                      onClick={() => handleTopicClick(topic)}
+                      onClick={() =>
+                        handleTopicClick(topic)
+                      }
                       className={`flex w-full items-center justify-between border-b border-[#ECE6E0] py-3 text-left font-hanken text-sm transition-colors ${
                         isActive
                           ? "text-[#B35D52]"
@@ -465,10 +639,16 @@ export default function Feed() {
 
               <button
                 type="button"
-                onClick={() => setShowAllTopics((current) => !current)}
+                onClick={() =>
+                  setShowAllTopics(
+                    (current) => !current
+                  )
+                }
                 className="mt-6 font-hanken text-xs uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
               >
-                {showAllTopics ? "Show less ↑" : "View full index →"}
+                {showAllTopics
+                  ? "Show less ↑"
+                  : "View full index →"}
               </button>
             </section>
           </aside>

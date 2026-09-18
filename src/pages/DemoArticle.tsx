@@ -260,7 +260,7 @@ const deleteCommentMutation = useMutation({
                     <img
                       src={suggested.coverImage || feedtechnology}
                       alt={suggested.title}
-                      className="h-48 w-full object-cover"
+                      className="h-48 w-[80%] object-cover"
                     />
                     <h1 className="text-sm">
                       <span className="text-[#b35d52]">

@@ -21,6 +21,7 @@ import ReactMarkdown from "react-markdown";
 import { getCategories } from "../lib/api/category";
 import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
 import remarkGfm from "remark-gfm";
+import { createArticle, publishArticle, uploadArticleCoverImage } from "../lib/api/articles";
 import { createArticle, publishArticle, uploadCoverImage } from "../lib/api/articles";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
@@ -52,7 +53,7 @@ export default function NewStory() {
   const [preview, setPreview] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
-  // AI States
+  
   const [showAI, setShowAI] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState("");
@@ -290,7 +291,7 @@ ${storyText}
       // 2. Upload cover image if selected
       if (articleId && image) {
         setMessage("Uploading cover image...");
-        await uploadCoverImage(articleId, image);
+        await uploadArticleCoverImage(articleId, image);
       }
 
       setMessage("Draft saved successfully.");
@@ -357,7 +358,7 @@ ${storyText}
       // 2. Upload the cover image using its dedicated endpoint
       if (image) {
         setMessage("Uploading cover image...");
-        await uploadCoverImage(articleId, image);
+        await uploadArticleCoverImage(articleId, image);
       }
 
       // 3. Publish article
@@ -671,7 +672,7 @@ ${storyText}
                     </ReactMarkdown>
                   </div>
                 </div>
-              )}
+              )} 
             </div>
           </div>
         )}

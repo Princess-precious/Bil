@@ -59,6 +59,20 @@ console.log("USER PROFILE ERROR:", error);
   >("my-stories");
 
   
+  
+  
+
+  const [draft, setDraft] = useState<Draft | null>(null);
+
+  
+
+ 
+   
+  
+  
+
+  
+  
 
   
   
@@ -90,6 +104,7 @@ console.log("USER PROFILE ERROR:", error);
 
 
 
+  
 
 
    const {
@@ -126,6 +141,7 @@ console.log("USER PROFILE ERROR:", error);
   });
 };
 
+  
    
 
   const handleRemoveSavedStory = async (storyId: string) => {
@@ -160,6 +176,7 @@ console.log("USER PROFILE ERROR:", error);
 
       <main className="mx-auto my-12 w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
 
+        
        
 
         <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
@@ -389,6 +406,7 @@ console.log("USER PROFILE ERROR:", error);
                   
 
                
+       
         
 
         {activeTab === "saved-stories" && (
@@ -501,6 +519,7 @@ console.log("USER PROFILE ERROR:", error);
           </section>
         )}
 
+       
         
 
         {activeTab === "saved-drafts" && (
@@ -629,6 +648,7 @@ console.log("USER PROFILE ERROR:", error);
           </section>
         )}
 
+        
        
 
         <button
@@ -643,6 +663,7 @@ console.log("USER PROFILE ERROR:", error);
       </main>
 
       
+
       <Footer />
 
     </div>

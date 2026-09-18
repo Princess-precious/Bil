@@ -1,16 +1,3 @@
-/**
-    * @description      : 
-    * @author           : HP
-    * @group            : 
-    * @created          : 17/09/2026 - 14:48:57
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 17/09/2026
-    * - Author          : HP
-    * - Modification    : 
-**/
-
 import { http } from "../../https";
 
 export interface CreateArticleData {
@@ -19,12 +6,38 @@ export interface CreateArticleData {
   categoryId: string;
   excerpt?: string;
   status?: "draft" | "published";
-  file?: File;
 }
 
-export const createArticle = async (data: CreateArticleData) => {
-  const formData = new FormData();
+/**
+ * Create article
+ */
+export const createArticle = async (
+  data: CreateArticleData
+) => {
+  const payload = {
+    title: data.title,
+    content: data.content,
+    categoryId: data.categoryId,
 
+    ...(data.excerpt?.trim()
+      ? { excerpt: data.excerpt.trim() }
+      : {}),
+
+    ...(data.status
+      ? { status: data.status }
+      : {}),
+  };
+
+  const idempotencyKey = crypto.randomUUID();
+
+  const response = await http.privateRequest(
+    "POST",
+    "/articles",
+    payload,
+    {
+      "Idempotency-Key": idempotencyKey,
+    }
+  );
   console.log("CREATE ARTICLE DATA:", data);
   console.log("IS FORMDATA:", formData instanceof FormData);
 
@@ -32,88 +45,127 @@ export const createArticle = async (data: CreateArticleData) => {
   formData.append("content", data.content);
   formData.append("categoryId", data.categoryId);
 
-  if (data.excerpt) {
-    formData.append("excerpt", data.excerpt);
+  return response.data;
+};
+
+/**
+ * Upload article cover image
+ *
+ * Backend:
+ * POST /api/v1/articles/:id/cover-image
+ *
+ * Form field:
+ * file
+ */
+export const uploadArticleCoverImage = async (
+  articleId: string,
+  file: File
+) => {
+  if (!articleId) {
+    throw new Error("Article ID is missing.");
   }
 
-  if (data.status) {
-    formData.append("status", data.status);
+  if (!file) {
+    throw new Error("Cover image is missing.");
   }
 
-  if (data.file) {
-    // Matched key to backend 'coverImage'
-    formData.append("coverImage", data.file);
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please select a valid image file.");
   }
 
-  const idempotencyKey = crypto.randomUUID();
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("Cover image must be smaller than 5 MB.");
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  console.log("Uploading cover image:", {
+    articleId,
+    name: file.name,
+    type: file.type,
+    size: file.size,
+  });
 
   const response = await http.privateRequest(
     "POST",
-    "/articles",
-    formData,
-    {
-      "Idempotency-Key": idempotencyKey,
-    }
+    `/articles/${articleId}/cover-image`,
+    formData
+  );
+
+  console.log(
+    "Cover image upload response:",
+    response.data
   );
 
   return response.data;
 };
 
+/**
+ * Publish article
+ */
+export const publishArticle = async (
+  articleId: string
+) => {
 export const publishArticle = async (id: string) => {
   const response = await http.privateRequest(
     "PATCH",
-    `/articles/${id}/publish`
+    `/articles/${articleId}/publish`
   );
 
   return response.data;
 };
 
-export const saveArticle = async (id: string) => {
+
+export const saveArticle = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "POST",
-    `/articles/${id}/save`
+    `/articles/${articleId}/save`
   );
 
   return response.data;
 };
 
-export const unsaveArticle = async (id: string) => {
+/**
+ * Unsave article
+ */
+export const unsaveArticle = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "DELETE",
-    `/articles/${id}/unsave`
+    `/articles/${articleId}/unsave`
   );
 
   return response.data;
 };
 
-export const isArticleSaved = async (id: string) => {
+/**
+ * Check whether article is saved
+ */
+export const isArticleSaved = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "GET",
-    `/articles/${id}/save`
+    `/articles/${articleId}/save`
   );
 
   return response.data;
 };
 
+/**
+ * Get saved articles
+ */
 export const getSavedArticles = async () => {
   const response = await http.privateRequest(
     "GET",
     "/articles/me/saved"
-  );
-
-  return response.data;
-};
-
-
-export const uploadCoverImage = async (articleId: string, file: File) => {
-  const formData = new FormData();
-  
-  formData.append("coverImage", file);
-
-  const response = await http.privateRequest(
-    "POST",
-    `/articles/${articleId}/coverimage`,
-    formData
   );
 
   return response.data;
