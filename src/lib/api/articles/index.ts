@@ -1,16 +1,3 @@
-/**
- * @description      :
- * @author           : HP
- * @group            :
- * @created          : 17/09/2026 - 14:48:57
- *
- * MODIFICATION LOG
- * - Version         : 1.0.0
- * - Date            : 17/09/2026
- * - Author          : HP
- * - Modification    :
- */
-
 import { http } from "../../https";
 
 export interface CreateArticleData {
@@ -19,72 +6,27 @@ export interface CreateArticleData {
   categoryId: string;
   excerpt?: string;
   status?: "draft" | "published";
-  file?: File;
 }
 
 /**
- * Upload a standalone image.
- * Backend endpoint:
- * POST /api/v1/upload/image
+ * Create article
  */
-export const uploadImage = async (file: File): Promise<string> => {
-  const formData = new FormData();
-
-  formData.append("file", file);
-
-  const response = await http.privateRequest(
-    "POST",
-    "/upload/image",
-    formData
-  );
-
-  console.log("IMAGE UPLOAD RESPONSE:", response.data);
-
-  // Expected backend response:
-  // {
-  //   data: {
-  //     url: "https://res.cloudinary.com/..."
-  //   }
-  // }
-
-  const imageUrl = response.data?.data?.url;
-
-  if (!imageUrl) {
-    throw new Error("Image upload succeeded but no image URL was returned.");
-  }
-
-  return imageUrl;
-};
-
-/**
- * Create article.
- *
- * If an image file is supplied:
- * 1. Upload image to /upload/image
- * 2. Receive Cloudinary URL
- * 3. Send URL as coverImage when creating article
- */
-export const createArticle = async (data: CreateArticleData) => {
-  let coverImageUrl: string | undefined;
-
-  // Upload image first
-  if (data.file) {
-    coverImageUrl = await uploadImage(data.file);
-
-    console.log("CLOUDINARY IMAGE URL:", coverImageUrl);
-  }
-
-  // Article payload
+export const createArticle = async (
+  data: CreateArticleData
+) => {
   const payload = {
     title: data.title,
     content: data.content,
     categoryId: data.categoryId,
-    ...(data.excerpt && { excerpt: data.excerpt }),
-    ...(data.status && { status: data.status }),
-    ...(coverImageUrl && { coverImage: coverImageUrl }),
-  };
 
-  console.log("CREATE ARTICLE PAYLOAD:", payload);
+    ...(data.excerpt?.trim()
+      ? { excerpt: data.excerpt.trim() }
+      : {}),
+
+    ...(data.status
+      ? { status: data.status }
+      : {}),
+  };
 
   const idempotencyKey = crypto.randomUUID();
 
@@ -101,24 +43,82 @@ export const createArticle = async (data: CreateArticleData) => {
 };
 
 /**
- * Publish an existing article
+ * Upload article cover image
+ *
+ * Backend:
+ * POST /api/v1/articles/:id/cover-image
+ *
+ * Form field:
+ * file
  */
-export const publishArticle = async (id: string) => {
+export const uploadArticleCoverImage = async (
+  articleId: string,
+  file: File
+) => {
+  if (!articleId) {
+    throw new Error("Article ID is missing.");
+  }
+
+  if (!file) {
+    throw new Error("Cover image is missing.");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please select a valid image file.");
+  }
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("Cover image must be smaller than 5 MB.");
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  console.log("Uploading cover image:", {
+    articleId,
+    name: file.name,
+    type: file.type,
+    size: file.size,
+  });
+
   const response = await http.privateRequest(
-    "PATCH",
-    `/articles/${id}/publish`
+    "POST",
+    `/articles/${articleId}/cover-image`,
+    formData
+  );
+
+  console.log(
+    "Cover image upload response:",
+    response.data
   );
 
   return response.data;
 };
 
 /**
- * Save article
+ * Publish article
  */
-export const saveArticle = async (id: string) => {
+export const publishArticle = async (
+  articleId: string
+) => {
+  const response = await http.privateRequest(
+    "PATCH",
+    `/articles/${articleId}/publish`
+  );
+
+  return response.data;
+};
+
+
+export const saveArticle = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "POST",
-    `/articles/${id}/save`
+    `/articles/${articleId}/save`
   );
 
   return response.data;
@@ -127,22 +127,26 @@ export const saveArticle = async (id: string) => {
 /**
  * Unsave article
  */
-export const unsaveArticle = async (id: string) => {
+export const unsaveArticle = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "DELETE",
-    `/articles/${id}/unsave`
+    `/articles/${articleId}/unsave`
   );
 
   return response.data;
 };
 
 /**
- * Check if article is saved
+ * Check whether article is saved
  */
-export const isArticleSaved = async (id: string) => {
+export const isArticleSaved = async (
+  articleId: string
+) => {
   const response = await http.privateRequest(
     "GET",
-    `/articles/${id}/save`
+    `/articles/${articleId}/save`
   );
 
   return response.data;
