@@ -2,7 +2,7 @@
     * @description      : 
     * @author           : HP
     * @group            : 
-    * @created          : 17/09/2026 - 15:05:02
+    * @created          : 17/09/2026 - 23:47:27
     * 
     * MODIFICATION LOG
     * - Version         : 1.0.0
@@ -10,9 +10,14 @@
     * - Author          : HP
     * - Modification    : 
 **/
+
+
 import { useEffect, useMemo, useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import { useQuery } from "@tanstack/react-query";
+
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
@@ -41,8 +46,6 @@ const topics = [
   "Culture",
 ];
 
-
-
 export default function Feed() {
   const navigate = useNavigate();
 
@@ -50,22 +53,22 @@ export default function Feed() {
   const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
 
   useEffect(() => {
-  const loadSavedArticles = async () => {
-    try {
-      const response = await getSavedArticles();
+    const loadSavedArticles = async () => {
+      try {
+        const response = await getSavedArticles();
 
-      console.log("SAVED ARTICLES RESPONSE:", response);
+        console.log("SAVED ARTICLES RESPONSE:", response);
 
-      const savedIds = response.data.map((article: Story) => article.id);
+        const savedIds = response.data.map((article: Story) => article.id);
 
-      setSavedStoryIds(savedIds);
-    } catch (error) {
-      console.error("FAILED TO LOAD SAVED ARTICLES:", error);
-    }
-  };
+        setSavedStoryIds(savedIds);
+      } catch (error) {
+        console.error("FAILED TO LOAD SAVED ARTICLES:", error);
+      }
+    };
 
-  loadSavedArticles();
-}, []);
+    loadSavedArticles();
+  }, []);
 
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -123,31 +126,31 @@ export default function Feed() {
   };
 
   const handleSaveStory = async (storyId: string) => {
-  console.log("SAVE BUTTON CLICKED:", storyId);
+    console.log("SAVE BUTTON CLICKED:", storyId);
 
-  try {
-    if (SavedStoryIDs.includes(storyId)) {
-      console.log("UNSAVING ARTICLE:", storyId);
+    try {
+      if (SavedStoryIDs.includes(storyId)) {
+        console.log("UNSAVING ARTICLE:", storyId);
 
-      await unsaveArticle(storyId);
+        await unsaveArticle(storyId);
 
-      setSavedStoryIds((current) =>
-        current.filter((id) => id !== storyId)
-      );
-    } else {
-      console.log("SAVING ARTICLE:", storyId);
+        setSavedStoryIds((current) =>
+          current.filter((id) => id !== storyId)
+        );
+      } else {
+        console.log("SAVING ARTICLE:", storyId);
 
-      await saveArticle(storyId);
+        await saveArticle(storyId);
 
-      setSavedStoryIds((current) => [
-        ...current,
-        storyId,
-      ]);
+        setSavedStoryIds((current) => [
+          ...current,
+          storyId,
+        ]);
+      }
+    } catch (error) {
+      console.error("FAILED TO SAVE/UNSAVE:", error);
     }
-  } catch (error) {
-    console.error("FAILED TO SAVE/UNSAVE:", error);
-  }
-};
+  };
 
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
@@ -255,30 +258,6 @@ export default function Feed() {
                         </span>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleShare(story)}
-                        className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
-                      >
-                        Share
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleSaveStory(story.id)}
-                        aria-label={
-                          SavedStoryIDs.includes(story.id)
-                            ? "Unsave story"
-                            : "Save story"
-                        }
-                      >
-                        <Bookmark
-                          size={20}
-                          strokeWidth={1.5}
-                          className={
-                            SavedStoryIDs.includes(story.id)
-                              ? "fill-black text-black"
-                              : "text-black"
                       <h2
                         onClick={() => handleOpenStory(story.id)}
                         className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
@@ -311,7 +290,7 @@ export default function Feed() {
                           type="button"
                           onClick={() => handleSaveStory(story.id)}
                           aria-label={
-                            savedStoryIds.includes(story.id)
+                            SavedStoryIDs.includes(story.id)
                               ? "Unsave story"
                               : "Save story"
                           }
@@ -320,7 +299,7 @@ export default function Feed() {
                             size={20}
                             strokeWidth={1.5}
                             className={
-                              savedStoryIds.includes(story.id)
+                              SavedStoryIDs.includes(story.id)
                                 ? "fill-black text-black"
                                 : "text-black"
                             }
@@ -498,3 +477,4 @@ export default function Feed() {
     </div>
   );
 }
+

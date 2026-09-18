@@ -41,7 +41,35 @@ export class AuthService {
       console.log("NO REFRESH TOKEN FOUND");
     }
 }
+
+
+
   //Ensure user token is collected and stored to localstorage
+
+
+
+
+  static async refreshToken() {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (!refreshToken) {
+    throw new Error("Refresh token does not exist");
+  }
+
+  const response = await http.publicRequest(
+    "POST",
+    "/auth/refresh",
+    {
+      refreshToken,
+    }
+  );
+
+  const newAccessToken = response.data.accessToken;
+
+  localStorage.setItem("accessToken", newAccessToken);
+
+  return newAccessToken;
+}
 
   static async logout() {
     const refreshToken = localStorage.getItem("refreshToken");

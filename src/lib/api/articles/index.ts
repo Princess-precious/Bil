@@ -25,6 +25,9 @@ export interface CreateArticleData {
 export const createArticle = async (data: CreateArticleData) => {
   const formData = new FormData();
 
+  console.log("CREATE ARTICLE DATA:", data);
+  console.log("IS FORMDATA:", formData instanceof FormData);
+
   formData.append("title", data.title);
   formData.append("content", data.content);
   formData.append("categoryId", data.categoryId);
@@ -57,7 +60,7 @@ export const createArticle = async (data: CreateArticleData) => {
 };
 
 export const publishArticle = async (id: string) => {
-  const response = await http.publicRequest(
+  const response = await http.privateRequest(
     "PATCH",
     `/articles/${id}/publish`
   );
