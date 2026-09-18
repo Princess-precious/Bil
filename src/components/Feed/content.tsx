@@ -1,22 +1,9 @@
-/**
-    * @description      : 
-    * @author           : HP
-    * @group            : 
-    * @created          : 17/09/2026 - 15:05:02
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 17/09/2026
-    * - Author          : HP
-    * - Modification    : 
-**/
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
-
 import {
   saveArticle,
   unsaveArticle,
@@ -41,68 +28,116 @@ const topics = [
   "Culture",
 ];
 
-
-
 export default function Feed() {
   const navigate = useNavigate();
 
-  // Saved story IDs
-  const [SavedStoryIDs, setSavedStoryIds] = useState<string[]>([]);
+  // Saved story IDs state
+  const [savedStoryIds, setSavedStoryIds] = useState<string[]>([]);
 
+  // Safely load saved articles on mount
   useEffect(() => {
-  const loadSavedArticles = async () => {
-    try {
-      const response = await getSavedArticles();
+    const loadSavedArticles = async () => {
+      try {
+        const response = await getSavedArticles();
+        
+        // Handle various API return structures (array directly, { data: [...] }, or nested)
+        const articlesList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response?.data?.articles)
+          ? response.data.articles
+          : [];
 
-      console.log("SAVED ARTICLES RESPONSE:", response);
+        const savedIds = articlesList
+          .map((article: any) => article.id || article._id || article.articleId)
+          .filter(Boolean);
 
-      const savedIds = response.data.map((article: Story) => article.id);
+        setSavedStoryIds(savedIds);
+      } catch (error) {
+        console.error("FAILED TO LOAD SAVED ARTICLES:", error);
+      }
+    };
 
-      setSavedStoryIds(savedIds);
-    } catch (error) {
-      console.error("FAILED TO LOAD SAVED ARTICLES:", error);
-    }
-  };
-
-  loadSavedArticles();
-}, []);
+    loadSavedArticles();
+  }, []);
 
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState("All");
   const [visibleCount, setVisibleCount] = useState(3);
 
+  // Fetch stories with normalized fallback array
   const {
-    data: stories = [],
+    data: rawStories = [],
     isLoading,
     isError,
   } = useQuery<Story[]>({
     queryKey: ["stories"],
-    queryFn: () => getStories(),
+    queryFn: async () => {
+      const res = await getStories();
+      return Array.isArray(res) ? res : res?.data || [];
+    },
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
   });
 
+  const stories = useMemo(() => {
+    return Array.isArray(rawStories) ? rawStories : [];
+  }, [rawStories]);
+
+  // Safely extract category name string
+  const getCategoryName = (story: any): string => {
+    if (typeof story.category === "string") return story.category;
+    if (story.category?.name) return story.category.name;
+    if (typeof story.categoryId === "string") return story.categoryId;
+    return "Uncategorized";
+  };
+
+  // Safely extract author name string
+  const getAuthorName = (story: any): string => {
+    if (typeof story.author === "string") return story.author;
+    if (story.author?.name) return story.author.name;
+    if (story.user?.name) return story.user.name;
+    return "Anonymous";
+  };
+
+  // Resolve cover image URL
+  const getCoverImageSrc = (story: any): string | null => {
+    const rawImage =
+      story.coverImage ||
+      story.imageUrl ||
+      story.image;
+
+    if (typeof rawImage === "string" && rawImage.trim() !== "") {
+      if (rawImage.startsWith("http://") || rawImage.startsWith("https://")) {
+        return rawImage;
+      }
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      return `${baseUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
+    }
+    return null;
+  };
+
+  // Filter stories by selected topic
   const filteredStories = useMemo(() => {
     if (selectedTopic === "All") {
       return stories;
     }
 
     return stories.filter((story) => {
-      const category = story.category?.toLowerCase() ?? "";
+      const category = getCategoryName(story).toLowerCase();
       const topic = selectedTopic.toLowerCase();
-
       return category.includes(topic);
     });
   }, [stories, selectedTopic]);
 
   const visibleStories = filteredStories.slice(0, visibleCount);
 
+  // Share story handler
   const handleShare = async (story: Story) => {
-    const storyUrl =
-      window.location.origin +
-      window.location.pathname +
-      `#${story.id}`;
+    const storyId = story.id || (story as any)._id;
+    const storyUrl = `${window.location.origin}/story/${storyId}`;
 
     try {
       if (navigator.share) {
@@ -122,33 +157,35 @@ export default function Feed() {
     }
   };
 
+  // Save / unsave story with Optimistic UI updates
   const handleSaveStory = async (storyId: string) => {
-  console.log("SAVE BUTTON CLICKED:", storyId);
+    const isCurrentlySaved = savedStoryIds.includes(storyId);
 
-  try {
-    if (SavedStoryIDs.includes(storyId)) {
-      console.log("UNSAVING ARTICLE:", storyId);
+    // Optimistic state update
+    setSavedStoryIds((current) =>
+      isCurrentlySaved
+        ? current.filter((id) => id !== storyId)
+        : [...current, storyId]
+    );
 
-      await unsaveArticle(storyId);
-
+    try {
+      if (isCurrentlySaved) {
+        await unsaveArticle(storyId);
+      } else {
+        await saveArticle(storyId);
+      }
+    } catch (error) {
+      console.error("FAILED TO SAVE/UNSAVE ARTICLE:", error);
+      // Revert optimistic update on error
       setSavedStoryIds((current) =>
-        current.filter((id) => id !== storyId)
+        isCurrentlySaved
+          ? [...current, storyId]
+          : current.filter((id) => id !== storyId)
       );
-    } else {
-      console.log("SAVING ARTICLE:", storyId);
-
-      await saveArticle(storyId);
-
-      setSavedStoryIds((current) => [
-        ...current,
-        storyId,
-      ]);
     }
-  } catch (error) {
-    console.error("FAILED TO SAVE/UNSAVE:", error);
-  }
-};
+  };
 
+  // Topic selection handler
   const handleTopicClick = (topic: string) => {
     setSelectedTopic(topic);
     setVisibleCount(3);
@@ -159,19 +196,23 @@ export default function Feed() {
     });
   };
 
+  // Open single story view
   const handleOpenStory = (storyId: string) => {
     navigate(`/story/${storyId}`);
   };
 
+  // Reset topic filter
   const showAllStories = () => {
     setSelectedTopic("All");
     setVisibleCount(3);
   };
 
+  // Load more pagination handler
   const handleLoadMore = () => {
     setVisibleCount((current) => current + 3);
   };
 
+  // Loading UI
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FBF9F8]">
@@ -182,6 +223,7 @@ export default function Feed() {
     );
   }
 
+  // Error UI
   if (isError) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF9F8]">
@@ -200,7 +242,11 @@ export default function Feed() {
     <div className="min-h-screen bg-[#FBF9F8] text-[#1A1A1A]">
       <main className="mx-auto mt-14 w-full max-w-7xl px-6 py-12 lg:px-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+
+          {/* MAIN FEED */}
           <section className="space-y-16 lg:col-span-8">
+
+            {/* Active filter display */}
             {selectedTopic !== "All" && (
               <div className="flex items-center justify-between border-b border-[#ECE6E0] pb-4">
                 <div className="font-hanken text-xs uppercase tracking-[0.2em] text-[#8A8581]">
@@ -220,30 +266,29 @@ export default function Feed() {
               </div>
             )}
 
+            {/* STORIES LIST */}
             {visibleStories.length > 0 ? (
               visibleStories.map((story) => {
-                // Safely extract cover image property candidates
-                const rawImage =
-                  story.coverImage ||
-                  (story as any).imageUrl ||
-                  (story as any).image;
-
-                // Check that the image URL is a non-empty string with non-whitespace content
-                const imageSrc =
-                  typeof rawImage === "string" && rawImage.trim() !== ""
-                    ? rawImage
-                    : null;
+                const storyId = story.id || (story as any)._id;
+                const imageSrc = getCoverImageSrc(story);
+                const categoryName = getCategoryName(story);
+                const authorName = getAuthorName(story);
+                const isSaved = savedStoryIds.includes(storyId);
 
                 return (
                   <article
-                    id={story.id}
-                    key={story.id}
+                    id={storyId}
+                    key={storyId}
                     className="grid grid-cols-1 gap-8 border-b border-[#ECE6E0] pb-16 md:grid-cols-12 md:gap-10"
                   >
+
+                    {/* STORY CONTENT */}
                     <div className="order-last flex flex-col justify-center md:order-first md:col-span-7">
+
+                      {/* Category / Author */}
                       <div className="mb-4 flex flex-wrap items-center gap-3 font-hanken text-[11px] font-medium uppercase tracking-[0.18em]">
                         <span className="text-[#B35D52]">
-                          {story.category}
+                          {categoryName}
                         </span>
 
                         <span className="text-[#8A8581]">
@@ -251,54 +296,38 @@ export default function Feed() {
                         </span>
 
                         <span className="text-[#5C5855]">
-                          {story.author}
+                          {authorName}
                         </span>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleShare(story)}
-                        className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
-                      >
-                        Share
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleSaveStory(story.id)}
-                        aria-label={
-                          SavedStoryIDs.includes(story.id)
-                            ? "Unsave story"
-                            : "Save story"
-                        }
-                      >
-                        <Bookmark
-                          size={20}
-                          strokeWidth={1.5}
-                          className={
-                            SavedStoryIDs.includes(story.id)
-                              ? "fill-black text-black"
-                              : "text-black"
+                      {/* Title */}
                       <h2
-                        onClick={() => handleOpenStory(story.id)}
+                        onClick={() => handleOpenStory(storyId)}
                         className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
                       >
                         {story.title}
                       </h2>
 
+                      {/* Excerpt */}
                       <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
                         {story.excerpt}
                       </p>
 
+                      {/* Date / Share / Bookmark Action */}
                       <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+
+                        {/* Date */}
                         <span>
-                          {story.date
-                            ? new Date(story.date).toLocaleDateString()
+                          {story.createdAt || (story as any).date
+                            ? new Date(
+                                story.createdAt || (story as any).date
+                              ).toLocaleDateString()
                             : ""}
                         </span>
 
                         <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
 
+                        {/* Share */}
                         <button
                           type="button"
                           onClick={() => handleShare(story)}
@@ -307,33 +336,31 @@ export default function Feed() {
                           Share
                         </button>
 
+                        {/* Bookmark / Save */}
                         <button
                           type="button"
-                          onClick={() => handleSaveStory(story.id)}
-                          aria-label={
-                            savedStoryIds.includes(story.id)
-                              ? "Unsave story"
-                              : "Save story"
-                          }
+                          onClick={() => handleSaveStory(storyId)}
+                          aria-label={isSaved ? "Unsave story" : "Save story"}
+                          className="transition-transform active:scale-95"
                         >
                           <Bookmark
                             size={20}
                             strokeWidth={1.5}
                             className={
-                              savedStoryIds.includes(story.id)
-                                ? "fill-black text-black"
-                                : "text-black"
+                              isSaved
+                                ? "fill-[#B35D52] text-[#B35D52]"
+                                : "text-black hover:text-[#B35D52]"
                             }
                           />
                         </button>
                       </div>
                     </div>
 
-                    {/* Clickable Cover Image */}
+                    {/* COVER IMAGE */}
                     <div className="order-first md:order-last md:col-span-5">
                       <figure>
                         <div
-                          onClick={() => handleOpenStory(story.id)}
+                          onClick={() => handleOpenStory(storyId)}
                           className="group/img relative aspect-[4/3] cursor-pointer overflow-hidden bg-[#F4F0EB]"
                         >
                           {imageSrc ? (
@@ -359,6 +386,7 @@ export default function Feed() {
                 );
               })
             ) : (
+              /* EMPTY STATE */
               <div className="border-y border-[#ECE6E0] py-20 text-center">
                 <h2 className="font-playfair text-2xl">
                   No stories found
@@ -378,6 +406,7 @@ export default function Feed() {
               </div>
             )}
 
+            {/* LOAD MORE BUTTON */}
             {visibleCount < filteredStories.length && (
               <div className="flex justify-center">
                 <button
@@ -391,7 +420,10 @@ export default function Feed() {
             )}
           </section>
 
+          {/* SIDEBAR */}
           <aside className="space-y-12 lg:col-span-4 lg:border-l lg:border-[#ECE6E0] lg:pl-10">
+
+            {/* FOR YOU */}
             <section>
               <div className="mb-6 flex items-baseline justify-between">
                 <h3 className="font-playfair text-2xl font-semibold">
@@ -406,33 +438,37 @@ export default function Feed() {
               </div>
 
               <div className="space-y-6">
-                {stories.slice(0, 4).map((story, index) => (
-                  <button
-                    key={story.id}
-                    type="button"
-                    onClick={() => handleOpenStory(story.id)}
-                    className="group block w-full text-left"
-                  >
-                    <div className="flex gap-4">
-                      <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                {stories.slice(0, 4).map((story, index) => {
+                  const storyId = story.id || (story as any)._id;
+                  return (
+                    <button
+                      key={storyId}
+                      type="button"
+                      onClick={() => handleOpenStory(storyId)}
+                      className="group block w-full text-left"
+                    >
+                      <div className="flex gap-4">
+                        <span className="shrink-0 font-hanken text-[10px] text-[#8A8581]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
 
-                      <div>
-                        <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
-                          {story.title}
-                        </h4>
+                        <div>
+                          <h4 className="font-playfair text-lg font-medium leading-snug transition-colors group-hover:text-[#B35D52]">
+                            {story.title}
+                          </h4>
 
-                        <p className="mt-1 font-hanken text-xs text-[#8A8581]">
-                          {story.category}
-                        </p>
+                          <p className="mt-1 font-hanken text-xs text-[#8A8581]">
+                            {getCategoryName(story)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
+            {/* CATEGORIES INDEX */}
             <section>
               <div className="mb-4">
                 <div className="mb-5 flex items-center justify-end">
@@ -464,7 +500,10 @@ export default function Feed() {
               </div>
 
               <div className="space-y-2">
-                {(showAllTopics ? topics : topics.slice(0, 7)).map((topic) => {
+                {(showAllTopics
+                  ? topics
+                  : topics.slice(0, 7)
+                ).map((topic) => {
                   const isActive = selectedTopic === topic;
 
                   return (
@@ -489,7 +528,9 @@ export default function Feed() {
                 onClick={() => setShowAllTopics((current) => !current)}
                 className="mt-6 font-hanken text-xs uppercase tracking-[0.15em] text-[#B35D52] transition-colors hover:text-[#9E4E44]"
               >
-                {showAllTopics ? "Show less ↑" : "View full index →"}
+                {showAllTopics
+                  ? "Show less ↑"
+                  : "View full index →"}
               </button>
             </section>
           </aside>

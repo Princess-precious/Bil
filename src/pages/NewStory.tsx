@@ -1,14 +1,14 @@
 /**
- * @description      :
+ * @description      : New Story creation component
  * @author           : HP
  * @group            :
  * @created          : 07/09/2026 - 13:24:32
  *
  * MODIFICATION LOG
- * - Version         : 1.0.1
- * - Date            : 07/09/2026
+ * - Version         : 1.0.3
+ * - Date            : 18/09/2026
  * - Author          : HP
- * - Modification    : Upload cover image via dedicated uploadCoverImage endpoint after article creation
+ * - Modification    : Integrated standalone cover image upload flow
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -17,13 +17,13 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
 
-
-import { getCategories } from "../lib/api/category";
-import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
-import remarkGfm from "remark-gfm";
-import { createArticle, publishArticle, uploadCoverImage } from "../lib/api/articles";
 import { getCategories } from "../lib/api/category";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import remarkGfm from "remark-gfm";
+import {
+  createArticle,
+  publishArticle,
+} from "../lib/api/articles";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import axios from "axios";
@@ -45,14 +45,19 @@ export default function NewStory() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
 
+  // Actual selected image file
   const [image, setImage] = useState<File | null>(null);
+
+  // Local preview
   const [preview, setPreview] = useState<string | null>(null);
+
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // AI States
   const [showAI, setShowAI] = useState(false);
@@ -116,36 +121,55 @@ export default function NewStory() {
     };
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Handle cover image selection
+   */
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
+    // Store actual File.
+    // This File will later be sent to /upload/image.
     setImage(file);
 
+    // Create local preview only.
     const reader = new FileReader();
+
     reader.onloadend = () => {
       setPreview(reader.result as string);
     };
+
     reader.readAsDataURL(file);
   };
 
+  /**
+   * AI Request
+   */
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
 
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
-      setAiResponse("You must be logged in to use the AI assistant.");
+      setAiResponse(
+        "You must be logged in to use the AI assistant."
+      );
       return;
     }
 
     let requestMessage = "";
 
     if (aiAction !== null) {
-      const storyText = quillRef.current?.getText().trim() || "";
+      const storyText =
+        quillRef.current?.getText().trim() || "";
 
       if (!storyText) {
-        setAiResponse("Write or paste a story into the editor first.");
+        setAiResponse(
+          "Write or paste a story into the editor first."
+        );
         return;
       }
 
@@ -167,7 +191,8 @@ Story:
 ${storyText}
       `.trim();
     } else {
-      const storyText = quillRef.current?.getText().trim() || "";
+      const storyText =
+        quillRef.current?.getText().trim() || "";
 
       requestMessage = `
 User instruction:
@@ -199,6 +224,7 @@ ${storyText}
       );
 
       const text = await response.text();
+
       let result;
 
       try {
@@ -214,15 +240,22 @@ ${storyText}
 
       if (!response.ok) {
         throw new Error(
-          result.detail || result.message || `HTTP Error ${response.status}`
+          result.detail ||
+            result.message ||
+            `HTTP Error ${response.status}`
         );
       }
 
       const responseContent =
-        result.data || result.response || result.message || text;
+        result.data ||
+        result.response ||
+        result.message ||
+        text;
 
       if (!responseContent) {
-        throw new Error("Backend returned an empty response.");
+        throw new Error(
+          "Backend returned an empty response."
+        );
       }
 
       setAiResponse(responseContent);
@@ -249,7 +282,10 @@ ${storyText}
     if (quillRef.current && aiResponse) {
       const range = quillRef.current.getSelection(true);
 
-      quillRef.current.insertText(range.index, `\n${aiResponse}\n`);
+      quillRef.current.insertText(
+        range.index,
+        `\n${aiResponse}\n`
+      );
     }
   };
 
@@ -259,10 +295,12 @@ ${storyText}
     setAiAction(null);
   };
 
-  /*
+  /**
    * SAVE DRAFT
    */
   const handleSaveDraft = async () => {
+    if (isSubmitting) return;
+
     if (!title.trim()) {
       return setMessage("Please enter an article title.");
     }
@@ -276,24 +314,21 @@ ${storyText}
     }
 
     try {
-      setMessage("Saving draft...");
+      setIsSubmitting(true);
+      setMessage(
+        image
+          ? "Uploading cover image and saving draft..."
+          : "Saving draft..."
+      );
 
-      // 1. Create draft article
-      const article = await createArticle({
-        title,
+      await createArticle({
+        title: title.trim(),
         content,
         categoryId: category,
-        excerpt,
+        excerpt: excerpt.trim(),
         status: "draft",
+        file: image ?? undefined,
       });
-
-      const articleId = article?.data?.id || article?.id;
-
-      // 2. Upload cover image if selected
-      if (articleId && image) {
-        setMessage("Uploading cover image...");
-        await uploadCoverImage(articleId, image);
-      }
 
       setMessage("Draft saved successfully.");
 
@@ -305,27 +340,49 @@ ${storyText}
         image: preview,
       };
 
-      localStorage.setItem("storyDraft", JSON.stringify(draft));
+      localStorage.setItem(
+        "storyDraft",
+        JSON.stringify(draft)
+      );
 
       setTimeout(() => {
         setMessage("");
       }, 3000);
     } catch (error) {
-      console.error("Failed to save draft:", error);
+      console.error("FAILED TO SAVE DRAFT:", error);
 
       if (axios.isAxiosError(error)) {
-        console.error("Status:", error.response?.status);
-        console.error("Response:", error.response?.data);
+        console.error(
+          "STATUS:",
+          error.response?.status
+        );
+        console.error(
+          "RESPONSE:",
+          error.response?.data
+        );
       }
 
-      setMessage("Failed to save draft. Please check the console.");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to save draft."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  /*
+  /**
    * PUBLISH STORY
+   *
+   * Flow:
+   * 1. Upload image through /upload/image
+   * 2. Create article as draft with returned coverImage URL
+   * 3. Publish article through /articles/:id/publish
    */
   const handlePublish = async () => {
+    if (isSubmitting) return;
+
     if (!title.trim()) {
       return setMessage("Please enter an article title.");
     }
@@ -339,33 +396,65 @@ ${storyText}
     }
 
     try {
-      setMessage("Creating article...");
+      setIsSubmitting(true);
 
-      // 1. Create base article first
+      setMessage(
+        image
+          ? "Uploading cover image..."
+          : "Creating article..."
+      );
+
+      /**
+       * createArticle() handles the image upload.
+       *
+       * If image exists:
+       * POST /upload/image
+       *        ↓
+       * Cloudinary URL
+       *        ↓
+       * POST /articles
+       */
       const article = await createArticle({
-        title,
+        title: title.trim(),
         content,
         categoryId: category,
-        excerpt,
+        excerpt: excerpt.trim(),
         status: "draft",
+        file: image ?? undefined,
       });
 
-      const articleId = article?.data?.id || article?.id;
+      console.log("ARTICLE CREATED:", article);
+
+      /**
+       * Support the possible response structures.
+       */
+      const articleId =
+        article?.data?.id ??
+        article?.id ??
+        article?.data?.article?.id ??
+        article?.data?.articleId;
 
       if (!articleId) {
-        throw new Error("Article ID was not returned by the backend.");
+        throw new Error(
+          "Article was created, but no article ID was returned by the backend."
+        );
       }
 
-      // 2. Upload the cover image using its dedicated endpoint
-      if (image) {
-        setMessage("Uploading cover image...");
-        await uploadCoverImage(articleId, image);
-      }
-
-      // 3. Publish article
+      /**
+       * Publish the draft.
+       */
       setMessage("Publishing article...");
+
       await publishArticle(articleId);
 
+      console.log(
+        "ARTICLE PUBLISHED:",
+        articleId
+      );
+
+      /**
+       * Refresh feed data.
+       */
       await queryClient.invalidateQueries({
         queryKey: ["stories"],
       });
@@ -376,6 +465,9 @@ ${storyText}
 
       setMessage("Story published successfully.");
 
+      /**
+       * Reset form.
+       */
       setTitle("");
       setExcerpt("");
       setContent("");
@@ -397,14 +489,30 @@ ${storyText}
         navigate("/feed");
       }, 1500);
     } catch (error) {
-      console.error("Failed to publish article:", error);
+      console.error(
+        "FAILED TO PUBLISH ARTICLE:",
+        error
+      );
 
       if (axios.isAxiosError(error)) {
-        console.error("Status:", error.response?.status);
-        console.error("Response:", error.response?.data);
+        console.error(
+          "STATUS:",
+          error.response?.status
+        );
+
+        console.error(
+          "RESPONSE:",
+          error.response?.data
+        );
       }
 
-      setMessage("Failed to publish article. Please check the console.");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to publish article. Please check the console."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -424,7 +532,9 @@ ${storyText}
             className="flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800"
           >
             <span>✨</span>
-            <span>{showAI ? "Close Assistant" : "Ask AI"}</span>
+            <span>
+              {showAI ? "Close Assistant" : "Ask AI"}
+            </span>
           </button>
         </header>
 
@@ -457,7 +567,10 @@ ${storyText}
             />
 
             <div className="min-h-[450px] border-y border-gray-200 py-4">
-              <div ref={editorRef} className="min-h-[400px] w-full" />
+              <div
+                ref={editorRef}
+                className="min-h-[400px] w-full"
+              />
             </div>
           </div>
 
@@ -471,7 +584,9 @@ ${storyText}
 
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) =>
+                  setCategory(e.target.value)
+                }
                 className="w-full border-b border-gray-300 bg-transparent py-2.5 text-sm text-gray-800 outline-none focus:border-black"
               >
                 <option value="" disabled hidden>
@@ -479,7 +594,10 @@ ${storyText}
                 </option>
 
                 {categories.map((item: any) => (
-                  <option key={item.id} value={item.id}>
+                  <option
+                    key={item.id}
+                    value={item.id}
+                  >
                     {item.name}
                   </option>
                 ))}
@@ -492,7 +610,7 @@ ${storyText}
                 Cover Image
               </label>
 
-              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
+              <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-gray-50 transition hover:border-black">
                 {preview ? (
                   <img
                     src={preview}
@@ -512,6 +630,12 @@ ${storyText}
                   onChange={handleImageChange}
                 />
               </label>
+
+              {image && (
+                <p className="mt-2 truncate text-xs text-gray-500">
+                  Selected: {image.name}
+                </p>
+              )}
             </div>
 
             {/* ACTIONS */}
@@ -519,17 +643,23 @@ ${storyText}
               <button
                 type="button"
                 onClick={handlePublish}
-                className="w-full bg-black py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800"
+                disabled={isSubmitting}
+                className="w-full bg-black py-3.5 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Publish
+                {isSubmitting
+                  ? "Publishing..."
+                  : "Publish"}
               </button>
 
               <button
                 type="button"
                 onClick={handleSaveDraft}
-                className="w-full border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-widest text-black transition hover:bg-gray-50"
+                disabled={isSubmitting}
+                className="w-full border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-widest text-black transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Save Draft
+                {isSubmitting
+                  ? "Processing..."
+                  : "Save Draft"}
               </button>
             </div>
           </aside>
@@ -537,13 +667,18 @@ ${storyText}
 
         <button
           onClick={() => navigate("/feed")}
-          className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+          className="fixed left-6 top-24 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
         >
           ←
         </button>
 
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
           className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
         >
           ↑
@@ -555,6 +690,7 @@ ${storyText}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
               <div className="flex items-center gap-2">
                 <span className="text-lg">✨</span>
+
                 <h3 className="font-semibold text-gray-900">
                   AI Writing Assistant
                 </h3>
@@ -580,22 +716,26 @@ ${storyText}
                   {[
                     {
                       label: "Improve writing",
-                      prompt: "Help me improve the writing in my story",
+                      prompt:
+                        "Help me improve the writing in my story",
                       action: "improve",
                     },
                     {
                       label: "Suggest quote",
-                      prompt: "Suggest a relevant quote for my story",
+                      prompt:
+                        "Suggest a relevant quote for my story",
                       action: "quote",
                     },
                     {
                       label: "Continue writing",
-                      prompt: "Help me continue writing my story",
+                      prompt:
+                        "Help me continue writing my story",
                       action: null,
                     },
                     {
                       label: "Rewrite",
-                      prompt: "Rewrite my story to make it more engaging",
+                      prompt:
+                        "Rewrite my story to make it more engaging",
                       action: "rewrite",
                     },
                   ].map((item) => (
@@ -624,7 +764,9 @@ ${storyText}
               <div className="relative rounded-lg border border-gray-200 bg-gray-50 p-2 focus-within:border-black focus-within:bg-white">
                 <textarea
                   value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
+                  onChange={(e) =>
+                    setAiPrompt(e.target.value)
+                  }
                   placeholder="Ask AI for suggestions, rewrites, or quotes..."
                   rows={3}
                   className="w-full resize-none bg-transparent p-2 text-sm outline-none placeholder:text-gray-400"
@@ -642,10 +784,14 @@ ${storyText}
                   <button
                     type="button"
                     onClick={handleAIRequest}
-                    disabled={aiLoading || !aiPrompt.trim()}
+                    disabled={
+                      aiLoading || !aiPrompt.trim()
+                    }
                     className="rounded-md bg-black px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-gray-800 disabled:opacity-40"
                   >
-                    {aiLoading ? "Thinking..." : "Generate"}
+                    {aiLoading
+                      ? "Thinking..."
+                      : "Generate"}
                   </button>
                 </div>
               </div>
@@ -668,7 +814,9 @@ ${storyText}
                   </div>
 
                   <div className="prose prose-sm text-sm leading-relaxed text-gray-700">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                    >
                       {aiResponse}
                     </ReactMarkdown>
                   </div>
