@@ -21,6 +21,7 @@ import {
   getStories,
   getComments,
   createComment,
+  deleteComment,
   type Story,
 } from "../lib/api/stories";
 
@@ -56,13 +57,22 @@ export default function DemoArticle() {
       queryKey: ["comments", id],
     });
   },
-  onError: (error: any) => {
-  console.error("COMMENT ERROR:", error.response?.data);
-  alert(
-    error.response?.data?.message ||
-    "Failed to post comment"
-  );
-},
+  onError: (error) => {
+    console.error("COMMENT ERROR:", error);
+    alert("Failed to post comment");
+  },
+});
+const deleteCommentMutation = useMutation({
+  mutationFn: (commentId: string) => deleteComment(id!, commentId),
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["comments", id],
+    });
+  },
+  onError: (error) => {
+    console.error("DELETE COMMENT ERROR:", error);
+    alert("Failed to delete comment");
+  },
 });
   const story = stories.find((item) => String(item.id) === String(id));
 
@@ -122,18 +132,18 @@ export default function DemoArticle() {
           )}
 
           {/* SECTION 3: DYNAMIC DRAFT / QUILL CONTENT */}
-<section className="flex flex-col w-full max-w-4xl bg-[#fbf9f8] px-6 md:px-12 mt-10">
-  <div
-    className="prose prose-lg max-w-none text-xs md:text-base leading-relaxed text-[#1A1A1A]"
-    dangerouslySetInnerHTML={{ __html: typeof story.content === "string" ? story.content : "" }}
-  />
+          <section className="flex flex-col w-full max-w-4xl bg-[#fbf9f8] px-6 md:px-12 mt-10">
+            <div
+              className="prose prose-lg max-w-none text-xs md:text-base leading-relaxed text-[#1A1A1A]"
+              dangerouslySetInnerHTML={{ __html: typeof story.content === "string" ? story.content : "" }}
+            />
 
-  <div className="flex flex-row mt-10 gap-2 mb-10">
-    <span className="bg-[#f5f3f3] text-[10px] p-1">Design Theory</span>
-    <span className="bg-[#f5f3f3] text-[10px] p-1">UI Architecture</span>
-    <span className="bg-[#f5f3f3] text-[10px] p-1">Web Trends</span>
-  </div>
-</section>
+            <div className="flex flex-row mt-10 gap-2 mb-10">
+              <span className="bg-[#f5f3f3] text-[10px] p-1">Design Theory</span>
+              <span className="bg-[#f5f3f3] text-[10px] p-1">UI Architecture</span>
+              <span className="bg-[#f5f3f3] text-[10px] p-1">Web Trends</span>
+            </div>
+          </section>
 
           {/* SECTION 4: DISCUSSION */}
           
@@ -180,15 +190,17 @@ export default function DemoArticle() {
                     <div className="flex rounded-full overflow-hidden flex-shrink-0">
                       <img
                       src={
-                          comment.user?.profileImage ||
-                          comment.user?.avatar ||
-                          comment.author?.profileImage ||
-                          comment.author?.avatar ||
-                          firstcomment
-                        }
-                        className="object-cover rounded-full w-10 h-10"
-                        alt="Commenter avatar"
-                      />
+                        comment.user?.profileImage ||
+                        comment.user?.avatar ||
+                        comment.author?.profileImage ||
+                        comment.author?.avatar ||
+                        comment.profileImage ||
+                        comment.avatar ||
+                        firstcomment
+                      }
+                      className="object-cover rounded-full w-10 h-10"
+                      alt="Commenter avatar"
+                    />
                         
                     </div>
 
@@ -198,12 +210,27 @@ export default function DemoArticle() {
                           comment.author?.name ||
                           comment.user?.username ||
                           comment.author?.username ||
+                          comment.name ||
+                          comment.username ||
                           "Anonymous"}
                       </h1>
 
-                      <p className="text-xs pb-5">
+                      <p className="text-xs">
                         {comment.content}
                       </p>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm("Delete this comment?")) {
+                            deleteCommentMutation.mutate(comment.id);
+                          }
+                        }}
+                        disabled={deleteCommentMutation.isPending}
+                        className="self-start text-[10px] text-red-600 pb-5 hover:underline disabled:opacity-50"
+                      >
+                        DELETE
+                      </button>
                     </div>
                   </div>
                 ))

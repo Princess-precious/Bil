@@ -64,7 +64,7 @@ export class AuthService {
     }
   );
 
-  const newAccessToken = response.data.accessToken;
+  const newAccessToken = response.data.data.accessToken;
 
   localStorage.setItem("accessToken", newAccessToken);
 

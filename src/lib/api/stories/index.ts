@@ -151,3 +151,15 @@ export const createComment = async (
 
   return response.data;
 };
+
+export const deleteComment = async (
+  articleId: string,
+  commentId: string
+) => {
+  const response = await http.privateRequest(
+    "DELETE",
+    `/articles/${articleId}/comments/${commentId}`
+  );
+
+  return response.data;
+};
