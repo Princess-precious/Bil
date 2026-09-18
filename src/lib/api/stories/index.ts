@@ -64,10 +64,10 @@ export interface Story {
 };
 
 export const getMyStories = async (): Promise<Story[]> => {
-  const response = await http.publicRequest(
-    "GET",
-    "/articles/me/articles"
-  );
+  const response = await http.privateRequest(
+  "GET",
+  "/articles/me/articles"
+);
 
   const articles = response.data.data.articles;
 
@@ -105,4 +105,49 @@ export const getStoryBySlug = async (
     coverImage: article.coverImagePublicId || "",
     content: article.content || article.body || "", // Added content mapping
   };
+};
+
+export const updateStory = async (
+  id: string,
+  data: {
+    title: string;
+    content: string;
+    excerpt: string;
+  }
+) => {
+  const response = await http.privateRequest(
+    "PATCH",
+    `/articles/${id}`,
+    data
+  );
+
+  return response.data;
+};
+
+export const getComments = async (articleId: string) => {
+  const response = await http.publicRequest(
+    "GET",
+    `/articles/${articleId}/comments`
+  );
+
+  return response.data.data;
+};
+
+
+export const createComment = async (
+  articleId: string,
+  content: string
+) => {
+  const response = await http.privateRequest(
+    "POST",
+    `/articles/${articleId}/comments`,
+    {
+      content: content.trim(),
+    },
+    {
+      "Idempotency-Key": crypto.randomUUID(),
+    }
+  );
+
+  return response.data;
 };

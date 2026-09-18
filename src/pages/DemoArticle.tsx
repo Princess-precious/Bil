@@ -1,21 +1,69 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 17/09/2026 - 23:52:43
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 17/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import firstcomment from "../images/firstcomment.jpg";
 import feedtechnology from "../../public/feedtechnology.png";
-import { getStories, type Story } from "../lib/api/stories";
+import {
+  getStories,
+  getComments,
+  createComment,
+  type Story,
+} from "../lib/api/stories";
+
 
 export default function DemoArticle() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+
+  const [comment, setComment] = useState("");
 
   // Fetch all stories and locate the current story matching the route param
   const { data: stories = [], isLoading, isError } = useQuery<Story[]>({
     queryKey: ["stories"],
-    queryFn: getStories,
+    queryFn: () => getStories(),
   });
 
+  const {
+    data: comments = [],
+    isLoading: commentsLoading,
+  } = useQuery({
+    queryKey: ["comments", id],
+    queryFn: () => getComments(id!),
+    enabled: !!id,
+  });
+
+  const createCommentMutation = useMutation({
+  mutationFn: () => createComment(id!, comment),
+  onSuccess: () => {
+    setComment("");
+
+    queryClient.invalidateQueries({
+      queryKey: ["comments", id],
+    });
+  },
+  onError: (error: any) => {
+  console.error("COMMENT ERROR:", error.response?.data);
+  alert(
+    error.response?.data?.message ||
+    "Failed to post comment"
+  );
+},
+});
   const story = stories.find((item) => String(item.id) === String(id));
 
   if (isLoading) {
@@ -88,35 +136,78 @@ export default function DemoArticle() {
 </section>
 
           {/* SECTION 4: DISCUSSION */}
+          
           <section className="flex flex-col w-full max-w-4xl px-6 md:px-12 border-t border-[#dbdad9]">
-            <h1 className="text-xl font-bold py-6">Discussion (3)</h1>
+            <h1 className="text-xl font-bold py-6">
+              Discussion ({comments.length})
+            </h1>
+
             <div className="flex flex-col gap-2">
               <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 placeholder="Add your perspective..."
                 className="bg-white p-4 text-sm border border-[#dbdad9]"
-              ></textarea>
-              <button className="flex self-start text-sm px-4 py-2 bg-black text-white">
-                POST COMMENT
+              />
+
+              <button
+                type="button"
+                onClick={() => createCommentMutation.mutate()}
+                disabled={!comment.trim() || createCommentMutation.isPending}
+                className="flex self-start text-sm px-4 py-2 bg-black text-white disabled:opacity-50"
+              >
+                {createCommentMutation.isPending
+                  ? "POSTING..."
+                  : "POST COMMENT"}
               </button>
             </div>
 
             <div className="flex flex-col mt-14 gap-4">
-              <div className="flex flex-row gap-2 border-b border-[#dbdad9]">
-                <div className="flex rounded-full overflow-hidden flex-shrink-0">
-                  <img
-                    src={firstcomment}
-                    className="object-cover rounded-full w-10 h-10"
-                    alt="Commenter avatar"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h1 className="text-xs font-bold">Elena Rostova</h1>
-                  <p className="text-xs pb-5">
-                    The argument for structural transparency is compelling, but I
-                    wonder if pure brutalism alienates non-technical users.
-                  </p>
-                </div>
-              </div>
+              {commentsLoading ? (
+                <p className="text-sm text-[#8A8581]">
+                  Loading comments...
+                </p>
+              ) : comments.length === 0 ? (
+                <p className="text-sm text-[#8A8581]">
+                  No comments yet. Be the first to share your perspective.
+                </p>
+              ) : (
+                comments.map((comment: any) => (
+                  <div
+                    key={comment.id}
+                    className="flex flex-row gap-2 border-b border-[#dbdad9]"
+                  >
+                    <div className="flex rounded-full overflow-hidden flex-shrink-0">
+                      <img
+                      src={
+                          comment.user?.profileImage ||
+                          comment.user?.avatar ||
+                          comment.author?.profileImage ||
+                          comment.author?.avatar ||
+                          firstcomment
+                        }
+                        className="object-cover rounded-full w-10 h-10"
+                        alt="Commenter avatar"
+                      />
+                        
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <h1 className="text-xs font-bold">
+                        {comment.user?.name ||
+                          comment.author?.name ||
+                          comment.user?.username ||
+                          comment.author?.username ||
+                          "Anonymous"}
+                      </h1>
+
+                      <p className="text-xs pb-5">
+                        {comment.content}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </section>
 

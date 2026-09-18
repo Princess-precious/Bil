@@ -22,8 +22,6 @@ import { getCategories } from "../lib/api/category";
 import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
 import remarkGfm from "remark-gfm";
 import { createArticle, publishArticle, uploadCoverImage } from "../lib/api/articles";
-import { getCategories } from "../lib/api/category";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import axios from "axios";

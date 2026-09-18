@@ -11,7 +11,7 @@
     * - Modification    : 
 **/
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
@@ -19,52 +19,21 @@ import remarkGfm from "remark-gfm";
 
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
+import { updateStory } from "../lib/api/stories";
 
 // =========================
 // TEMPORARY STORY DATA
 // =========================
 
-const stories = [
-  {
-    id: 1,
-    title: "The Weight of Silence: Brutalism in the Modern Era",
-    excerpt:
-      "Exploring the beauty, strength and meaning behind brutalist architecture.",
-    content:
-      "<p>Brutalist architecture has always been surrounded by strong opinions. Some see it as cold and intimidating, while others see beauty in its raw concrete forms.</p><p>In the modern era, brutalism continues to influence architecture and design.</p>",
-    category: "art",
-    image: "/profileHero.jpg",
-  },
-  {
-    id: 2,
-    title: "Texture & Time: Materials That Age With Grace",
-    excerpt:
-      "A look at how materials change and develop character over time.",
-    content:
-      "<p>Materials tell stories through the way they age. Wood develops deeper tones, metal develops patina, and stone becomes more expressive with time.</p>",
-    category: "culture",
-    image: "/story.jpg",
-  },
-  {
-    id: 3,
-    title: "Negative Space in City Planning",
-    excerpt:
-      "Understanding the importance of empty spaces in modern cities.",
-    content:
-      "<p>Good city planning is not only about what we build. It is also about the spaces we intentionally leave open.</p><p>Negative space gives cities room to breathe and creates opportunities for people to connect.</p>",
-    category: "science",
-    image: "/profileHero.jpg",
-  },
-];
+
 
 export default function EditStory() {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
 
   const storyId = params.storyId ?? params.id;
-  const numericStoryId = Number(storyId);
-
-  const story = stories.find((item) => item.id === numericStoryId);
+  const story = location.state?.story;
 
   // =========================
   // FORM STATES
@@ -152,7 +121,7 @@ export default function EditStory() {
     setExcerpt(story.excerpt);
     setContent(story.content);
     setCategory(story.category);
-    setPreview(story.image);
+    setPreview(story.coverImage);
 
     if (quillRef.current) {
       quillRef.current.root.innerHTML = story.content;
@@ -295,39 +264,46 @@ ${storyText}
   // SAVE CHANGES
   // =========================
 
-  const handleSaveChanges = () => {
-    if (!title.trim()) {
-      setMessage("Please enter an article title.");
-      return;
-    }
+  const handleSaveChanges = async () => {
+  if (!title.trim()) {
+    setMessage("Please enter an article title.");
+    return;
+  }
 
-    if (!content.trim() || content === "<p><br></p>") {
-      setMessage("Please write your story.");
-      return;
-    }
+  if (!content.trim() || content === "<p><br></p>") {
+    setMessage("Please write your story.");
+    return;
+  }
 
-    if (!category) {
-      setMessage("Please select a category.");
-      return;
-    }
+  if (!category) {
+    setMessage("Please select a category.");
+    return;
+  }
 
-    const updatedStory = {
-      id: numericStoryId,
+  if (!storyId) {
+    setMessage("Story ID is missing.");
+    return;
+  }
+
+  try {
+    setMessage("Saving changes...");
+
+    await updateStory(storyId, {
       title,
-      excerpt,
       content,
-      category,
-      imageName: image?.name || story?.image,
-    };
-
-    console.log("Updated Story:", updatedStory);
+      excerpt,
+    });
 
     setMessage("Story updated successfully.");
 
     setTimeout(() => {
       navigate("/user-profile");
-    }, 1500);
-  };
+    }, 1000);
+  } catch (error) {
+    console.error("Failed to update story:", error);
+    setMessage("Failed to update story. Please try again.");
+  }
+};  
 
   const handleCancel = () => {
     navigate("/user-profile");
