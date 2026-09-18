@@ -140,3 +140,22 @@ export async function resetpassword(data: resetPasswordData) {
 
   return response.data;
 }
+
+export const logoutUser = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (!refreshToken) {
+    throw new Error("Refresh token does not exist");
+  }
+
+  return http.publicRequest(
+    "POST",
+    "/api/v1/auth/logout",
+    {
+      refreshToken,
+    },
+    {
+      "Content-Type": "application/json",
+    }
+  );
+};

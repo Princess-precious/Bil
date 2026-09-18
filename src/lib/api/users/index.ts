@@ -52,12 +52,15 @@ export async function updateProfileImage(file: File) {
   const formData = new FormData();
 
   formData.append("file", file);
-
   const response = await http.privateRequest(
-    "POST",
-    "/users/user/profile-image",
-    formData
-  );
+  "POST",
+  "/users/user/profile-image",
+  formData,
+  {
+    "Content-Type": "multipart/form-data",
+  }
+);
+  
 
   return response.data;
 }

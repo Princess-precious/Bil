@@ -16,7 +16,9 @@ import { getStories } from "../api/stories";
 export const useStories = () => {
   const query = useQuery({
     queryKey: ["stories"],
-    queryFn: getStories,
+    queryFn: () => getStories(),
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   console.log("REACT QUERY ERROR:", query);

@@ -16,12 +16,24 @@ import {Link, useNavigate} from "react-router-dom"
 import { useState } from "react";
 import { deleteAccount } from "../lib/api/users";
 import { useAuth } from "../../src/useAuth";
+import { AuthService } from "../lib/Auth/AuthService";
 
 function Settings(){
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const { setIsSignedIn } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    } finally {
+      setIsSignedIn(false);
+      navigate("/");
+    }
+  };
 
   const handleDeleteAccount = async () => {
     try {
@@ -73,7 +85,7 @@ function Settings(){
             </p>
           </div>
           <div className="flex items-center">
-            <button className="text-black text-xs whitespace-nowrap  bg-[#eeebeb] px-4 py-2 hover:opacity-80 focus:opacity-80">LOG OUT</button>
+            <button onClick={handleLogout} className="text-black text-xs whitespace-nowrap  bg-[#eeebeb] px-4 py-2 hover:opacity-80 focus:opacity-80">LOG OUT</button>
           </div>
         </section>
 
