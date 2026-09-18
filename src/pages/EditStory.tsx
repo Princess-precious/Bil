@@ -21,9 +21,8 @@ import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import { updateStory } from "../lib/api/stories";
 
-// =========================
+
 // TEMPORARY STORY DATA
-// =========================
 
 
 
@@ -35,31 +34,23 @@ export default function EditStory() {
   const storyId = params.storyId ?? params.id;
   const story = location.state?.story;
 
-  // =========================
-  // FORM STATES
-  // =========================
+  
 
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  // =========================
-  // IMAGE STATES
-  // =========================
+  
 
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  // =========================
-  // MESSAGE STATE
-  // =========================
+
 
   const [message, setMessage] = useState("");
 
-  // =========================
-  // AI STATES
-  // =========================
+  
 
   const [showAI, setShowAI] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
@@ -69,16 +60,12 @@ export default function EditStory() {
     "improve" | "quote" | "rewrite" | null
   >(null);
 
-  // =========================
-  // EDITOR REF
-  // =========================
+
 
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
-  // =========================
-  // INITIALIZE QUILL
-  // =========================
+ 
 
   useEffect(() => {
     if (!editorRef.current || quillRef.current) return;
@@ -110,9 +97,7 @@ export default function EditStory() {
     };
   }, []);
 
-  // =========================
-  // LOAD STORY INTO FORM
-  // =========================
+  
 
   useEffect(() => {
     if (!story) return;
@@ -138,9 +123,7 @@ export default function EditStory() {
     setPreview(URL.createObjectURL(file));
   };
 
-  // =========================
-  // AI ASSISTANT REQUEST
-  // =========================
+  
 
   const handleAIRequest = async () => {
     if (!aiPrompt.trim() || aiLoading) return;
@@ -227,9 +210,9 @@ ${storyText}
     }
   };
 
-  // =========================
+  
   // AI QUICK ACTION
-  // =========================
+  
 
   const handleAIQuickAction = (
     prompt: string,
@@ -239,9 +222,7 @@ ${storyText}
     setAiAction(action);
   };
 
-  // =========================
-  // INSERT AI RESPONSE INTO EDITOR
-  // =========================
+  
 
   const handleInsertToEditor = () => {
     if (quillRef.current && aiResponse) {
@@ -250,9 +231,9 @@ ${storyText}
     }
   };
 
-  // =========================
+  
   // CLEAR AI
-  // =========================
+  
 
   const handleClearAI = () => {
     setAiPrompt("");
@@ -260,9 +241,8 @@ ${storyText}
     setAiAction(null);
   };
 
-  // =========================
   // SAVE CHANGES
-  // =========================
+
 
   const handleSaveChanges = async () => {
   if (!title.trim()) {

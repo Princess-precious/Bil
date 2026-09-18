@@ -32,11 +32,13 @@ type Draft = {
 };
 
 export default function UserProfile() {
-  const { data, isLoading, error} = useQuery({
+  const { data, isLoading, error } = useQuery({
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
-  enabled: !!localStorage.getItem("user")
 });
+
+console.log("USER PROFILE DATA:", data);
+console.log("USER PROFILE ERROR:", error);
   const {
     data: stories = [],
     isLoading: storiesLoading,
@@ -50,28 +52,27 @@ export default function UserProfile() {
 //PROFILE INFO
   const defaultProfileImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='18' fill='%23f5f5f5'/%3E%3Cpath d='M18 90c3-22 16-34 32-34s29 12 32 34' fill='%23f5f5f5'/%3E%3C/svg%3E`;
 
-  // ================= ACTIVE TAB =================
+  
 
   const [activeTab, setActiveTab] = useState<
     "my-stories" | "saved-stories" | "saved-drafts"
   >("my-stories");
 
-  // ================= SAVED STORY IDs =================
+  
 
   
-  // ================= SAVED DRAFT =================
+  
 
   const [draft, setDraft] = useState<Draft | null>(null);
 
-  // ================= MY STORIES =================
+ 
 
  
    
-  // ================= FEED STORIES =================
 
   
 
-  //  LOAD SAVED DATA 
+  //LOAD SAVED DATA 
   useEffect(() => {
     const savedDraft = localStorage.getItem("storyDraft");
 
@@ -89,7 +90,7 @@ export default function UserProfile() {
 
 
 
-  // ================= GET SAVED STORIES =================
+
 
    const {
       data: savedStories = [],
@@ -102,7 +103,7 @@ export default function UserProfile() {
       },
     });
 
-  // ================= SHARE PROFILE =================
+  
 
   const handleShare = async () => {
     try {
@@ -125,7 +126,7 @@ export default function UserProfile() {
   });
 };
 
-  //REMOVE SAVED STORY 
+   
 
   const handleRemoveSavedStory = async (storyId: string) => {
     try {
@@ -137,14 +138,14 @@ export default function UserProfile() {
     }
   };
 
-  // ================= DELETE DRAFT =================
+ 
 
   const handleDeleteDraft = () => {
     localStorage.removeItem("storyDraft");
     setDraft(null);
   };
 
-  // ================= CONTINUE DRAFT =================
+  
 
   const handleContinueDraft = () => {
     navigate("/new-story");
@@ -153,13 +154,13 @@ export default function UserProfile() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
 
-      {/* ================= NAVBAR ================= */}
+      
 
       <Navbar />
 
       <main className="mx-auto my-12 w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
 
-        {/* ================= PROFILE HEADER ================= */}
+       
 
         <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
 
@@ -242,7 +243,7 @@ export default function UserProfile() {
 
         </header>
 
-        {/* ================= TABS ================= */}
+       
 
         <div className="mb-12 flex gap-8 overflow-x-auto border-b border-gray-300">
 
@@ -388,9 +389,7 @@ export default function UserProfile() {
                   
 
                
-        {/* ======================================================
-            SAVED STORIES
-        ====================================================== */}
+        
 
         {activeTab === "saved-stories" && (
           <section>
@@ -502,9 +501,7 @@ export default function UserProfile() {
           </section>
         )}
 
-        {/* ======================================================
-            SAVED DRAFTS
-        ====================================================== */}
+        
 
         {activeTab === "saved-drafts" && (
           <section>
@@ -632,7 +629,7 @@ export default function UserProfile() {
           </section>
         )}
 
-        {/* ================= BACK TO FEED ================= */}
+       
 
         <button
           type="button"
@@ -645,8 +642,7 @@ export default function UserProfile() {
 
       </main>
 
-      {/* ================= FOOTER ================= */}
-
+      
       <Footer />
 
     </div>

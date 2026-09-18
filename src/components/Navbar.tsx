@@ -187,7 +187,7 @@ function Navbar({className}:NavbarProps) {
           
           {isHome ? (
             <div className="flex">
-              <Link to="/signin" className="text-white bg-black border border-white hover:opacity-80 active:opacity-80 text-sm px-3 py-1 rounded-2xl text-center">
+              <Link to="/signup" className="text-white bg-black border border-white hover:opacity-80 active:opacity-80 text-sm px-3 py-1 rounded-2xl text-center">
                 Sign Up
               </Link>
             </div>

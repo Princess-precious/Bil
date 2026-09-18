@@ -103,9 +103,7 @@ export default function SignIn() {
       
   };
 
-  const handleForgotPassword = () => {
-  navigate("/forget-password");
-};
+ 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
@@ -269,13 +267,7 @@ export default function SignIn() {
                   Remember me
                 </label>
 
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-xs font-medium text-black underline"
-                >
-                  Forgot password?
-                </button>
+                
 
               </div>
 

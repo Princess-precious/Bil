@@ -11,7 +11,7 @@
     * - Modification    : 
 **/
 import axios from "axios";
-
+import { AuthService } from "./Auth/AuthService";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BILLET_API_URL,
@@ -51,8 +51,8 @@ export const http = {
 
   const isFormData = data instanceof FormData;
 
-  try {
-    return await api.request({
+  const request = () =>
+    api.request({
       method,
       url,
       data,
@@ -66,42 +66,22 @@ export const http = {
         ...headers,
       },
     });
+
+  try {
+    return await request();
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      const refreshToken = localStorage.getItem("refreshToken");
+      try {
+        token = await AuthService.refreshToken();
 
-      if (!refreshToken) {
-        throw error;
+        return await request();
+      } catch (refreshError) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+
+        throw refreshError;
       }
-
-      const refreshResponse = await api.request({
-        method: "POST",
-        url: "/auth/refresh",
-        data: {
-          refreshToken,
-        },
-      });
-
-      const newAccessToken = refreshResponse.data.data.accessToken;
-
-      localStorage.setItem("accessToken", newAccessToken);
-
-      token = newAccessToken;
-
-      return await api.request({
-        method,
-        url,
-        data,
-        headers: {
-          ...(isFormData
-            ? {}
-            : { "Content-Type": "application/json" }),
-
-          Authorization: `Bearer ${token}`,
-
-          ...headers,
-        },
-      });
     }
 
     throw error;
