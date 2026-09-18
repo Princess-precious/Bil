@@ -32,11 +32,13 @@ type Draft = {
 };
 
 export default function UserProfile() {
-  const { data, isLoading, error} = useQuery({
+  const { data, isLoading, error } = useQuery({
   queryKey: ["userProfile"],
   queryFn: getUserProfile,
-  enabled: !!localStorage.getItem("user")
 });
+
+console.log("USER PROFILE DATA:", data);
+console.log("USER PROFILE ERROR:", error);
   const {
     data: stories = [],
     isLoading: storiesLoading,
@@ -70,6 +72,21 @@ export default function UserProfile() {
   
 
   
+  
+
+  
+  
+
+  const [draft, setDraft] = useState<Draft | null>(null);
+
+ 
+
+ 
+   
+
+  
+
+  //LOAD SAVED DATA 
   useEffect(() => {
     const savedDraft = localStorage.getItem("storyDraft");
 
@@ -88,6 +105,7 @@ export default function UserProfile() {
 
 
   
+
 
    const {
       data: savedStories = [],
@@ -124,6 +142,8 @@ export default function UserProfile() {
 };
 
   
+   
+
   const handleRemoveSavedStory = async (storyId: string) => {
     try {
       await unsaveArticle(storyId);
@@ -134,6 +154,7 @@ export default function UserProfile() {
     }
   };
 
+ 
 
   const handleDeleteDraft = () => {
     localStorage.removeItem("storyDraft");
@@ -150,11 +171,14 @@ export default function UserProfile() {
     <div className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
 
       
+
       <Navbar />
 
       <main className="mx-auto my-12 w-full max-w-6xl flex-grow px-6 pb-32 pt-16 md:px-12">
 
         
+       
+
         <header className="mb-24 flex flex-col items-start gap-12 md:flex-row md:items-center">
 
           {/* PROFILE IMAGE */}
@@ -383,6 +407,8 @@ export default function UserProfile() {
 
                
        
+        
+
         {activeTab === "saved-stories" && (
           <section>
 
@@ -494,6 +520,8 @@ export default function UserProfile() {
         )}
 
        
+        
+
         {activeTab === "saved-drafts" && (
           <section>
 
@@ -621,6 +649,7 @@ export default function UserProfile() {
         )}
 
         
+       
 
         <button
           type="button"

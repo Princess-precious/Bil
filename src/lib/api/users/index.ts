@@ -26,7 +26,10 @@ export async function getUserProfile(): Promise<UserProfile> {
     "GET",
     "/users/user"
   );
-  
+
+  console.log("PROFILE RESPONSE FROM API:", response.data);
+  console.log("PROFILE DATA RETURNED:", response.data.data);
+
   return response.data.data;
 }
 

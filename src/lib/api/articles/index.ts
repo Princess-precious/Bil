@@ -38,6 +38,12 @@ export const createArticle = async (
       "Idempotency-Key": idempotencyKey,
     }
   );
+  console.log("CREATE ARTICLE DATA:", data);
+  console.log("IS FORMDATA:", formData instanceof FormData);
+
+  formData.append("title", data.title);
+  formData.append("content", data.content);
+  formData.append("categoryId", data.categoryId);
 
   return response.data;
 };
@@ -104,6 +110,7 @@ export const uploadArticleCoverImage = async (
 export const publishArticle = async (
   articleId: string
 ) => {
+export const publishArticle = async (id: string) => {
   const response = await http.privateRequest(
     "PATCH",
     `/articles/${articleId}/publish`

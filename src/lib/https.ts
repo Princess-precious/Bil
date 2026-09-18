@@ -35,6 +35,22 @@ export const http = {
     const isFormData = data instanceof FormData;
 
     return api.request({
+ privateRequest: async (
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+  url: string,
+  data?: unknown,
+  headers?: Record<string, string>
+) => {
+  let token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("Access token does not exist");
+  }
+
+  const isFormData = data instanceof FormData;
+
+  const request = () =>
+    api.request({
       method,
       url,
       data,
@@ -48,5 +64,25 @@ export const http = {
         ...headers,
       },
     });
-  },
+
+  try {
+    return await request();
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      try {
+        token = await AuthService.refreshToken();
+
+        return await request();
+      } catch (refreshError) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+
+        throw refreshError;
+      }
+    }
+
+    throw error;
+  }
+},
 };

@@ -1,7 +1,23 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 17/09/2026 - 23:47:27
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 17/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
+
 
 import { useEffect, useMemo, useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import { useQuery } from "@tanstack/react-query";
+
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
@@ -53,6 +69,9 @@ export default function Feed() {
               article.id || article._id || article.articleId
           )
           .filter(Boolean);
+        console.log("SAVED ARTICLES RESPONSE:", response);
+
+        const savedIds = response.data.map((article: Story) => article.id);
 
         setSavedStoryIds(savedIds);
       } catch (error) {
@@ -180,6 +199,29 @@ export default function Feed() {
           ? [...current, storyId]
           : current.filter((id) => id !== storyId)
       );
+    console.log("SAVE BUTTON CLICKED:", storyId);
+
+    try {
+      if (SavedStoryIDs.includes(storyId)) {
+        console.log("UNSAVING ARTICLE:", storyId);
+
+        await unsaveArticle(storyId);
+
+        setSavedStoryIds((current) =>
+          current.filter((id) => id !== storyId)
+        );
+      } else {
+        console.log("SAVING ARTICLE:", storyId);
+
+        await saveArticle(storyId);
+
+        setSavedStoryIds((current) => [
+          ...current,
+          storyId,
+        ]);
+      }
+    } catch (error) {
+      console.error("FAILED TO SAVE/UNSAVE:", error);
     }
   };
 
@@ -307,11 +349,58 @@ export default function Feed() {
                         <h2
                           onClick={() =>
                             handleOpenStory(storyId)
+                      <h2
+                        onClick={() => handleOpenStory(story.id)}
+                        className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
+                      >
+                        {story.title}
+                      </h2>
+
+                      <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
+                        {story.excerpt}
+                      </p>
+
+                      <div className="mt-7 flex items-center gap-5 font-hanken text-xs text-[#8A8581]">
+                        <span>
+                          {story.date
+                            ? new Date(story.date).toLocaleDateString()
+                            : ""}
+                        </span>
+
+                        <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
+
+                        <button
+                          type="button"
+                          onClick={() => handleShare(story)}
+                          className="uppercase tracking-[0.15em] transition-colors hover:text-[#B35D52]"
+                        >
+                          Share
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSaveStory(story.id)}
+                          aria-label={
+                            SavedStoryIDs.includes(story.id)
+                              ? "Unsave story"
+                              : "Save story"
                           }
                           className="cursor-pointer font-playfair text-3xl font-semibold leading-tight text-[#1A1A1A] transition-colors hover:text-[#B35D52] md:text-4xl"
                         >
                           {story.title}
                         </h2>
+                          <Bookmark
+                            size={20}
+                            strokeWidth={1.5}
+                            className={
+                              SavedStoryIDs.includes(story.id)
+                                ? "fill-black text-black"
+                                : "text-black"
+                            }
+                          />
+                        </button>
+                      </div>
+                    </div>
 
                         {/* Excerpt */}
                         <p className="mt-5 max-w-xl font-hanken text-base font-light leading-7 text-[#5C5855]">
@@ -568,3 +657,4 @@ export default function Feed() {
     </div>
   );
 }
+
