@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 18/09/2026 - 10:48:00
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 18/09/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import axios from "axios";
 import { AuthService } from "./Auth/AuthService";
 
@@ -26,7 +38,7 @@ export const http = {
     data?: unknown,
     headers?: Record<string, string>
   ) => {
-    const token = localStorage.getItem("accessToken");
+    let token = localStorage.getItem("accessToken");
 
     if (!token) {
       throw new Error("Access token does not exist");
@@ -34,55 +46,43 @@ export const http = {
 
     const isFormData = data instanceof FormData;
 
-    return api.request({
- privateRequest: async (
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-  url: string,
-  data?: unknown,
-  headers?: Record<string, string>
-) => {
-  let token = localStorage.getItem("accessToken");
+    const request = () =>
+      api.request({
+        method,
+        url,
+        data,
+        headers: {
+          ...(isFormData
+            ? {}
+            : { "Content-Type": "application/json" }),
 
-  if (!token) {
-    throw new Error("Access token does not exist");
-  }
+          Authorization: `Bearer ${token}`,
 
-  const isFormData = data instanceof FormData;
+          ...headers,
+        },
+      });
 
-  const request = () =>
-    api.request({
-      method,
-      url,
-      data,
-      headers: {
-        ...(isFormData
-          ? {}
-          : { "Content-Type": "application/json" }),
+    try {
+      return await request();
+    } catch (error) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response?.status === 401
+      ) {
+        try {
+          token = await AuthService.refreshToken();
 
-        Authorization: `Bearer ${token}`,
+          return await request();
+        } catch (refreshError) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
 
-        ...headers,
-      },
-    });
-
-  try {
-    return await request();
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      try {
-        token = await AuthService.refreshToken();
-
-        return await request();
-      } catch (refreshError) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("user");
-
-        throw refreshError;
+          throw refreshError;
+        }
       }
-    }
 
-    throw error;
-  }
-},
+      throw error;
+    }
+  },
 };
