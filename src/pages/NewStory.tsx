@@ -17,12 +17,14 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
 
-
 import { getCategories } from "../lib/api/category";
-import { useQuery,  useQueryClient } from "@tanstack/react-query"; 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import remarkGfm from "remark-gfm";
-import { createArticle, publishArticle, uploadArticleCoverImage } from "../lib/api/articles";
-import { createArticle, publishArticle, uploadCoverImage } from "../lib/api/articles";
+import {
+  createArticle,
+  publishArticle,
+  uploadArticleCoverImage,
+} from "../lib/api/articles";
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import axios from "axios";
@@ -53,7 +55,6 @@ export default function NewStory() {
   const [preview, setPreview] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
-  
   const [showAI, setShowAI] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState("");
@@ -536,7 +537,7 @@ ${storyText}
 
         <button
           onClick={() => navigate("/feed")}
-          className="fixed top-24 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+          className="fixed left-6 top-24 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
         >
           ←
         </button>
@@ -672,7 +673,7 @@ ${storyText}
                     </ReactMarkdown>
                   </div>
                 </div>
-              )} 
+              )}
             </div>
           </div>
         )}
