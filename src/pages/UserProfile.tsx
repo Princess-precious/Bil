@@ -25,7 +25,7 @@ import { getMyStories } from "../lib/api/stories";
 import { getSavedArticles, unsaveArticle } from "../lib/api/articles";
 
 export default function UserProfile() {
-  const { data, isLoading, error } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["userProfile"],
     queryFn: getUserProfile,
   });
@@ -293,10 +293,7 @@ export default function UserProfile() {
                     <div className="flex flex-col justify-center md:col-span-7">
 
                       <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                        {typeof story.category === "string"
-                          ? story.category
-                          : story.category?.name ||
-                            "Uncategorized"}
+                        {story.category || "Uncategorized"}
                       </span>
 
                       <h2 className="mt-3 text-3xl font-bold text-gray-900">
@@ -310,10 +307,7 @@ export default function UserProfile() {
                       <div className="mt-5 flex flex-wrap items-center gap-5">
 
                         <span className="text-sm text-gray-500">
-                          {story.author?.name ||
-                            story.author?.username ||
-                            data?.name ||
-                            "Unknown author"}
+                          {story.author || data?.name || "Unknown author"}
                         </span>
 
                         <span className="h-1 w-1 rounded-full bg-gray-400" />
@@ -355,7 +349,15 @@ export default function UserProfile() {
 
               <div className="space-y-12">
 
-                {savedStories.map((story) => (
+                {savedStories.map((story: {
+                  id: string;
+                  title: string;
+                  excerpt?: string;
+                  coverImage?: string;
+                  category?: string;
+                  author?: string;
+                  date?: string;
+                }) => (
 
                   <article
                     key={story.id}
@@ -383,9 +385,7 @@ export default function UserProfile() {
                     <div className="flex flex-col justify-center md:col-span-7">
 
                       <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
-                        {typeof story.category === "string"
-                          ? story.category
-                          : story.category?.name || "Uncategorized"}
+                        {story.category || "Uncategorized"}
                       </span>
 
                       <h2 className="mt-3 text-3xl font-bold text-gray-900">
@@ -399,9 +399,7 @@ export default function UserProfile() {
                       <div className="mt-5 flex flex-wrap items-center gap-5">
 
                         <span className="text-sm text-gray-500">
-                          {story.author?.name ||
-                            story.author?.username ||
-                            "Unknown author"}
+                          {story.author || "Unknown author"}
                         </span>
 
                         <span className="h-1 w-1 rounded-full bg-gray-400" />

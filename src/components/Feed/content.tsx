@@ -90,7 +90,7 @@ export default function Feed() {
     queryFn: async () => {
       const res = await getStories();
 
-      return Array.isArray(res) ? res : res?.data || [];
+      return Array.isArray(res) ? res :  [];
     },
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
@@ -347,13 +347,13 @@ export default function Feed() {
 
                           {/* Date */}
                           <span>
-                            {story.createdAt ||
-                            (story as any).date
+                            {(story as any).createdAt ||
+                              (story as any).date
                               ? new Date(
-                                  story.createdAt ||
-                                    (story as any).date
-                                ).toLocaleDateString()
-                              : ""}
+                                (story as any).createdAt ||
+                                (story as any).date
+                              ).toLocaleDateString()
+                            : ""}
                           </span>
 
                           <span className="h-1 w-1 rounded-full bg-[#8A8581]" />

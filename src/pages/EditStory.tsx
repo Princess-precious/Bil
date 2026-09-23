@@ -43,7 +43,7 @@ export default function EditStory() {
 
   
 
-  const [image, setImage] = useState<File | null>(null);
+  const [, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
 

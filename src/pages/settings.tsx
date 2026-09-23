@@ -20,7 +20,7 @@ import { AuthService } from "../lib/Auth/AuthService";
 
 function Settings(){
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [showToast] = useState(false);
   const navigate = useNavigate();
   const { setIsSignedIn } = useAuth();
 
