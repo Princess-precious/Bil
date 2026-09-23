@@ -11,7 +11,7 @@
     * - Modification    : 
 **/
 import woman from "../images/woman.png"
-import art from "../images/Art.png"
+import art from "../images/art.png"
 import studyroom from "../images/studyroom.jpg"
 import {useState, useEffect} from "react"
 import walls from "../images/walls.png"
