@@ -46,7 +46,7 @@ export default function NewStory() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
 
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });

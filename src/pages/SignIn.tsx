@@ -16,7 +16,6 @@ import { useState } from "react";
 import {signinUser}  from "../lib/api/auth";
 import { googleLogin } from "../lib/api/auth";
 //import {useMutation}  from  "@tanstack/react-query";
-import { AuthService } from "../lib/Auth/AuthService";
 import { useAuth } from "../../src/useAuth";
 
 

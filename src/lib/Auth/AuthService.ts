@@ -22,7 +22,11 @@ import { http } from "../https";
 
 export class AuthService {
 
-    static login(data) {
+    static login(data: {
+    accessToken?: string;
+    refreshToken?: string;
+    [key: string]: any;
+    }) {
     console.log("LOGIN DATA RECEIVED BY AUTHSERVICE:", data);
 
     localStorage.setItem("user", JSON.stringify(data));
