@@ -57,10 +57,7 @@ export default function UserProfile() {
     refetch: refetchSavedStories,
   } = useQuery({
     queryKey: ["saved-stories"],
-    queryFn: async () => {
-      const response = await getSavedArticles();
-      return response.data;
-    },
+    queryFn: getSavedArticles,
   });
 
   const handleShare = async () => {
