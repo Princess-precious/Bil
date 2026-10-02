@@ -1,41 +1,16 @@
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { http } from '../https';
-import { AuthService } from '../Auth/AuthService';
+import { useSearchParams } from 'react-router-dom';
 
 export default function OAuthSuccess() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const exchangeCode = async () => {
-      const code = searchParams.get('code');
+    console.log('🔥 OAUTH SUCCESS COMPONENT IS RUNNING');
 
-      if (!code) {
-        navigate('/signin', { replace: true });
-        return;
-      }
+    const code = searchParams.get('code');
 
-      try {
-        const response = await http.publicRequest(
-          'POST',
-          '/auth/google/exchange',
-          { code },
-        );
+    console.log('🔥 GOOGLE CODE:', code);
+  }, [searchParams]);
 
-        const data = response.data.data;
-
-        AuthService.login(data);
-
-        navigate('/feed', { replace: true });
-      } catch (error) {
-        console.error('Google authentication failed:', error);
-        navigate('/signin', { replace: true });
-      }
-    };
-
-    exchangeCode();
-  }, [searchParams, navigate]);
-
-  return <div>Logging you in...</div>;
+  return <div>Google OAuth callback reached</div>;
 }
