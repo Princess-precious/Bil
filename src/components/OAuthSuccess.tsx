@@ -1,24 +1,52 @@
+/**
+    * @description      : 
+    * @author           : HP
+    * @group            : 
+    * @created          : 03/10/2026 - 21:48:46
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 03/10/2026
+    * - Author          : HP
+    * - Modification    : 
+**/
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { http } from '../lib/https';
+import { AuthService } from '../lib/Auth/AuthService';
 
 export default function OAuthSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
+    const exchangeCode = async () => {
+      const code = searchParams.get('code');
 
-    if (accessToken) {
-      // Store tokens in storage or auth state
-      localStorage.setItem('accessToken', accessToken);
-      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      if (!code) {
+        navigate('/signin', { replace: true });
+        return;
+      }
 
-      // Redirect to the feed page
-      navigate('/feed', { replace: true });
-    } else {
-      navigate('/login', { replace: true });
-    }
+      try {
+        const response = await http.publicRequest(
+          'POST',
+          '/auth/google/exchange',
+          { code },
+        );
+
+        const data = response.data.data;
+
+        AuthService.login(data);
+
+        navigate('/feed', { replace: true });
+      } catch (error) {
+        console.error('Google authentication failed:', error);
+        navigate('/signin', { replace: true });
+      }
+    };
+
+    exchangeCode();
   }, [searchParams, navigate]);
 
   return <div>Logging you in...</div>;

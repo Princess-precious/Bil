@@ -2,19 +2,20 @@
     * @description      : 
     * @author           : HP
     * @group            : 
-    * @created          : 18/09/2026 - 10:40:27
+    * @created          : 01/10/2026 - 00:22:09
     * 
     * MODIFICATION LOG
     * - Version         : 1.0.0
-    * - Date            : 18/09/2026
+    * - Date            : 01/10/2026
     * - Author          : HP
     * - Modification    : 
 **/
 
 
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
@@ -44,6 +45,7 @@ const topics = [
 
 export default function Feed() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [savedStoryIds, setSavedStoryIds] = useState<string[]>([]);
   const [showAllTopics, setShowAllTopics] = useState(false);
@@ -59,6 +61,8 @@ export default function Feed() {
 
         const articlesList = Array.isArray(response)
           ? response
+          : Array.isArray(response?.articles)
+          ? response.articles
           : Array.isArray(response?.data)
           ? response.data
           : Array.isArray(response?.data?.articles)
@@ -90,7 +94,7 @@ export default function Feed() {
     queryFn: async () => {
       const res = await getStories();
 
-      return Array.isArray(res) ? res :  [];
+      return Array.isArray(res) ? res : [];
     },
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
@@ -191,6 +195,11 @@ export default function Feed() {
         console.log("SAVING ARTICLE:", storyId);
         await saveArticle(storyId);
       }
+
+      // Refresh saved stories on UserProfile
+      await queryClient.invalidateQueries({
+        queryKey: ["saved-stories"],
+      });
     } catch (error) {
       console.error("FAILED TO SAVE/UNSAVE ARTICLE:", error);
 
@@ -348,12 +357,12 @@ export default function Feed() {
                           {/* Date */}
                           <span>
                             {(story as any).createdAt ||
-                              (story as any).date
+                            (story as any).date
                               ? new Date(
-                                (story as any).createdAt ||
-                                (story as any).date
-                              ).toLocaleDateString()
-                            : ""}
+                                  (story as any).createdAt ||
+                                  (story as any).date
+                                ).toLocaleDateString()
+                              : ""}
                           </span>
 
                           <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
@@ -596,4 +605,3 @@ export default function Feed() {
     </div>
   );
 }
-
