@@ -54,6 +54,8 @@ export default function UserProfile() {
   // LOAD SAVED STORIES
   const {
     data: savedStories = [],
+    isLoading: savedStoriesLoading,
+    isError: savedStoriesError,
     refetch: refetchSavedStories,
   } = useQuery({
     queryKey: ["saved-stories"],
@@ -342,19 +344,27 @@ export default function UserProfile() {
         {activeTab === "saved-stories" && (
           <section>
 
-            {savedStories.length > 0 ? (
+            {savedStoriesLoading ? (
+              <div className="py-20 text-center">
+                <p className="text-gray-500">
+                  Loading saved stories...
+                </p>
+              </div>
+            ) : savedStoriesError ? (
+              <div className="border-y border-gray-300 py-20 text-center">
+                <h2 className="text-2xl font-bold">
+                  Failed to load saved stories
+                </h2>
+
+                <p className="mt-3 text-gray-500">
+                  Please try again later.
+                </p>
+              </div>
+            ) : savedStories.length > 0 ? (
 
               <div className="space-y-12">
 
-                {savedStories.map((story: {
-                  id: string;
-                  title: string;
-                  excerpt?: string;
-                  coverImage?: string;
-                  category?: string;
-                  author?: string;
-                  date?: string;
-                }) => (
+                {savedStories.map((story) => (
 
                   <article
                     key={story.id}
