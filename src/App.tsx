@@ -27,6 +27,7 @@ import ForgetPassword from './pages/ForgetPassword';
 import ChangePassword from './pages/ChangePassword';
 import EditProfile from './pages/EditProfile';
 import OAuthSuccess from './components/OAuthSuccess';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 function App() {
@@ -38,12 +39,12 @@ function App() {
                 <Route path="/story/:id" element={<DemoArticle/>}/>
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/new-story" element={<NewStory />} />
-                <Route path="/edit-story/:id" element={<EditStory />} />
-                <Route path="/user-profile" element={<UserProfile />} />
+                <Route path="/new-story" element={<ProtectedRoute><NewStory /></ProtectedRoute>} />
+                <Route path="/edit-story/:id" element={<ProtectedRoute><EditStory /></ProtectedRoute>} />
+                <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
                 <Route path="/privacy" element={<Privacy/>}/>
-                <Route path="/settings" element={<Settings/>}/>
-                <Route path="/edit-profile" element={<EditProfile/>}/>
+                <Route path="/settings" element={<ProtectedRoute><Settings/></ProtectedRoute>}/>
+                <Route path="/edit-profile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/about" element={<About/>}/>
