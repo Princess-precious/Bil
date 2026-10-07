@@ -11,11 +11,12 @@
     * - Modification    : 
 **/
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import feedtechnology from "../../public/feedtechnology.png";
+import { isSignedIn } from "../components/ProtectedRoute";
 import {
   getStories,
   getComments,
@@ -31,10 +32,25 @@ const defaultAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
 export default function DemoArticle() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
   const [comment, setComment] = useState("");
+
+  /**
+   * Posting or deleting a comment needs a session. A reader who arrived on a
+   * shared link is sent to sign in and comes back to this story afterwards.
+   */
+  const requireSignIn = (): boolean => {
+    if (isSignedIn()) {
+      return true;
+    }
+
+    navigate("/signin", { state: { from: location.pathname } });
+
+    return false;
+  };
 
   // Fetch all stories and locate the current story matching the route param
   const { data: stories = [], isLoading, isError } = useQuery<Story[]>({
@@ -158,6 +174,7 @@ const deleteCommentMutation = useMutation({
             <div className="flex flex-col gap-2">
               <textarea
                 value={comment}
+                onFocus={() => requireSignIn()}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Add your perspective..."
                 className="bg-white p-4 text-sm border border-[#dbdad9]"
@@ -165,7 +182,13 @@ const deleteCommentMutation = useMutation({
 
               <button
                 type="button"
-                onClick={() => createCommentMutation.mutate()}
+                onClick={() => {
+                  if (!requireSignIn()) {
+                    return;
+                  }
+
+                  createCommentMutation.mutate();
+                }}
                 disabled={!comment.trim() || createCommentMutation.isPending}
                 className="flex self-start text-sm px-4 py-2 bg-black text-white disabled:opacity-50"
               >
@@ -210,6 +233,10 @@ const deleteCommentMutation = useMutation({
                       <button
                         type="button"
                         onClick={() => {
+                          if (!requireSignIn()) {
+                            return;
+                          }
+
                           if (window.confirm("Delete this comment?")) {
                             deleteCommentMutation.mutate(comment.id);
                           }
