@@ -228,7 +228,7 @@ function Navbar({className}:NavbarProps) {
       </nav>
 
       
-       {showMenu && 
+       {showMenu &&
         <div className="md:hidden bg-white flex flex-col items-center gap-4 p-4 fixed top-[80px] right-0 z-40">
           <Link to="/edit-profile" className="text-sm hover:text-[#b35d52] focus:text-[#b35d52]">Edit Profile</Link>
 
@@ -242,17 +242,17 @@ function Navbar({className}:NavbarProps) {
           </button>
 
           {/* {!isSignedIn && (
-            
+
               <Link to="/signin" className="  hover:opacity-80 active:opacity-80 bg-[#1a1a1a] text-sm p-1 text-white">
                 Sign In
               </Link>
-            
+
           )} */}
 
-          
+
 
         </div>
-      } 
+      }
     </>
   );
 }
