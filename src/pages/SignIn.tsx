@@ -11,7 +11,7 @@
     * - Modification    : 
 **/
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import {signinUser}  from "../lib/api/auth";
 import { googleLogin } from "../lib/api/auth";
@@ -21,6 +21,12 @@ import { useAuth } from "../../src/useAuth";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Set by ProtectedRoute when a signed-out visitor is sent here.
+  const redirectTo =
+    (location.state as { from?: string } | null)?.from ||
+    "/feed";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,7 +89,7 @@ export default function SignIn() {
       setEmail("");
       setPassword("");
 
-       navigate("/feed");
+       navigate(redirectTo);
       } 
       catch (error: any) {
   console.error("Login failed:", error);

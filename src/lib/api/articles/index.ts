@@ -11,6 +11,7 @@
     * - Modification    : 
 **/
 import { http } from "../../https";
+import { findFirstArray } from "../normalize";
 
 export interface CreateArticleData {
   title: string;
@@ -167,13 +168,115 @@ export const isArticleSaved = async (
 };
 
 /**
+ * Article shape returned by the API list endpoints.
+ *
+ * `author` and `category` are objects, not strings, and `article` is present
+ * when the API wraps a saved record instead of the article itself.
+ */
+interface ApiArticle {
+  id?: string;
+  slug?: string;
+  title?: string;
+  excerpt?: string;
+  publishedAt?: string;
+  savedAt?: string;
+  createdAt?: string;
+  coverImage?: string | null;
+  author?: { name?: string } | string | null;
+  category?: { name?: string } | string | null;
+  article?: ApiArticle;
+  articleId?: string;
+}
+
+/**
+ * Saved article in the shape the profile UI renders.
+ */
+export interface SavedArticle {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  coverImage: string;
+  date: string;
+}
+
+const getAuthorName = (
+  author: ApiArticle["author"]
+): string => {
+  if (typeof author === "string") {
+    return author;
+  }
+
+  return author?.name || "";
+};
+
+const getCategoryName = (
+  category: ApiArticle["category"]
+): string => {
+  if (typeof category === "string") {
+    return category;
+  }
+
+  return category?.name || "";
+};
+
+/**
+ * The saved endpoint does not guarantee the same envelope as the other list
+ * endpoints, so unwrap whichever one the API returns.
+ */
+const extractArticleList = (
+  response: unknown
+): ApiArticle[] => {
+  const envelope = (response || {}) as Record<string, unknown>;
+  const data = (envelope.data || {}) as Record<string, unknown>;
+
+  const list =
+    [
+      response,
+      envelope.articles,
+      envelope.savedArticles,
+      data.articles,
+      data.savedArticles,
+      data.data,
+    ].find(Array.isArray) || findFirstArray(response);
+
+  return (list || []) as ApiArticle[];
+};
+
+/**
  * Get saved articles
  */
-export const getSavedArticles = async () => {
+export const getSavedArticles = async (): Promise<
+  SavedArticle[]
+> => {
   const response = await http.privateRequest(
     "GET",
     "/articles/me/saved"
   );
 
-  return response.data;
+  const articles = extractArticleList(response.data);
+
+  console.log("SAVED ARTICLES RESPONSE:", response.data);
+
+  return articles.map((raw) => {
+    // A saved record wraps the article, e.g. { id, articleId, article: {...} }
+    const article = raw.article || raw;
+
+    return {
+      id: article.id || raw.articleId || "",
+      slug: article.slug || "",
+      title: article.title || "",
+      excerpt: article.excerpt || "",
+      category: getCategoryName(article.category),
+      author: getAuthorName(article.author),
+      coverImage: article.coverImage || "",
+      date:
+        article.publishedAt ||
+        article.savedAt ||
+        article.createdAt ||
+        "",
+    };
+  });
 };

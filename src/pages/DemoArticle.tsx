@@ -15,7 +15,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
-import firstcomment from "../images/firstcomment.jpg";
 import feedtechnology from "../../public/feedtechnology.png";
 import {
   getStories,
@@ -24,6 +23,10 @@ import {
   deleteComment,
   type Story,
 } from "../lib/api/stories";
+
+// Neutral placeholder, so a comment without a profile image never falls back
+// to another user's photo.
+const defaultAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='18' fill='%23f5f5f5'/%3E%3Cpath d='M18 90c3-22 16-34 32-34s29 12 32 34' fill='%23f5f5f5'/%3E%3C/svg%3E`;
 
 
 export default function DemoArticle() {
@@ -182,37 +185,22 @@ const deleteCommentMutation = useMutation({
                   No comments yet. Be the first to share your perspective.
                 </p>
               ) : (
-                comments.map((comment: any) => (
+                comments.map((comment) => (
                   <div
                     key={comment.id}
                     className="flex flex-row gap-2 border-b border-[#dbdad9]"
                   >
                     <div className="flex rounded-full overflow-hidden flex-shrink-0">
                       <img
-                      src={
-                        comment.user?.profileImage ||
-                        comment.user?.avatar ||
-                        comment.author?.profileImage ||
-                        comment.author?.avatar ||
-                        comment.profileImage ||
-                        comment.avatar ||
-                        firstcomment
-                      }
-                      className="object-cover rounded-full w-10 h-10"
-                      alt="Commenter avatar"
-                    />
-                        
+                        src={comment.authorImage || defaultAvatar}
+                        className="object-cover rounded-full w-10 h-10"
+                        alt="Commenter avatar"
+                      />
                     </div>
 
                     <div className="flex flex-col gap-2">
                       <h1 className="text-xs font-bold">
-                        {comment.user?.name ||
-                          comment.author?.name ||
-                          comment.user?.username ||
-                          comment.author?.username ||
-                          comment.name ||
-                          comment.username ||
-                          "Anonymous"}
+                        {comment.authorName || "Anonymous"}
                       </h1>
 
                       <p className="text-xs">

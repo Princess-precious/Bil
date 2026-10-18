@@ -11,6 +11,7 @@
     * - Modification    : 
 **/
 import { http } from "../../https";
+import { resolveAuthor } from "../normalize";
 
 export interface UserProfile {
   id: string;
@@ -76,3 +77,90 @@ export async function deleteAccount() {
 
   return response.data;
 }
+
+export interface UserSummary {
+  name: string;
+  image: string;
+}
+
+/**
+ * Endpoint that returns a single user by id.
+ *
+ * The comments endpoint only returns author ids, so commenters are resolved
+ * through here. Change this path if the API names it differently.
+ */
+const USER_BY_ID_PATH = (userId: string) => `/users/${userId}`;
+
+/** Cache and in-flight de-duping, so N comments cost one request per author. */
+const userSummaryCache = new Map<string, UserSummary>();
+
+const userSummaryRequests = new Map<
+  string,
+  Promise<UserSummary>
+>();
+
+/**
+ * Returns a user's display name and profile image.
+ *
+ * Never throws: an unresolvable author yields empty fields so the caller can
+ * fall back to a placeholder rather than failing the whole comment list.
+ */
+export const getUserSummary = async (
+  userId: string
+): Promise<UserSummary> => {
+  const cached = userSummaryCache.get(userId);
+
+  if (cached) {
+    return cached;
+  }
+
+  const pending = userSummaryRequests.get(userId);
+
+  if (pending) {
+    return pending;
+  }
+
+  const request = (async (): Promise<UserSummary> => {
+    try {
+      // Send the token when there is one, so this works whether the endpoint
+      // is public or authenticated. Logged-out readers just get the
+      // placeholder instead of an error.
+      const hasToken = Boolean(
+        localStorage.getItem("accessToken")
+      );
+
+      const response = hasToken
+        ? await http.privateRequest(
+            "GET",
+            USER_BY_ID_PATH(userId)
+          )
+        : await http.publicRequest(
+            "GET",
+            USER_BY_ID_PATH(userId)
+          );
+
+      const body = response.data as Record<string, unknown>;
+      const user = (body?.data || body) as Record<string, unknown>;
+
+      return resolveAuthor(user);
+    } catch (error) {
+      console.error(
+        "FAILED TO LOAD COMMENT AUTHOR:",
+        userId,
+        error
+      );
+
+      return { name: "", image: "" };
+    } finally {
+      userSummaryRequests.delete(userId);
+    }
+  })();
+
+  userSummaryRequests.set(userId, request);
+
+  const summary = await request;
+
+  userSummaryCache.set(userId, summary);
+
+  return summary;
+};

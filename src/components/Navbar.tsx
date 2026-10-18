@@ -230,7 +230,7 @@ function Navbar({className}:NavbarProps) {
       
        {showMenu && 
         <div className="md:hidden bg-white flex flex-col items-center gap-4 p-4 fixed top-[80px] right-0 z-40">
-          <Link to="/" className="text-sm hover:text-[#b35d52] focus:text-[#b35d52]">Edit Profile</Link>  
+          <Link to="/edit-profile" className="text-sm hover:text-[#b35d52] focus:text-[#b35d52]">Edit Profile</Link>
 
           {/* Settings */}
           <Link to="/settings" className="flex items-center gap-1 text-sm hover:text-[#b35d52] focus:text-[#b35d52]">

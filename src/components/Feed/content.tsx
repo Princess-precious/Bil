@@ -2,19 +2,20 @@
     * @description      : 
     * @author           : HP
     * @group            : 
-    * @created          : 18/09/2026 - 10:40:27
+    * @created          : 01/10/2026 - 00:22:09
     * 
     * MODIFICATION LOG
     * - Version         : 1.0.0
-    * - Date            : 18/09/2026
+    * - Date            : 01/10/2026
     * - Author          : HP
     * - Modification    : 
 **/
 
 
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
 
 import { getStories, type Story } from "../../lib/api/stories";
@@ -42,8 +43,41 @@ const topics = [
   "Culture",
 ];
 
+/**
+ * Reads an optional string field that is not part of the Story contract, e.g.
+ * the `_id` some API responses use instead of `id`.
+ */
+const readStringField = (
+  value: unknown,
+  key: string
+): string => {
+  if (!value || typeof value !== "object") {
+    return "";
+  }
+
+  const field = (value as Record<string, unknown>)[key];
+
+  return typeof field === "string" ? field : "";
+};
+
+/**
+ * Reads a name from a value that may be the name itself or an object carrying
+ * one, so callers do not need to widen the type to `any`.
+ */
+const readName = (value: unknown): string => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return readStringField(value, "name");
+};
+
+const getStoryId = (story: Story): string =>
+  story.id || readStringField(story, "_id");
+
 export default function Feed() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [savedStoryIds, setSavedStoryIds] = useState<string[]>([]);
   const [showAllTopics, setShowAllTopics] = useState(false);
@@ -53,26 +87,19 @@ export default function Feed() {
   useEffect(() => {
     const loadSavedArticles = async () => {
       try {
-        const response = await getSavedArticles();
+        // getSavedArticles already unwraps the response envelope.
+        const savedArticles = await getSavedArticles();
 
-        console.log("SAVED ARTICLES RESPONSE:", response);
+        console.log(
+          "SAVED ARTICLES RESPONSE:",
+          savedArticles
+        );
 
-        const articlesList = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.data)
-          ? response.data
-          : Array.isArray(response?.data?.articles)
-          ? response.data.articles
-          : [];
-
-        const savedIds = articlesList
-          .map(
-            (article: any) =>
-              article.id || article._id || article.articleId
-          )
-          .filter(Boolean);
-
-        setSavedStoryIds(savedIds);
+        setSavedStoryIds(
+          savedArticles
+            .map((article) => article.id)
+            .filter(Boolean)
+        );
       } catch (error) {
         console.error("FAILED TO LOAD SAVED ARTICLES:", error);
       }
@@ -90,7 +117,7 @@ export default function Feed() {
     queryFn: async () => {
       const res = await getStories();
 
-      return Array.isArray(res) ? res :  [];
+      return Array.isArray(res) ? res : [];
     },
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
@@ -101,36 +128,22 @@ export default function Feed() {
     return Array.isArray(rawStories) ? rawStories : [];
   }, [rawStories]);
 
-  const getCategoryName = (story: any): string => {
-    if (typeof story.category === "string") {
-      return story.category;
-    }
-
-    if (story.category?.name) {
-      return story.category.name;
-    }
-
-    if (typeof story.categoryId === "string") {
-      return story.categoryId;
-    }
-
-    return "Uncategorized";
+  const getCategoryName = (story: Story): string => {
+    return (
+      readName(story.category) ||
+      readStringField(story, "categoryId") ||
+      "Uncategorized"
+    );
   };
 
-  const getAuthorName = (story: any): string => {
-    if (typeof story.author === "string") {
-      return story.author;
-    }
+  const getAuthorName = (story: Story): string => {
+    const user = (story as { user?: unknown }).user;
 
-    if (story.author?.name) {
-      return story.author.name;
-    }
-
-    if (story.user?.name) {
-      return story.user.name;
-    }
-
-    return "Anonymous";
+    return (
+      readName(story.author) ||
+      readName(user) ||
+      "Anonymous"
+    );
   };
 
   const filteredStories = useMemo(() => {
@@ -149,7 +162,7 @@ export default function Feed() {
   const visibleStories = filteredStories.slice(0, visibleCount);
 
   const handleShare = async (story: Story) => {
-    const storyId = story.id || (story as any)._id;
+    const storyId = getStoryId(story);
 
     const storyUrl = `${window.location.origin}/story/${storyId}`;
 
@@ -191,6 +204,11 @@ export default function Feed() {
         console.log("SAVING ARTICLE:", storyId);
         await saveArticle(storyId);
       }
+
+      // Refresh saved stories on UserProfile
+      await queryClient.invalidateQueries({
+        queryKey: ["saved-stories"],
+      });
     } catch (error) {
       console.error("FAILED TO SAVE/UNSAVE ARTICLE:", error);
 
@@ -281,8 +299,7 @@ export default function Feed() {
             {/* STORIES LIST */}
             {visibleStories.length > 0 ? (
               visibleStories.map((story) => {
-                const storyId =
-                  story.id || (story as any)._id;
+                const storyId = getStoryId(story);
 
                 if (!storyId) {
                   return null;
@@ -293,6 +310,10 @@ export default function Feed() {
 
                 const authorName =
                   getAuthorName(story);
+
+                const storyDate =
+                  readStringField(story, "createdAt") ||
+                  story.date;
 
                 const isSaved =
                   savedStoryIds.includes(storyId);
@@ -347,13 +368,11 @@ export default function Feed() {
 
                           {/* Date */}
                           <span>
-                            {(story as any).createdAt ||
-                              (story as any).date
+                            {storyDate
                               ? new Date(
-                                (story as any).createdAt ||
-                                (story as any).date
-                              ).toLocaleDateString()
-                            : ""}
+                                  storyDate
+                                ).toLocaleDateString()
+                              : ""}
                           </span>
 
                           <span className="h-1 w-1 rounded-full bg-[#8A8581]" />
@@ -474,9 +493,7 @@ export default function Feed() {
                 {stories
                   .slice(0, 4)
                   .map((story, index) => {
-                    const storyId =
-                      story.id ||
-                      (story as any)._id;
+                    const storyId = getStoryId(story);
 
                     if (!storyId) {
                       return null;
@@ -596,4 +613,3 @@ export default function Feed() {
     </div>
   );
 }
-

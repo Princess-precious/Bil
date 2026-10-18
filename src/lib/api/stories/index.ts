@@ -12,6 +12,12 @@
  */
 
 import { http } from "../../https";
+import {
+  findFirstArray,
+  pickString,
+  resolveAuthor,
+} from "../normalize";
+import { getUserSummary } from "../users";
 
 interface ApiArticle {
   id: string;
@@ -145,13 +151,101 @@ export const updateStory = async (
   return response.data;
 };
 
-export const getComments = async (articleId: string) => {
+export interface Comment {
+  id: string;
+  content: string;
+  userId: string;
+  authorName: string;
+  authorImage: string;
+}
+
+/**
+ * Keys that may hold the author's id on a comment that references rather than
+ * embeds its user.
+ */
+const COMMENT_ID_KEYS = [
+  "userId",
+  "user_id",
+  "authorId",
+  "author_id",
+  "createdById",
+  "created_by_id",
+];
+
+const getCommentUserId = (
+  comment: Record<string, unknown>
+): string => {
+  const direct = pickString(comment, COMMENT_ID_KEYS);
+
+  if (direct) {
+    return direct;
+  }
+
+  // `user`/`author` may themselves hold the raw id.
+  for (const key of ["user", "author"]) {
+    const value = comment[key];
+
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+  }
+
+  return "";
+};
+
+/**
+ * The comments endpoint returns the author's id but not the author, so the
+ * display name and image are resolved through the users endpoint.
+ */
+const resolveCommentAuthor = async (
+  comment: Comment
+): Promise<Comment> => {
+  if (!comment.userId) {
+    return comment;
+  }
+
+  if (comment.authorName && comment.authorImage) {
+    return comment;
+  }
+
+  const summary = await getUserSummary(comment.userId);
+
+  return {
+    ...comment,
+    authorName: comment.authorName || summary.name,
+    authorImage: comment.authorImage || summary.image,
+  };
+};
+
+export const getComments = async (
+  articleId: string
+): Promise<Comment[]> => {
   const response = await http.publicRequest(
     "GET",
     `/articles/${articleId}/comments`
   );
 
-  return response.data.data;
+  console.log("COMMENTS RESPONSE:", response.data);
+
+  const list = findFirstArray(response.data) || [];
+
+  const comments = list.map((raw) => {
+    const comment = (raw || {}) as Record<string, unknown>;
+
+    const author = resolveAuthor(comment);
+
+    return {
+      id: String(comment.id || comment._id || ""),
+      content: String(
+        comment.content || comment.body || comment.text || ""
+      ),
+      userId: getCommentUserId(comment),
+      authorName: author.name,
+      authorImage: author.image,
+    };
+  });
+
+  return Promise.all(comments.map(resolveCommentAuthor));
 };
 
 
