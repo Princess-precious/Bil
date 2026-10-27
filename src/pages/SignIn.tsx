@@ -151,6 +151,10 @@ export default function SignIn() {
 
         {/* RIGHT SIDE */}
         <div className="flex w-full items-center justify-center bg-white px-16 py-5 md:w-1/2 font-fira-sans">
+           
+             <div className="absolute left-10 top-18 md:hidden">
+            <h1 className="text-xl font-bold text-black">BIL</h1>
+          </div>
 
           <div className="w-full max-w-md">
 

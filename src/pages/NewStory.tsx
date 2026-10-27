@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import ReactMarkdown from "react-markdown";
+import {ArrowLeft} from "lucide-react"
 
 import { getCategories } from "../lib/api/category";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -30,6 +31,7 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 
 type Draft = {
+  id?: string;
   title: string;
   excerpt: string;
   content: string;
@@ -288,24 +290,30 @@ ${storyText}
       });
 
       const articleId = article?.data?.id || article?.id;
-
-      // 2. Upload cover image if selected
-      if (articleId && image) {
-        setMessage("Uploading cover image...");
-        await uploadArticleCoverImage(articleId, image);
+      if (!articleId) {
+        throw new Error("Article ID was not returned by the backend.");
       }
 
-      setMessage("Draft saved successfully.");
-
       const draft: Draft = {
+        id: articleId,
         title,
         excerpt,
         content,
         category,
         image: preview,
       };
-
       localStorage.setItem("storyDraft", JSON.stringify(draft));
+
+      // 2. Upload cover image if selected
+      if (image) {
+        setMessage("Uploading cover image...");
+        await uploadArticleCoverImage(articleId, image);
+      }
+
+      // Refresh the profile page's story list so the new draft shows up
+      await queryClient.invalidateQueries({ queryKey: ["my-stories"] });
+
+      setMessage("Draft saved successfully.");
 
       setTimeout(() => {
         setMessage("");
@@ -536,8 +544,15 @@ ${storyText}
         </form>
 
         <button
+         onClick={() => navigate("/feed")}
+        className="fixed left-6 top-15 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-transparent text-xl text-white shadow-lg hover:bg-gray-800 md:hidden"
+         >
+       <ArrowLeft size={20} strokeWidth={1.5} className="text-black" />
+      </button>
+
+        <button
           onClick={() => navigate("/feed")}
-          className="fixed left-6 top-24 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
+          className="fixed left-11 top-21 z-50 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-black text-xl text-white shadow-lg hover:bg-gray-800"
         >
           ←
         </button>

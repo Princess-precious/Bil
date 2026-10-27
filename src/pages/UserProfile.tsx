@@ -5,10 +5,10 @@
     * @created          : 22/09/2026 - 15:58:22
     * 
     * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 22/09/2026
+    * - Version         : 1.0.1
+    * - Date            : 15/10/2026
     * - Author          : HP
-    * - Modification    : 
+    * - Modification    : Added Drafts tab
 **/
 
 
@@ -19,6 +19,7 @@ import { Settings } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 
+import Loader from "../components/Loader";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../lib/api/users";
 import { getMyStories } from "../lib/api/stories";
@@ -42,13 +43,21 @@ export default function UserProfile() {
     queryFn: getMyStories,
   });
 
+  // SPLIT BY STATUS
+  const publishedStories = stories.filter(
+    (story) => story.status !== "draft"
+  );
+  const draftStories = stories.filter(
+    (story) => story.status === "draft"
+  );
+
   const navigate = useNavigate();
 
   // PROFILE INFO
   const defaultProfileImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='18' fill='%23f5f5f5'/%3E%3Cpath d='M18 90c3-22 16-34 32-34s29 12 32 34' fill='%23f5f5f5'/%3E%3C/svg%3E`;
 
   const [activeTab, setActiveTab] = useState<
-    "my-stories" | "saved-stories"
+    "my-stories" | "drafts" | "saved-stories"
   >("my-stories");
 
   // LOAD SAVED STORIES
@@ -93,6 +102,13 @@ export default function UserProfile() {
     }
   };
 
+  const tabClass = (tab: typeof activeTab) =>
+    `whitespace-nowrap border-b-2 pb-4 text-sm font-semibold uppercase tracking-widest transition-colors ${
+      activeTab === tab
+        ? "border-black text-black"
+        : "border-transparent text-gray-500 hover:text-black"
+    }`;
+
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
 
@@ -131,7 +147,7 @@ export default function UserProfile() {
             <div className="flex items-center gap-8 text-base text-gray-900">
               <div>
                 <span className="font-bold text-black">
-                  {stories.length}
+                  {publishedStories.length}
                 </span>{" "}
                 Stories
               </div>
@@ -189,30 +205,30 @@ export default function UserProfile() {
 
           <button
             type="button"
-            onClick={() =>
-              setActiveTab("my-stories")
-            }
-            className={`whitespace-nowrap border-b-2 pb-4 text-sm font-semibold uppercase tracking-widest transition-colors ${
-              activeTab === "my-stories"
-                ? "border-black text-black"
-                : "border-transparent text-gray-500 hover:text-black"
-            }`}
+            onClick={() => setActiveTab("my-stories")}
+            className={tabClass("my-stories")}
           >
             My Stories
+          </button>
+
+          {/* DRAFTS */}
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("drafts")}
+            className={tabClass("drafts")}
+          >
+            Drafts
+            {draftStories.length > 0 &&
+              ` (${draftStories.length})`}
           </button>
 
           {/* SAVED STORIES */}
 
           <button
             type="button"
-            onClick={() =>
-              setActiveTab("saved-stories")
-            }
-            className={`whitespace-nowrap border-b-2 pb-4 text-sm font-semibold uppercase tracking-widest transition-colors ${
-              activeTab === "saved-stories"
-                ? "border-black text-black"
-                : "border-transparent text-gray-500 hover:text-black"
-            }`}
+            onClick={() => setActiveTab("saved-stories")}
+            className={tabClass("saved-stories")}
           >
             Saved Stories
           </button>
@@ -225,11 +241,7 @@ export default function UserProfile() {
           <section>
 
             {storiesLoading ? (
-              <div className="py-20 text-center">
-                <p className="text-gray-500">
-                  Loading your stories...
-                </p>
-              </div>
+              <Loader/>
             ) : storiesError ? (
               <div className="border-y border-gray-300 py-20 text-center">
                 <h2 className="text-2xl font-bold">
@@ -240,7 +252,7 @@ export default function UserProfile() {
                   Please try again later.
                 </p>
               </div>
-            ) : stories.length === 0 ? (
+            ) : publishedStories.length === 0 ? (
               <div className="border-y border-gray-300 py-20 text-center">
                 <h2 className="text-3xl font-bold">
                   No stories yet
@@ -261,7 +273,7 @@ export default function UserProfile() {
             ) : (
               <div className="space-y-12">
 
-                {stories.map((story) => (
+                {publishedStories.map((story) => (
 
                   <article
                     key={story.id}
@@ -339,17 +351,127 @@ export default function UserProfile() {
           </section>
         )}
 
+        {/* DRAFTS */}
+
+        {activeTab === "drafts" && (
+          <section>
+
+            {storiesLoading ? (
+              <Loader/>
+            ) : storiesError ? (
+              <div className="border-y border-gray-300 py-20 text-center">
+                <h2 className="text-2xl font-bold">
+                  Failed to load drafts
+                </h2>
+
+                <p className="mt-3 text-gray-500">
+                  Please try again later.
+                </p>
+              </div>
+            ) : draftStories.length > 0 ? (
+
+              <div className="space-y-12">
+
+                {draftStories.map((story) => (
+
+                  <article
+                    key={story.id}
+                    className="grid grid-cols-1 gap-8 border-b border-gray-300 pb-12 md:grid-cols-12 md:gap-10"
+                  >
+
+                    {/* IMAGE */}
+
+                    <div className="md:col-span-5">
+
+                      <div className="aspect-[4/3] w-full overflow-hidden">
+
+                        <img
+                          src={story.coverImage || "/profileHero.jpg"}
+                          alt={story.title || "Untitled draft"}
+                          className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
+                        />
+
+                      </div>
+
+                    </div>
+
+                    {/* STORY INFORMATION */}
+
+                    <div className="flex flex-col justify-center md:col-span-7">
+
+                      <span className="text-sm font-semibold uppercase tracking-widest text-gray-500">
+                        Draft · {story.category || "Uncategorized"}
+                      </span>
+
+                      <h2 className="mt-3 text-3xl font-bold text-gray-900">
+                        {story.title || "Untitled draft"}
+                      </h2>
+
+                      <p className="mt-4 text-base leading-7 text-gray-600">
+                        {story.excerpt || "No content yet."}
+                      </p>
+
+                      <div className="mt-5 flex flex-wrap items-center gap-5">
+
+                        <span className="text-sm text-gray-500">
+                          Last edited {story.date}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleEditStory(story)
+                          }
+                          className="text-sm font-semibold uppercase tracking-widest text-black transition-colors hover:text-gray-600"
+                        >
+                          Continue Editing
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </article>
+
+                ))}
+
+              </div>
+
+            ) : (
+
+              <div className="border-y border-gray-300 py-20 text-center">
+
+                <h2 className="text-3xl font-bold">
+                  No drafts
+                </h2>
+
+                <p className="mx-auto mt-4 max-w-md text-gray-500">
+                  Stories you start but haven't published will
+                  appear here.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/new-story")}
+                  className="mt-8 bg-black px-6 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-gray-800"
+                >
+                  Start a Story
+                </button>
+
+              </div>
+
+            )}
+
+          </section>
+        )}
+
         {/* SAVED STORIES */}
 
         {activeTab === "saved-stories" && (
           <section>
 
             {savedStoriesLoading ? (
-              <div className="py-20 text-center">
-                <p className="text-gray-500">
-                  Loading saved stories...
-                </p>
-              </div>
+              <Loader/>
             ) : savedStoriesError ? (
               <div className="border-y border-gray-300 py-20 text-center">
                 <h2 className="text-2xl font-bold">
@@ -483,4 +605,3 @@ export default function UserProfile() {
     </div>
   );
 }
-

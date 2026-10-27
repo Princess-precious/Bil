@@ -1,16 +1,3 @@
-/**
- * @description      :
- * @author           : HP
- * @group            :
- * @created          : 14/09/2026 - 13:39:15
- *
- * MODIFICATION LOG
- * - Version         : 1.0.0
- * - Date            : 14/09/2026
- * - Author          : HP
- * - Modification    :
- */
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signupUser, googleLogin } from "../lib/api/auth";
@@ -18,6 +5,11 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { validate } from "class-validator";
 import { SignUpValidator } from "../Validation/signUpvalidator";
+
+// Shared classes so every field matches the sign-in page
+const labelClass = "mb-0.5 block text-xs font-semibold text-gray-900";
+const inputClass =
+  "w-full rounded-full border border-gray-700 bg-white px-4 py-2 text-sm outline-none placeholder:text-gray-700 focus:border-black";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -82,9 +74,7 @@ export default function SignUp() {
     },
   });
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setError("");
@@ -119,14 +109,11 @@ export default function SignUp() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-
       {/* MAIN MODAL */}
       <div className="flex h-[90vh] max-h-[95vh] w-[95vw] max-w-5xl overflow-hidden rounded-lg bg-white md:w-[60vw]">
-
         {/* LEFT SIDE */}
         <div className="hidden w-1/2 bg-gray-900 md:block">
           <div className="relative h-full overflow-hidden">
-
             <img
               src="signup.jpg"
               alt="Editorial"
@@ -137,14 +124,12 @@ export default function SignUp() {
 
             {/* LOGO */}
             <div className="absolute left-10 top-8 z-10">
-              <h1 className="text-2xl font-bold text-white">
-                BIL
-              </h1>
+              <h1 className="text-2xl font-bold text-white">BIL</h1>
             </div>
 
             {/* QUOTE */}
             <div className="absolute bottom-12 left-10 z-10 text-white">
-              <p className="max-w-md px-4 text-2xl ">
+              <p className="max-w-md px-4 text-2xl">
                 "Every story begins with a single thought."
               </p>
 
@@ -152,196 +137,166 @@ export default function SignUp() {
                 Editorial / Culture
               </p>
             </div>
-
           </div>
         </div>
 
-        
-          
+        {/* RIGHT SIDE (scrolls if the form is taller than the card) */}
+        <div className="flex w-full overflow-y-auto bg-white px-6 py-4 font-fira-sans md:w-1/2 md:px-10">
+          {/* MOBILE LOGO */}
+          <div className="absolute left-10 top-18 md:hidden">
+            <h1 className="text-xl font-bold text-black">BIL</h1>
+          </div>
 
-           
+          {/* m-auto centers vertically without clipping the top when content overflows */}
+          <div className="m-auto w-full max-w-[280px]">
+            {/* HEADING */}
+            <h2 className="mb-4 text-center text-xl font-semibold text-gray-900">
+              Create your account
+            </h2>
 
-            
-               
+            {/* ERROR MESSAGE */}
+            {error && (
+              <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">
+                {error}
+              </div>
+            )}
 
-                 
+            {/* SUCCESS MESSAGE */}
+            {success && (
+              <div className="mb-3 rounded-md bg-green-50 px-3 py-2 text-xs text-green-600">
+                {success}
+              </div>
+            )}
 
-               
-               
-                 
-            
-                 
-               
-               {/* RIGHT SIDE */}
-<div className="flex w-full items-center justify-center bg-white px-6 py-4 md:w-1/2 md:px-10 font-fira-sans overflow-y-auto">
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-2.5">
+              {/* GOOGLE BUTTON */}
+              <button
+                type="button"
+                onClick={googleLogin}
+                className="flex w-full items-center justify-center gap-2.5 rounded-full border border-gray-700 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="#4285F4"
+                    d="M23.49 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.39 3.61v3h3.87c2.27-2.09 3.57-5.17 3.57-8.64Z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.87-3c-1.07.72-2.44 1.15-4.06 1.15-3.12 0-5.76-2.11-6.71-4.95H1.29v3.09A12 12 0 0 0 12 24Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.29 14.29A7.2 7.2 0 0 1 4.92 12c0-.79.14-1.56.37-2.29V6.62H1.29A12 12 0 0 0 0 12c0 1.93.46 3.76 1.29 5.38l4-3.09Z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 4.76c1.76 0 3.34.61 4.58 1.8l3.43-3.43C17.95 1.11 15.24 0 12 0A12 12 0 0 0 1.29 6.62l4 3.09 4 3.09C6.24 6.87 8.88 4.76 12 4.76Z"
+                  />
+                </svg>
+                Continue with Google
+              </button>
 
-  {/* MOBILE LOGO */}
-  <div className="absolute left-6 top-6 md:hidden">
-    <h1 className="text-xl font-bold text-black">
-      BIL
-    </h1>
-  </div>
+              {/* DIVIDER */}
+              <div className="flex items-center gap-2">
+                <div className="h-px flex-1 bg-gray-300"></div>
+                <span className="text-xs text-gray-700">or</span>
+                <div className="h-px flex-1 bg-gray-300"></div>
+              </div>
 
-  <div className="w-full max-w-sm py-2">
+              {/* NAME */}
+              <div>
+                <label htmlFor="name" className={labelClass}>
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-    {/* HEADING */}
-    <div className="mb-3 text-center md:text-left">
-      <h2 className="text-lg font-semibold  text-center  mb-4 text-gray-900">
-        Create your account
-      </h2>
+              {/* USERNAME */}
+              <div>
+                <label htmlFor="username" className={labelClass}>
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-      <p className="mt-0.5 text-xs text-gray-900">
-        Join our community of curators and design enthusiasts.
-      </p>
-    </div>
+              {/* EMAIL */}
+              <div>
+                <label htmlFor="email" className={labelClass}>
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-    {/* ERROR MESSAGE */}
-    {error && (
-      <div className="mb-2 rounded-md bg-red-50 px-3 py-1.5 text-xs text-red-600">
-        {error}
-      </div>
-    )}
+              {/* PASSWORD */}
+              <div>
+                <label htmlFor="password" className={labelClass}>
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`${inputClass} pr-14`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-600 hover:text-black"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
 
-    {/* SUCCESS MESSAGE */}
-    {success && (
-      <div className="mb-2 rounded-md bg-green-50 px-3 py-1.5 text-xs text-green-600">
-        {success}
-      </div>
-    )}
+              {/* SIGN UP BUTTON */}
+              <button
+                type="submit"
+                disabled={signupMutation.isPending}
+                className="w-full rounded-full bg-black py-2.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {signupMutation.isPending ? "Creating account..." : "Sign up"}
+              </button>
+            </form>
 
-    {/* FORM */}
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-2.5"
-    >
-
-      {/* GOOGLE BUTTON */}
-      <button
-        type="button"
-        onClick={googleLogin}
-        className="flex w-full items-center justify-center gap-2.5 rounded-3xl border border-gray-700 bg-white px-4 py-2 text-xs font-medium text-gray-900 transition hover:bg-gray-50"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="#4285F4"
-            d="M23.49 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.39 3.61v3h3.87c2.27-2.09 3.57-5.17 3.57-8.64Z"
-          />
-          <path
-            fill="#34A853"
-            d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.87-3c-1.07.72-2.44 1.15-4.06 1.15-3.12 0-5.76-2.11-6.71-4.95H1.29v3.09A12 12 0 0 0 12 24Z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M5.29 14.29A7.2 7.2 0 0 1 4.92 12c0-.79.14-1.56.37-2.29V6.62H1.29A12 12 0 0 0 0 12c0 1.93.46 3.76 1.29 5.38l4-3.09Z"
-          />
-          <path
-            fill="#EA4335"
-            d="M12 4.76c1.76 0 3.34.61 4.58 1.8l3.43-3.43C17.95 1.11 15.24 0 12 0A12 12 0 0 0 1.29 6.62l4 3.09 4 3.09C6.24 6.87 8.88 4.76 12 4.76Z"
-          />
-        </svg>
-        Continue with Google
-      </button>
-
-      {/* DIVIDER */}
-      <div className="flex items-center gap-2 my-1">
-        <div className="h-px flex-1 bg-gray-300"></div>
-        <span className="text-[10px] uppercase tracking-wider text-gray-700">
-          or
-        </span>
-        <div className="h-px flex-1 bg-gray-200"></div>
-      </div>
-
-      {/* NAME */}
-      <div>
-        <label className="mb-0.5 block text-[10px] font-medium text-gray-900 uppercase tracking-wider">
-          Name
-        </label>
-        <input
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-2xl border border-gray-700 bg-white px-3.5 py-1.5 text-xs outline-none placeholder:text-gray-700 focus:border-black"
-        />
-      </div>
-
-      {/* USERNAME */}
-      <div>
-        <label className="mb-0.5 block text-[10px] font-medium text-gray-900 uppercase tracking-wider">
-          User Name
-        </label>
-        <input
-          type="text"
-          placeholder="Enter your user name"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full rounded-2xl border border-gray-700 bg-white px-3.5 py-1.5 text-xs outline-none placeholder:text-gray-700 focus:border-black"
-        />
-      </div>
-
-      {/* EMAIL */}
-      <div>
-        <label className="mb-0.5 block text-[10px] font-medium text-gray-900 uppercase tracking-wider">
-          Email Address
-        </label>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-2xl border border-gray-700 bg-white px-3.5 py-1.5 text-xs outline-none placeholder:text-gray-900 focus:border-black"
-        />
-      </div>
-
-      {/* PASSWORD */}
-      <div>
-        <label className="mb-0.5 block text-[10px] font-medium text-gray-700 uppercase tracking-wider">
-          Password
-        </label>
-        <div className="relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-2xl border border-gray-700 bg-white px-3.5 py-1.5 pr-14 text-xs outline-none placeholder:text-gray-900 focus:border-black"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-gray-500 hover:text-black"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
+            {/* SIGN IN LINK */}
+            <p className="mt-3 text-center text-sm text-gray-900">
+              Already have an account?{" "}
+              <Link to="/signin" className="font-semibold text-black underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* SIGN UP BUTTON */}
-      <button
-        type="submit"
-        disabled={signupMutation.isPending}
-        className="w-full rounded-2xl bg-black py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {signupMutation.isPending ? "Creating Account..." : "Sign Up"}
-      </button>
-
-    </form>
-
-    {/* SIGN IN LINK */}
-    <p className="mt-3 text-center text-xs text-gray-700">
-      Already have an account?{" "}
-      <Link to="/signin" className="font-semibold text-black underline">
-        Sign in
-      </Link>
-    </p>
-
-  </div>
-</div>
       </div>
     </div>
   );

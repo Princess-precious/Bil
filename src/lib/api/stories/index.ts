@@ -5,10 +5,10 @@
  * @created          : 15/09/2026 - 13:48:27
  *
  * MODIFICATION LOG
- * - Version         : 1.0.1
- * - Date            : 18/09/2026
+ * - Version         : 1.0.2
+ * - Date            : 15/10/2026
  * - Author          : HP
- * - Modification    : Use Cloudinary coverImage URL instead of public ID
+ * - Modification    : Added article status (draft/published), publish and delete
  */
 
 import { http } from "../../https";
@@ -19,12 +19,17 @@ import {
 } from "../normalize";
 import { getUserSummary } from "../users";
 
+export type StoryStatus = "draft" | "published";
+
 interface ApiArticle {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  publishedAt: string;
+  status?: StoryStatus;
+  publishedAt?: string | null;
+  updatedAt?: string;
+  createdAt?: string;
 
   // Cloudinary image URL
   coverImage: string | null;
@@ -54,7 +59,31 @@ export interface Story {
   date: string;
   coverImage: string;
   content: string;
+  status: StoryStatus;
 }
+
+const mapArticle = (article: ApiArticle): Story => ({
+  id: article.id,
+  slug: article.slug,
+  category: article.category?.name || "",
+  author: article.author?.name || "",
+  title: article.title,
+  excerpt: article.excerpt,
+
+  // Drafts have no publishedAt, so fall back to the last edit date
+  date:
+    article.publishedAt ||
+    article.updatedAt ||
+    article.createdAt ||
+    "",
+
+  // Use the actual Cloudinary URL
+  coverImage: article.coverImage || "",
+
+  content: article.content || article.body || "",
+
+  status: article.status === "draft" ? "draft" : "published",
+});
 
 export const getStories = async (
   search?: string
@@ -68,44 +97,24 @@ export const getStories = async (
 
   const articles = response.data.data.articles;
 
-  return articles.map((article: ApiArticle) => ({
-    id: article.id,
-    slug: article.slug,
-    category: article.category?.name || "",
-    author: article.author?.name || "",
-    title: article.title,
-    excerpt: article.excerpt,
-    date: article.publishedAt,
-
-    // Use the actual Cloudinary URL
-    coverImage: article.coverImage || "",
-
-    content: article.content || article.body || "",
-  }));
+  return articles.map((article: ApiArticle) =>
+    mapArticle(article)
+  );
 };
 
+// Returns the user's drafts AND published stories.
+// Split them by `status` in the UI.
 export const getMyStories = async (): Promise<Story[]> => {
   const response = await http.privateRequest(
-  "GET",
-  "/articles/me/articles"
-);
+    "GET",
+    "/articles/me/articles?page=1&limit=100"
+  );
 
   const articles = response.data.data.articles;
 
-  return articles.map((article: ApiArticle) => ({
-    id: article.id,
-    slug: article.slug,
-    category: article.category?.name || "",
-    author: article.author?.name || "",
-    title: article.title,
-    excerpt: article.excerpt,
-    date: article.publishedAt,
-
-    // Use the actual Cloudinary URL
-    coverImage: article.coverImage || "",
-
-    content: article.content || article.body || "",
-  }));
+  return articles.map((article: ApiArticle) =>
+    mapArticle(article)
+  );
 };
 
 export const getStoryBySlug = async (
@@ -116,22 +125,7 @@ export const getStoryBySlug = async (
     `/articles/${slug}`
   );
 
-  const article = response.data.data;
-
-  return {
-    id: article.id,
-    slug: article.slug,
-    category: article.category?.name || "",
-    author: article.author?.name || "",
-    title: article.title,
-    excerpt: article.excerpt,
-    date: article.publishedAt,
-
-    // Use the actual Cloudinary URL
-    coverImage: article.coverImage || "",
-
-    content: article.content || article.body || "",
-  };
+  return mapArticle(response.data.data);
 };
 
 export const updateStory = async (
@@ -146,6 +140,36 @@ export const updateStory = async (
     "PATCH",
     `/articles/${id}`,
     data
+  );
+
+  return response.data;
+};
+
+// PATCH /articles/:id/publish - turns a draft into a published story
+export const publishStory = async (id: string) => {
+  const response = await http.privateRequest(
+    "PATCH",
+    `/articles/${id}/publish`
+  );
+
+  return response.data;
+};
+
+// PATCH /articles/:id/unpublish - moves a published story back to drafts
+export const unpublishStory = async (id: string) => {
+  const response = await http.privateRequest(
+    "PATCH",
+    `/articles/${id}/unpublish`
+  );
+
+  return response.data;
+};
+
+// DELETE /articles/:id - permanently deletes a story or draft
+export const deleteStory = async (id: string) => {
+  const response = await http.privateRequest(
+    "DELETE",
+    `/articles/${id}`
   );
 
   return response.data;

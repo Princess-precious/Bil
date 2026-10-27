@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Plus } from "lucide-react";
+import Loader from "../Loader";
 
 import { getStories, type Story } from "../../lib/api/stories";
 import {
@@ -247,9 +248,7 @@ export default function Feed() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FBF9F8]">
-        <p className="font-hanken text-sm text-[#8A8581]">
-          Loading stories...
-        </p>
+        <Loader />
       </div>
     );
   }

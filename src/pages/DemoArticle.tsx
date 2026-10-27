@@ -123,18 +123,21 @@ const deleteCommentMutation = useMutation({
             </div>
           </section>
 
-          {/* SECTION 2: COVER IMAGE */}
-          {story.coverImage && (
-            <section className="flex w-full bg-[#fbf9f8] items-center justify-center py-4">
-              <img
-                src={story.coverImage}
-                alt={story.title}
-                className="w-full h-full max-h-[500px] md:w-[1000px] object-cover"
-              />
-            </section>
-          )}
+        
+  
+           {story.coverImage && (
+      <section className="flex w-full items-center justify-center bg-[#fbf9f8] px-8 py-4 md:px-14">
+      <img
+        src={story.coverImage}
+        alt={story.title}
+        className="aspect-[16/9] w-[85%] mx-auto max-w-[1000px] rounded-lg object-cover"
+      
+         />
+       </section>
+    )}
 
-          {/* SECTION 3: DYNAMIC DRAFT / QUILL CONTENT */}
+
+          
           <section className="flex flex-col w-full max-w-4xl bg-[#fbf9f8] px-6 md:px-12 mt-10">
             <div
               className="prose prose-lg max-w-none text-xs md:text-base leading-relaxed text-[#1A1A1A]"
@@ -148,7 +151,7 @@ const deleteCommentMutation = useMutation({
             </div>
           </section>
 
-          {/* SECTION 4: DISCUSSION */}
+          
           
           <section className="flex flex-col w-full max-w-4xl px-6 md:px-12 border-t border-[#dbdad9]">
             <h1 className="text-xl font-bold py-6">
