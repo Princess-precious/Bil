@@ -195,7 +195,7 @@ function Navbar({className}:NavbarProps) {
           ) : (
             //Profile Icon
             <Link to="/user-profile" className="group flex md:items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isProfile ? "#b35d52" : "#000000"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="group-focus:stroke-[#b35d52]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isProfile ? "#b35d52" : "currentColor"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="group-focus:stroke-[#b35d52]">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
               </svg>
