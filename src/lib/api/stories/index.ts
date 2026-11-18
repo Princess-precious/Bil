@@ -301,4 +301,9 @@ export const deleteComment = async (
   );
 
   return response.data;
+}
+export async function getUserStoriesById(userId: string) {
+  const response = await fetch(`/api/users/${userId}/stories`);
+  if (!response.ok) throw new Error("Failed to fetch user stories");
+  return response.json();
 };

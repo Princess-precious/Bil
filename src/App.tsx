@@ -28,7 +28,7 @@ import ChangePassword from './pages/ChangePassword';
 import EditProfile from './pages/EditProfile';
 import OAuthSuccess from './components/OAuthSuccess';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import PublicProfile from "./pages/PublicProfile";
 
 function App() {
     return(
@@ -50,6 +50,7 @@ function App() {
                 <Route path="/about" element={<About/>}/>
                 <Route path="/reset-password" element={<ResetPassword />}/>
                 <Route path="/oauth-success" element={<OAuthSuccess />} />
+                <Route path="/profile/:userId" element={<PublicProfile />} />
             </Routes>
         </BrowserRouter>
     );

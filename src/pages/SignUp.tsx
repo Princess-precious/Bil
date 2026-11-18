@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { validate } from "class-validator";
 import { SignUpValidator } from "../Validation/signUpvalidator";
+import Loader from "../components/Loader";
 
 // Shared classes so every field matches the sign-in page
 const labelClass = "mb-0.5 block text-xs font-semibold text-gray-900";
@@ -278,7 +279,13 @@ export default function SignUp() {
                 </div>
               </div>
 
-              {/* SIGN UP BUTTON */}
+               <div className="space-y-3">
+            {signupMutation.isPending && (
+              <div className="flex justify-center py-2">
+           <Loader />
+              </div>
+             )}
+             </div>
               <button
                 type="submit"
                 disabled={signupMutation.isPending}

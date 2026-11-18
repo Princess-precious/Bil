@@ -164,3 +164,8 @@ export const getUserSummary = async (
 
   return summary;
 };
+export async function getUserProfileById(userId: string) {
+  const response = await fetch(`/api/users/${userId}`);
+  if (!response.ok) throw new Error("Failed to fetch user profile");
+  return response.json();
+}
