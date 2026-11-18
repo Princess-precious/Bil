@@ -5,6 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bil</title>
+    <!-- Tints the phone's browser bar to match the theme. -->
+    <meta name="theme-color" content="#fbf9f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)" />
+    <script>
+      // Runs before first paint so a dark-mode visitor never sees a white
+      // flash. Mirrors the logic in src/ThemeProvider.tsx; keep the two in
+      // step. Wrapped because localStorage throws in some privacy modes.
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var useDark = stored === "dark" || ((!stored || stored === "system") && prefersDark);
+          if (useDark) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (error) {
+          // No stored preference is readable; fall through to light.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

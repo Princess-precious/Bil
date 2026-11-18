@@ -4,6 +4,12 @@
 
 @import "tailwindcss";
 
+/* Class-based dark mode. The `dark` class is put on <html> by ThemeProvider
+   (and by the inline script in index.html, so the first paint is already
+   correct). `dark:` utilities are available for one-off cases the token
+   remap at the bottom of this file cannot express. */
+@custom-variant dark (&:where(.dark, .dark *));
+
  
 @keyframes slideFromLeft {
   from {
@@ -95,8 +101,8 @@
 body {
   margin: 0;
   font-family: 'Playfair Display', serif  ;
-  color:#1a1a1a;
-  background-color:#fbf9f8;
+  color: var(--bil-ink);
+  background-color: var(--bil-canvas);
 }
 
 .font-fira-sans {
@@ -109,4 +115,318 @@ body {
 
 .font-hanken {
   font-family: "Hanken Grotesk", sans-serif;
+}
+
+/* ====================================================================
+   THEME
+   --------------------------------------------------------------------
+   Light values are exactly the colours this app already used, so light
+   mode is unchanged. Dark mode is a swap of the same tokens.
+
+   The remap below exists because the app writes colours directly into
+   class strings instead of using design tokens. Two mechanisms:
+
+     1. Tailwind palette utilities compile to `var(--color-*)`, so they
+        are re-pointed by redefining those variables (the gray ramp) or
+        by targeting the utility (white/black - see the note below).
+     2. Arbitrary hex utilities (`bg-[#fbf9f8]`) compile to a literal
+        `background-color:#fbf9f8`, so the generated class name has to
+        be targeted directly. IF YOU ADD A NEW hex colour anywhere in
+        src/, it will NOT theme until a rule is added here.
+
+   Two opt-out classes are honoured, for artwork that is already dark by
+   design and should look identical in both themes:
+
+     bg-transparent  an element that supplies its own background
+                     (Home's navbar and footer, over the hero image)
+     theme-fixed     an element that is intentionally dark everywhere
+                     (the black caption plates in Carousel.tsx)
+   ==================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --bil-canvas: #fbf9f8;      /* page background */
+  --bil-card: #ffffff;        /* raised surface */
+  --bil-sunken: #eeebeb;      /* inset / secondary surface */
+  --bil-chip: #e5e0d9;        /* chips, search field */
+  --bil-ink: #1a1a1a;         /* primary text, solid buttons */
+  --bil-muted: #8a8581;       /* secondary text */
+  --bil-subtle: #5c5855;      /* tertiary text */
+  --bil-line: #ece6e0;        /* hairline border */
+  --bil-line-strong: #afa8a0; /* input border */
+  --bil-accent: #b35d52;      /* brand terracotta */
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --bil-canvas: #14120f;
+  --bil-card: #1c1917;
+  --bil-sunken: #262220;
+  --bil-chip: #2a2523;
+  --bil-ink: #f3efe9;
+  --bil-muted: #a29a91;
+  --bil-subtle: #bab2a8;
+  --bil-line: #2f2a26;
+  --bil-line-strong: #4a433c;
+  --bil-accent: #d97f70;
+}
+
+/* --- 1a. The gray ramp, inverted -------------------------------------
+   Every gray-* utility (including all hover:/focus:/group-hover: variants,
+   which inherit the same variable) inverts at once: backgrounds that were
+   near-white become near-black and text that was near-black becomes
+   near-white. This is what re-themes the ~200 gray usages across the app
+   without touching a single component. */
+
+html.dark {
+  --color-gray-50: #232120;
+  --color-gray-100: #262220;
+  --color-gray-200: #2b2724;
+  --color-gray-300: #57504a;
+  --color-gray-400: #8b837a;
+  --color-gray-500: #a29a91;
+  --color-gray-600: #b8b0a6;
+  --color-gray-700: #d0c8be;
+  --color-gray-800: #e4ddd4;
+  --color-gray-900: #f3efe9;
+}
+
+/* --- 1b. White and black --------------------------------------------
+   These are deliberately NOT variables. Home renders the carousel hero
+   with a transparent navbar and footer carrying a bare `text-white`
+   (src/pages/Home.tsx), so redefining --color-white would turn that hero's
+   copy dark. Targeting the utilities leaves those instances alone, and the
+   `:not(.bg-transparent)` guard means an element that has explicitly opted
+   out of a background is never given one. */
+
+html.dark .bg-white:not(.bg-transparent),
+html.dark .hover\:bg-white:hover {
+  background-color: var(--bil-card);
+}
+
+html.dark .border-white {
+  border-color: var(--bil-line);
+}
+
+html.dark .bg-black:not(.bg-transparent):not(.theme-fixed) {
+  background-color: var(--bil-ink);
+}
+
+/* A surface that inverts to a light colour needs its label inverted with it.
+   Two shapes: white text on the same element (a button), and white text in a
+   child (a caption on a plate). Home's bare `text-white` hero copy is touched
+   by neither, and Home's navbar uses `text-white!`, which wins on importance
+   regardless. */
+html.dark .bg-black.text-white,
+html.dark .bg-black:not(.bg-transparent):not(.theme-fixed) .text-white {
+  color: var(--bil-canvas);
+}
+
+html.dark .text-black,
+html.dark .hover\:text-black:hover {
+  color: var(--bil-ink);
+}
+
+html.dark .border-black,
+html.dark .hover\:border-black:hover,
+html.dark .focus\:border-black:focus {
+  border-color: var(--bil-ink);
+}
+
+html.dark .bg-red-50 {
+  background-color: rgba(179, 93, 82, 0.16);
+}
+
+html.dark .text-red-600 {
+  color: #e08b7f;
+}
+
+/* --- 2. Arbitrary hex utilities -------------------------------------- */
+
+/* Backgrounds. `:not(.bg-transparent)` leaves the Home hero's transparent
+   navbar and footer untouched. */
+html.dark .bg-\[\#fbf9f8\]:not(.bg-transparent),
+html.dark .bg-\[\#FBF9F8\]:not(.bg-transparent) {
+  background-color: var(--bil-canvas);
+}
+
+html.dark .bg-\[\#eeebeb\]:not(.bg-transparent),
+html.dark .bg-\[\#f5f5f5\]:not(.bg-transparent) {
+  background-color: var(--bil-sunken);
+}
+
+html.dark .bg-\[\#E5E0D9\]:not(.bg-transparent),
+html.dark .bg-\[\#F0EDE8\]:not(.bg-transparent),
+html.dark .bg-\[\#f5f3f3\]:not(.bg-transparent) {
+  background-color: var(--bil-chip);
+}
+
+html.dark .bg-\[\#1A1A1A\]:not(.bg-transparent),
+html.dark .bg-\[\#1a1a1a\]:not(.bg-transparent),
+html.dark .hover\:bg-\[\#1A1A1A\]:hover {
+  background-color: var(--bil-ink);
+}
+
+html.dark .bg-\[\#b35d52\]:not(.bg-transparent) {
+  background-color: var(--bil-accent);
+}
+
+html.dark .bg-\[\#8A8581\]:not(.bg-transparent) {
+  background-color: var(--bil-muted);
+}
+
+/* Text */
+html.dark .text-\[\#1A1A1A\],
+html.dark .text-\[\#1a1a1a\],
+html.dark .text-\[\#252321\] {
+  color: var(--bil-ink);
+}
+
+html.dark .text-\[\#8A8581\] {
+  color: var(--bil-muted);
+}
+
+html.dark .text-\[\#5C5855\] {
+  color: var(--bil-subtle);
+}
+
+html.dark .text-\[\#b35d52\],
+html.dark .text-\[\#B35D52\],
+html.dark .text-\[\#9E4E44\],
+html.dark .hover\:text-\[\#b35d52\]:hover,
+html.dark .hover\:text-\[\#B35D52\]:hover,
+html.dark .hover\:text-\[\#9E4E44\]:hover,
+html.dark .focus\:text-\[\#b35d52\]:focus {
+  color: var(--bil-accent);
+}
+
+html.dark .hover\:text-white:hover {
+  color: var(--bil-canvas);
+}
+
+/* Borders, and the SVGs that draw their own colour */
+html.dark .border-\[\#ECE6E0\],
+html.dark .border-\[\#dbdad9\] {
+  border-color: var(--bil-line);
+}
+
+html.dark .border-\[\#D6D0C8\],
+html.dark .border-\[\#AFA8A0\] {
+  border-color: var(--bil-line-strong);
+}
+
+html.dark .border-\[\#1A1A1A\] {
+  border-color: var(--bil-ink);
+}
+
+html.dark .stroke-\[\#b35d52\],
+html.dark .focus\:stroke-\[\#b35d52\]:focus {
+  stroke: var(--bil-accent);
+}
+
+html.dark .group:focus .group-focus\:stroke-\[\#b35d52\] {
+  stroke: var(--bil-accent);
+}
+
+html.dark .fill-\[\#B35D52\] {
+  fill: var(--bil-accent);
+}
+
+/* Group-hover variants resolve through the `group` ancestor, so the
+   override needs the same shape Tailwind generates. */
+html.dark .group:hover .group-hover\:text-black {
+  color: var(--bil-ink);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#b35d52\],
+html.dark .group:hover .group-hover\:text-\[\#B35D52\] {
+  color: var(--bil-accent);
+}
+
+/* ====================================================================
+   QUILL
+   quill/dist/quill.snow.css is light-only (white toolbar, near-black
+   icons), so the rich text editor is restyled here for dark mode. It is
+   imported by src/pages/NewStory.tsx and src/pages/EditStory.tsx.
+   ==================================================================== */
+
+html.dark .ql-toolbar.ql-snow,
+html.dark .ql-container.ql-snow {
+  border-color: var(--bil-line);
+}
+
+html.dark .ql-toolbar.ql-snow {
+  background-color: var(--bil-card);
+}
+
+html.dark .ql-container.ql-snow {
+  background-color: var(--bil-card);
+}
+
+html.dark .ql-editor {
+  color: var(--bil-ink);
+}
+
+html.dark .ql-editor.ql-blank::before {
+  color: var(--bil-muted);
+}
+
+html.dark .ql-snow .ql-stroke {
+  stroke: var(--bil-subtle);
+}
+
+html.dark .ql-snow .ql-fill,
+html.dark .ql-snow .ql-stroke.ql-fill {
+  fill: var(--bil-subtle);
+}
+
+html.dark .ql-snow .ql-picker {
+  color: var(--bil-subtle);
+}
+
+html.dark .ql-snow .ql-picker-options {
+  background-color: var(--bil-card);
+  border-color: var(--bil-line);
+}
+
+html.dark .ql-snow .ql-picker.ql-expanded .ql-picker-label,
+html.dark .ql-snow .ql-picker.ql-expanded .ql-picker-options {
+  border-color: var(--bil-line);
+}
+
+html.dark .ql-snow .ql-tooltip {
+  background-color: var(--bil-card);
+  border-color: var(--bil-line);
+  box-shadow: none;
+  color: var(--bil-ink);
+}
+
+html.dark .ql-snow .ql-tooltip input[type="text"] {
+  background-color: var(--bil-sunken);
+  border-color: var(--bil-line);
+  color: var(--bil-ink);
+}
+
+/* Applied last so these win over the toolbars' own hover/active rules. */
+html.dark .ql-snow.ql-toolbar button:hover .ql-stroke,
+html.dark .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+html.dark .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+html.dark .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+  stroke: var(--bil-accent);
+}
+
+html.dark .ql-snow.ql-toolbar button:hover .ql-fill,
+html.dark .ql-snow.ql-toolbar button.ql-active .ql-fill,
+html.dark .ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
+html.dark .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill {
+  fill: var(--bil-accent);
+}
+
+html.dark .ql-snow.ql-toolbar button:hover,
+html.dark .ql-snow.ql-toolbar button.ql-active,
+html.dark .ql-snow.ql-toolbar .ql-picker-label:hover,
+html.dark .ql-snow.ql-toolbar .ql-picker-label.ql-active {
+  color: var(--bil-accent);
 }

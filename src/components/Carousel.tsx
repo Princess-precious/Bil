@@ -51,7 +51,7 @@ function Carousel(){
           <div className="absolute inset-0 bg-black/50"></div>
         
           <div className="relative z-10 flex flex-col flex-wrap gap-2 pt-[250px] md:pt-[250px] px-6 md:pr-12 md:pl-[700px]">
-            <div  className="inline-block bg-black px-6 py-4">
+            <div  className="inline-block bg-black px-6 py-4 theme-fixed">
              <p className="text-[#b35d52] text-[10px] md:text-xs">WORDS & ESSENCE</p>
               <h1 className="text-white font-bold text-xl md:text-4xl ">
                 Ideas are fragile as folded paper until given breath by conviction. Write what you dare not speak.
@@ -75,7 +75,7 @@ function Carousel(){
           <div className="absolute inset-0 bg-black/50"></div>
         
           <div className="relative z-10 flex flex-col flex-wrap gap-2 pt-[250px] md:pt-[250px] px-6 md:pr-12 md:pl-[700px]">
-            <div  className="inline-block bg-black px-6 py-4">
+            <div  className="inline-block bg-black px-6 py-4 theme-fixed">
              <p className="text-[#b35d52] text-[10px] md:text-xs">ARCHITECTURE OF SOLITUDE</p>
               <h1 className="text-white font-bold text-xl md:text-4xl ">
                 Solitude is not the absence of company, but the presence of clarity.

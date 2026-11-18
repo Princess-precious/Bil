@@ -5,12 +5,21 @@ import { useState } from "react";
 import { deleteAccount } from "../lib/api/users";
 import { useAuth } from "../../src/useAuth";
 import { AuthService } from "../lib/Auth/AuthService";
+import { useTheme } from "../useTheme";
+import type { ThemePreference } from "../ThemeContext";
+
+const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "System" },
+];
 
 function Settings() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showToast] = useState(false);
   const navigate = useNavigate();
   const { setIsSignedIn } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -143,6 +152,85 @@ function Settings() {
             </button>
           </section>
         </div>
+        <section className="flex md:flex-row flex-col  gap-4 p-8 bg-white">
+          <div className="flex flex-col gap-1">
+            <h1 className="flex text-xl md:text-2xl font-playfair font-bold items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q97-30 162-118.5T718-480H480v-315l-240 90v207q0 7 2 18h238v316Z"/></svg>
+              Password & Security
+            </h1>
+            <p className="text-xs">Update your login passphrase or configure two-factor authentication to secure your editorial drafts.</p>
+          </div>
+          <div className="flex items-center">
+            <Link to="/change-password" className="text-white text-xs whitespace-nowrap  bg-black px-4 py-2 hover:opacity-80 focus:opacity-80">Change Password</Link>
+          </div>
+        </section>
+
+        <section className="flex flex-col md:flex-row gap-4 p-8 bg-white mt-10">
+          <div className="flex flex-col gap-1">
+            <h1 className="flex text-xl md:text-2xl font-playfair font-bold items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
+              Session Management
+            </h1>
+            <p className="text-xs">
+              Safely terminate your current active session on this workstation or invalidate authorizations across all devices.
+            </p>
+          </div>
+          <div className="flex items-center">
+            <button onClick={handleLogout} className="text-black text-xs whitespace-nowrap  bg-[#eeebeb] px-4 py-2 hover:opacity-80 focus:opacity-80">LOG OUT</button>
+          </div>
+        </section>
+
+        <section className="flex flex-col md:flex-row gap-4 p-8 bg-white mt-10">
+          <div className="flex flex-col gap-1">
+            <h1 className="flex text-xl md:text-2xl font-playfair font-bold items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
+              Appearance
+            </h1>
+            <p className="text-xs">
+              Choose how Bil looks to you. Follow device setting keeps Bil in step with your phone or laptop's light and dark mode automatically.
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="flex flex-wrap gap-1" role="group" aria-label="Theme">
+              {THEME_OPTIONS.map((option) => {
+                const isActive = theme === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setTheme(option.value)}
+                    aria-pressed={isActive}
+                    className={`text-xs whitespace-nowrap px-4 py-2 hover:opacity-80 focus:opacity-80 ${
+                      isActive
+                        ? "text-white bg-black"
+                        : "text-black bg-[#eeebeb]"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="flex flex-col md:flex-row gap-4 p-8 bg-[#eeebeb] mt-10 mb-10">
+          <div className="flex flex-col gap-1">
+            <h1 className="flex text-xl md:text-2xl font-playfair font-bold items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" className="text-[#b35d52]" fill="currentColor"><path d="m376-300 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 180q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520Zm-400 0v520-520Z"/></svg>
+              Account Sovereignty
+            </h1>
+            <p className="text-xs">
+              Permanently delete your profile, published essays, drafts, and membership records. Data erasure begins within 72 hours.
+            </p>
+          </div>
+          <div className="flex items-center">
+            <button 
+            onClick={() => setShowDeleteModal(true)}
+            className="text-white text-xs whitespace-nowrap  bg-[#b35d52] px-4 py-2 hover:opacity-80 focus:opacity-80">Delete Account</button>
+          </div>
+        </section>
 
         {showDeleteModal && (
           <div
